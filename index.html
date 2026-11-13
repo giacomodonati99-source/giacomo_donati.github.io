@@ -156,7 +156,7 @@
     }
 
     .megafono-3 {
-      top: 58%;
+      top: 49%;
       left: 11%;
       width: 240px;
       transform: rotate(4deg);
@@ -442,9 +442,26 @@
         font-size: 16px;
       }
 
+      /* Megafono 3 a sinistra e Megafono 2 a destra affiancati tra citazione e statement */
+      .megafoni-coppia-mobile {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        margin: 8px 0 24px 0;
+      }
+
+      .megafono-3 {
+        width: 48%;
+        max-width: 175px;
+        margin: 0;
+        transform: rotate(4deg);
+      }
+
       .megafono-2 {
-        width: 165px;
-        margin: 0 0 24px auto;
+        width: 44%;
+        max-width: 160px;
+        margin: 0;
         transform: rotate(6deg);
       }
 
@@ -456,12 +473,6 @@
       .statement-testo {
         font-size: 14px;
         line-height: 1.75;
-      }
-
-      .megafono-3 {
-        width: 180px;
-        margin: 0 auto 24px 0;
-        transform: rotate(4deg);
       }
 
       .megafono-4 {
@@ -568,8 +579,11 @@
       <div class="citazione-autore">Roland Barthes</div>
     </div>
 
-    <!-- Immagine 2: sullo sfondo a destra su PC, tra citazione e statement su smartphone -->
-    <img src="megafono2.jpg" alt="" class="sfondo-home megafono-2">
+    <!-- Megafono 3 e Megafono 2: sullo sfondo su PC, affiancati tra citazione e statement su smartphone -->
+    <div class="megafoni-coppia-mobile">
+      <img src="megafono3.jpg" alt="" class="sfondo-home megafono-3">
+      <img src="megafono2.jpg" alt="" class="sfondo-home megafono-2">
+    </div>
 
     <div class="statement-wrapper">
       <div class="statement-testo">
@@ -582,9 +596,6 @@
         </p>
       </div>
     </div>
-
-    <!-- Immagine 3: sullo sfondo a sinistra su PC, dopo lo statement su smartphone -->
-    <img src="megafono3.jpg" alt="" class="sfondo-home megafono-3">
 
     <!-- Megafono 4 raddrizzato in chiusura -->
     <img src="megafono4.jpg" alt="" class="megafono-inline megafono-4">
