@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GIACOMO DONATI</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #FAF9F6;
+      color: #111;
+      margin: 0;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* INTESTAZIONE E CONTATTI */
+    header {
+      border-bottom: 2px solid #000;
+      padding-bottom: 10px;
+      display: inline-block;
+      margin-bottom: 25px;
+    }
+
+    .nome-home {
+      text-decoration: none;
+      color: #111;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Link sobrio */
+    .contatti a, .colonna-testo a {
+      color: #111;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1px;
+    }
+
+    .contatti a:hover, .colonna-testo a:hover {
+      text-decoration-style: dotted;
+      color: #555;
+    }
+
+    /* MENU DI NAVIGAZIONE TRA LE PAGINE */
+    nav {
+      margin-bottom: 50px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    nav a {
+      color: #111;
+      text-decoration: none;
+      font-size: 13px;
+      padding-bottom: 3px;
+      border-bottom: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    nav a:hover, nav a.attivo {
+      border-bottom: 1px solid #000;
+      font-weight: 700;
+    }
+
+    /* GESTIONE DELLE PAGINE */
+    .pagina {
+      display: none;
+    }
+
+    .pagina.visibile {
+      display: block;
+    }
+
+    /* --- PAGINA HOME: CITAZIONE + STATEMENT CON SCHIZZI --- */
+    .spazio-citazione {
+      min-height: 40vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 40px 15px;
+      margin-bottom: 60px;
+    }
+
+    .citazione-testo {
+      font-size: 18px;
+      font-style: italic;
+      max-width: 620px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .citazione-autore {
+      font-size: 12px;
+      border-bottom: 1px solid #000;
+      padding-bottom: 3px;
+    }
+
+    /* Contenitore dello statement con gioco di profondità */
+    .statement-wrapper {
+      position: relative;
+      max-width: 680px;
+      margin: 0 auto 140px auto;
+      padding: 40px 20px;
+    }
+
+    .statement-testo {
+      position: relative;
+      z-index: 2;
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    /* Schizzi che vanno parzialmente sotto al testo */
+    .schizzo {
+      position: absolute;
+      z-index: 1;
+      opacity: 0.55;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+    }
+
+    .schizzo-1 {
+      top: -30px;
+      left: -60px;
+      width: 260px;
+    }
+
+    .schizzo-2 {
+      bottom: -60px;
+      right: -40px;
+      width: 300px;
+    }
+
+    /* --- STILI PER LE ALTRE SEZIONI (PROGETTI, FOTO, SUONO, ECC.) --- */
+    .blocco-sinistra {
+      width: 48%;
+      margin-left: 2%;
+      margin-bottom: 110px;
+    }
+
+    .blocco-destra {
+      width: 50%;
+      margin-left: 45%;
+      margin-bottom: 120px;
+    }
+
+    .blocco-centro-piccolo {
+      width: 38%;
+      margin-left: 28%;
+      margin-bottom: 90px;
+    }
+
+    .blocco-gigante {
+      width: 82%;
+      margin-left: 10%;
+      margin-bottom: 120px;
+    }
+
+    img.opera, video.opera {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    audio {
+      width: 100%;
+      max-width: 450px;
+      display: block;
+    }
+
+    .nota {
+      font-size: 12px;
+      margin-top: 10px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #000;
+      display: inline-block;
+    }
+
+    .descrizione-opera {
+      font-size: 13px;
+      line-height: 1.65;
+      margin-top: 12px;
+      color: #222;
+    }
+
+    .crediti-foto {
+      font-size: 11px;
+      color: #555;
+      margin-top: 6px;
+    }
+
+    /* Stile per Bio - CV e Ricerca */
+    .colonna-testo {
+      max-width: 720px;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .sezione-cv-titolo {
+      margin-top: 45px;
+      margin-bottom: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .voce-cv {
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #000;
+    }
+
+    footer {
+      margin-top: 120px;
+      font-size: 11px;
+      color: #555;
+    }
+
+    /* Adattamento per smartphone */
+    @media (max-width: 700px) {
+      .blocco-sinistra, .blocco-destra, .blocco-centro-piccolo, .blocco-gigante {
+        width: 98%;
+        margin-left: 0;
+        margin-bottom: 70px;
+      }
+      .schizzo-1 {
+        left: -10px;
+        width: 180px;
+      }
+      .schizzo-2 {
+        right: 0;
+        width: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- INTESTAZIONE FISSA -->
+  <header>
+    <a class="nome-home" onclick="apriPagina('home')">GIACOMO DONATI</a> — Archivio (2022–2026)<br>
+    <span class="contatti">
+      Contatti: +39 3890349309 | <a href="mailto:giacomo.donati99@gmail.com">giacomo.donati99@gmail.com</a> | <a href="https://instagram.com/_giacomodonati_" target="_blank">@_giacomodonati_</a>
+    </span>
+  </header>
+
+  <!-- MENU SEZIONI -->
+  <nav>
+    <a id="link-progetti" onclick="apriPagina('progetti')">Progetti</a>
+    <a id="link-bio" onclick="apriPagina('bio')">Bio - CV</a>
+    <a id="link-fotografia" onclick="apriPagina('fotografia')">Fotografia</a>
+    <a id="link-suono" onclick="apriPagina('suono')">Suono</a>
+    <a id="link-ricerca" onclick="apriPagina('ricerca')">Ricerca</a>
+  </nav>
+
+  <!-- ========================================================= -->
+  <!-- 1. PAGINA PRINCIPALE (CITAZIONE + STATEMENT CON SCHIZZI)  -->
+  <!-- ========================================================= -->
+  <section id="home" class="pagina visibile">
+    
+    <div class="spazio-citazione">
+      <div class="citazione-testo">
+        “Qui inserisci la citazione dell'artista o del letterato che hai scelto per aprire lo sguardo verso la tua pratica.”
+      </div>
+      <div class="citazione-autore">Nome Autore / Autrice</div>
+    </div>
+
+    <div class="statement-wrapper">
+      <!-- Disegni posizionati dietro al testo -->
+      <img src="schizzo1.jpg" alt="" class="schizzo schizzo-1">
+      <img src="schizzo2.jpg" alt="" class="schizzo schizzo-2">
+
+      <div class="statement-testo">
+        <p><strong>Statement</strong></p>
+        <p>
+          La mia ricerca indaga la dimensione politica e sociale delle tecnologie di controllo, profilazione e diffusione delle informazioni, analizzandone le relative dinamiche di potere. Opero attraverso l'appropriazione, la modifica e la riconfigurazione di tecnologie preesistenti, sovvertendo e ironizzando gli immaginari e i dispositivi normativi a cui esse appartengono. La mia pratica si articola tra video, live performance, installazioni sonore e interventi site-specific.
+        </p>
+        <p>
+          L'ambiente viene letto sia come architettura di sorveglianza sia come spazio relazionale: un luogo di potenziale incontro e mutualismo in cui la tecnologia cessa di essere strumento di dominio per farsi cassa di risonanza collettiva. Riparto dal corpo fisico, incarnato, presenziale inteso come primo territorio di resistenza e cambiamento, dal quale riappropriarsi della propria esistenza e ricostruire nuove forme di collettività.
+        </p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ========================================================= -->
+  <!-- 2. SEZIONE PROGETTI (DA PORTFOLIO 2022–2026)              -->
+  <!-- ========================================================= -->
+  <section id="progetti" class="pagina">
+
+    <!-- PROGETTO 1: Sender-Receiver (Video) -->
+    <div class="blocco-destra">
+      <img src="sender-receiver-video.jpg" alt="Sender-Receiver (video)" class="opera">
+      <div class="nota"><strong>Sender-Receiver</strong>, 2026 — Video, 9'15"</div>
+      <p class="descrizione-opera">
+        Di notte, un odore chimico proveniente dalla zona industriale spinge a uscire di casa per cercarne l'origine. La narrazione di questa esperienza viene riprodotta negli stessi luoghi in cui è avvenuta, attraverso un registratore a cassette lasciato nello spazio. La voce risuona, viene cambiata dalle distanze, dai riverberi, dai rumori ambientali. Il percorso si trasforma progressivamente in un'esperienza di controllo e sorveglianza delineando un ambiente che reagisce a una presenza inattesa. La voce è intesa come un corpo sonoro che cambia lo spazio, lo chiama, lo interpella, lo attraversa.
+      </p>
+    </div>
+
+    <!-- PROGETTO 2: Sender-Receiver (Installazione) -->
+    <div class="blocco-gigante">
+      <img src="sender-receiver-installazione.jpg" alt="Sender-Receiver (installazione)" class="opera">
+      <div class="nota"><strong>Sender-Receiver</strong>, 2026 — Installazione, registratori a nastro, nastro magnetico, audio in loop 8'30"</div>
+      <p class="descrizione-opera">
+        Sei registratori a cassetta interagiscono nello spazio attraverso i nastri magnetici modificati: dei loop costruiscono circuiti chiusi portando il nastro fuori dal guscio delle cassette. Un'opera completamente analogica, dove il segnale rimane fisico in un continuo transitare tra forze meccaniche, elettriche e magnetiche. I nastri spezzati e riconfigurati in più loop interrompono la narrazione fino a far perdere la linearità del racconto. Lo scorrere del nastro diventa la manifestazione materiale di un campo di risonanze attraversato da tensioni e trasformazioni reciproche. Lo spazio smette di configurarsi come semplice sfondo per emergere come una moltitudine di voci, presenze e corpi che interrogano e rispondono.
+      </p>
+      <div class="crediti-foto">
+        Documentazione fotografica a cura di Alessio Belloni — Coordinate N. 6, <em>All the world is breathing through me</em>, a cura di Juan Pablo Macias e Alessandra Poggianti, Fondazione MG 48° 50°, Livorno.
+      </div>
+    </div>
+
+    <!-- PROGETTO 3: Asportissima -->
+    <div class="blocco-sinistra">
+      <img src="asportissima.jpg" alt="Asportissima" class="opera">
+      <div class="nota"><strong>Asportissima</strong>, 2026 — Progetto fotografico, happening (stampe in vinile monomerico 40x40 cm)</div>
+      <p class="descrizione-opera">
+        Asportissima è un progetto fotografico e performativo che attiva una mostra itinerante all'interno del sistema di delivery urbano. In collaborazione con i rider, le borse termiche utilizzate per le consegne diventano supporti espositivi mobili: immagini fotografiche vengono applicate sulle superfici delle borse e circolano nella città durante le normali attività di lavoro. La distribuzione delle opere non è stabile né controllata, ma dipende dai percorsi, dai tempi e dalle logiche della piattaforma di consegna, producendo una visibilità intermittente e decentralizzata nello spazio urbano. Il progetto utilizza l'infrastruttura del delivery come dispositivo espositivo, in cui la circolazione economica e quella delle immagini si sovrappongono, generando un sistema temporaneo di diffusione artistica non istituzionale.
+      </p>
+    </div>
+
+    <!-- PROGETTO 4: Confessioni -->
+    <div class="blocco-destra">
+      <img src="confessioni.jpg" alt="Confessioni" class="opera">
+      <div class="nota"><strong>Confessioni</strong>, 2025 — Installazione multimediale</div>
+      <p class="descrizione-opera">
+        Attraverso una pratica disfunzionale la telecamera diventa un display. Lo strumento di osservazione diventa oggetto osservato, disarmo di una funzione sorvegliante che determina anche una inversione di una asimmetria di potere. Due telecamere poste a terra, in corrispondenza di angoli, si osservano reciprocamente, in uno spazio confidenziale, dove, private della loro funzione originaria, diventano supporti per uno scambio di racconti e sogni.
+      </p>
+    </div>
+
+    <!-- PROGETTO 5: Modificando l'ordine -->
+    <div class="blocco-gigante">
+      <img src="modificando-ordine.jpg" alt="Modificando l'ordine" class="opera">
+      <div class="nota"><strong>Modificando l'ordine</strong>, 2022 — Stampa fotografica, 200x37,5 cm</div>
+      <p class="descrizione-opera">
+        Partendo da una immagine raffigurante tetti e infrastrutture di comunicazione, l'immagine viene sottoposta a un processo analitico di frammentazione e ricomposizione fino a comprometterne gradualmente la leggibilità. Un procedimento formale volto a interrogare i limiti dell'osservazione e dei sistemi contemporanei di produzione delle immagini.
+      </p>
+    </div>
+
+  </section>
+
+  <!-- ========================================================= -->
+  <!-- 3. SEZIONE BIO - CV                                       -->
+  <!-- ========================================================= -->
+  <section id="bio" class="pagina">
+    <div class="colonna-testo">
+      
+      <p><strong>Biografia</strong></p>
+      <p style="margin-bottom: 20px;">
+        Giacomo Donati (San Miniato, 1999) è un artista la cui pratica si articola tra video, live performance, installazioni sonore e interventi site-specific. Il suo lavoro si sviluppa a partire da episodi di vissuto reale ed esperienze dirette in contesti urbani e sociali attraversati da forme di controllo, monitoraggio e regolazione istituzionale, strutturandosi attraverso situazioni concrete di esposizione e osservazione.
+      </p>
+      <p style="margin-bottom: 20px;">
+        La sua ricerca indaga la relazione tra soggettività e dispositivi di sorveglianza, dai sistemi algoritmici e CCTV fino ai regimi linguistici incorporati nella vita quotidiana, esplorando la soglia in cui l'esperienza personale incontra la dimensione sistemica. Questo confine viene affrontato attraverso una dimensione sensibile di ascolto, in cui la voce e l'azione situata diventano strumenti centrali per intendere il linguaggio sia come spazio di costruzione collettiva, sia come potenziale luogo di fallimento e instabilità.
+      </p>
+      <p style="margin-bottom: 40px;">
+        Muovendosi tra ricerca tecnologica e intervento performativo, la sua pratica mira a osservare, registrare, mettere a nudo e sovvertire le dinamiche di potere e i meccanismi che regolano la visibilità e il comportamento. Il lavoro trova infine forma in strutture ibride tra performance, documentazione e installazione.
+      </p>
+
+      <div class="sezione-cv-titolo">Formazione</div>
+      <div class="voce-cv">
+        <strong>2021</strong> — Diploma Accademico di Primo Livello (Laurea Triennale / Bachelor of Fine Arts) in Pittura, Accademia di Belle Arti di Firenze (110/110 e lode).
+      </div>
+
+      <div class="sezione-cv-titolo">Mostre Selezionate</div>
+      <div class="voce-cv">
+        <strong>2026</strong> — <em>Let's Dance</em>, in collaborazione con Na Zhang e Alexandra Rinja. A cura di Vittoria Broggini, Donatello D'Angelo, Maurizio Di Lella, Lia Pantani. MFA, Accademia di Belle Arti di Firenze (VJ & DJ live performance).
+      </div>
+      <div class="voce-cv">
+        <strong>2026</strong> — <em>Sender/Receiver</em>, in <em>Coordinate N. 6, All the world is breathing through me</em>, a cura di Juan Pablo Macias e Alessandra Poggianti, Fondazione MG 48° 50°, Magazzini Generali, Livorno (Installazione sonora composta da sette registratori a nastro in loop).
+      </div>
+      <div class="voce-cv">
+        <strong>2023</strong> — <em>Sonic Guards</em>, in collaborazione con Lucia Kagramanyan. A cura di Robert Pettena, <em>Chroma</em>, Galleria Isolotto, Firenze (Installazione sonora e fotografica).
+      </div>
+      <div class="voce-cv">
+        <strong>2022</strong> — <em>Il muto colloquio</em>, a cura di Cheng Xi — <em>Nice to meet you today. Hope to see you again</em>, Enjoy Art Museum, Pechino (Proiezione video su schermo).
+      </div>
+
+      <div class="sezione-cv-titolo">Mostre Selezionate — Scartoni/Donati (duo con Irene Scartoni, dal 2022)</div>
+      <div class="voce-cv">
+        <strong>2026</strong> — <em>La Fiorita</em>, a cura di Marco Mazzi — <em>La Fiorita</em>, Villa Rondinelli, Fiesole (Evento site-specific, proiezione a parete di un lungometraggio).
+      </div>
+      <div class="voce-cv">
+        <strong>2025</strong> — <em>Impalestra. Tra museo e accademia</em>, a cura di Museo Novecento e Accademia di Belle Arti di Firenze (prof. Carlo Falciani), Museo Novecento, Firenze.
+      </div>
+      <div class="voce-cv">
+        <strong>2024</strong> — <em>Travasare: è arrivato l'Arembapampane</em>, a cura di Erica Romano, Open Studio Italo Bolano, Prato (Mostra personale di Scartoni/Donati).
+      </div>
+      <div class="voce-cv">
+        <strong>2022</strong> — <em>Lavoretti</em>, a cura di Carlo Falciani — Artefiera, Bologna (Esposizione presso il padiglione Accademia di Belle Arti di Firenze).
+      </div>
+
+      <div class="sezione-cv-titolo">Residenze d'Arte Selezionate — Scartoni/Donati</div>
+      <div class="voce-cv">
+        <strong>2025</strong> — <em>Cjase. Scartoni/Donati in residenza</em>, a cura di Duepunti, progetto Altrememorie, Le Serre, Campoformido/Pozzuolo del Friuli, Udine.
+      </div>
+      <div class="voce-cv">
+        <strong>2022</strong> — <em>Travasare</em>, a cura di Erica Romano, promosso dalla Fondazione Italo Bolano, Open air Museum, Portoferraio, Isola d'Elba.
+      </div>
+
+      <div class="sezione-cv-titolo">Premi e Riconoscimenti</div>
+      <div class="voce-cv">
+        <strong>2023</strong> — Premio di acquisizione alla X edizione della Biennale di Monza, Collezione dei Musei Civici di Monza. Opera premiata: Scartoni/Donati, <em>Lavoretti</em> (video, 16'9", 2022).
+      </div>
+      <div class="voce-cv">
+        <strong>2022</strong> — Borsa di studio <em>On Air, Mind Fellowships</em>, promossa dall'associazione culturale Carico Massimo.
+      </div>
+
+      <div class="sezione-cv-titolo">Collezioni Pubbliche e Private</div>
+      <div class="voce-cv">
+        Collezione pubblica dei Musei Civici di Monza — Opera acquistata: Scartoni/Donati, <em>Lavoretti</em> (video, 16'9", 2022).
+      </div>
+      <div class="voce-cv">
+        Collezione privata di Villa Rondinelli, Fiesole — Opere acquistate: Giacomo Donati, varie.
+      </div>
+
+      <div class="sezione-cv-titolo">Bibliografia e Stampa Selezionata</div>
+      <div class="voce-cv">
+        <strong>2026</strong> — "Meng" in <a href="https://www.modestazionesolare.com/" target="_blank">Modesta Azione Solare</a>, edizione Numero 00. Redazione ed editor: Dario Capello e Francesca Montanarella; direzione artistica e graphic design: Marco Curiale.
+      </div>
+      <div class="voce-cv">
+        <strong>2024</strong> — Contributi di pubblicazione e ricerca nella rubrica <em>Luftbeben (tremori d'aria)</em>, <a href="https://on-air.caricomassimo.org/en/airquakes/mind-fellowships/papers/giacomo-donati" target="_blank">Archivio d'Aria</a> a cura di Carico Massimo.
+      </div>
+      <div class="voce-cv">
+        <strong>2023</strong> — "Antipodisti" in <em>Chroma</em>, catalogo a cura di Robert Pettena.
+      </div>
+
+      <div class="sezione-cv-titolo">Workshop</div>
+      <div class="voce-cv">
+        <strong>2026</strong> — <em>Laboratorio sul gesto</em> con Soledad Zarka e Loup Uberto, Fondazione Magazzini Generali 48° 50° (progetto sostenuto da Laboratorio di Creatività Contemporanea, Direzione Generale Creatività Contemporanea del Ministero della Cultura).
+      </div>
+      <div class="voce-cv">
+        <strong>2026</strong> — <em>WILD:CARE Training</em>, realizzato da TAB (Take Away Bibliographies), Comparative Research Network, in collaborazione con Codesign Toscana e Centro Pecci di Prato.
+      </div>
+
+      <div class="sezione-cv-titolo">Curatela</div>
+      <div class="voce-cv">
+        <strong>2024</strong> — <em>Coordinate N.2, Lo sguardo dal di fuori, Mind Fellowships</em>, a cura di Giacomo Donati, Fondazione Magazzini Generali 48° 50°, Livorno.
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================= -->
+  <!-- 4. SEZIONE FOTOGRAFIA                                     -->
+  <!-- ========================================================= -->
+  <section id="fotografia" class="pagina">
+    <div class="blocco-sinistra">
+      <img src="foto1.jpg" alt="Fotografia 1" class="opera">
+      <div class="nota">Serie I — Scatto #01, 2025.</div>
+    </div>
+
+    <div class="blocco-destra">
+      <img src="foto2.jpg" alt="Fotografia 2" class="opera">
+      <div class="nota">Serie I — Scatto #02, 2025.</div>
+    </div>
+  </section>
+
+  <!-- ========================================================= -->
+  <!-- 5. SEZIONE SUONO                                          -->
+  <!-- ========================================================= -->
+  <section id="suono" class="pagina">
+    <div class="blocco-sinistra">
+      <audio controls>
+        <source src="traccia1.mp3" type="audio/mpeg">
+      </audio>
+      <div class="nota">[01] Registrazione / Composizione sonora #1, 2026</div>
+    </div>
+
+    <div class="blocco-destra">
+      <audio controls>
+        <source src="traccia2.mp3" type="audio/mpeg">
+      </audio>
+      <div class="nota">[02] Studio elettroacustico, 2025</div>
+    </div>
+  </section>
+
+  <!-- ========================================================= -->
+  <!-- 6. SEZIONE RICERCA                                        -->
+  <!-- ========================================================= -->
+  <section id="ricerca" class="pagina">
+    <div class="colonna-testo" style="margin-bottom: 60px;">
+      <p><strong>Quaderni, materiali d'archivio e processi in corso</strong></p>
+      <p>Spazio dedicato a frammenti teorici, prove di stampa, appunti visivi e riferimenti che accompagnano il lavoro prima che diventi opera finita.</p>
+    </div>
+
+    <div class="blocco-centro-piccolo">
+      <img src="ricerca1.jpg" alt="Appunto di ricerca" class="opera">
+      <div class="nota">Frammento di taccuino, 2025</div>
+    </div>
+
+    <div class="blocco-destra">
+      <img src="ricerca2.jpg" alt="Prova materiale" class="opera">
+      <div class="nota">Test materiale, 2026</div>
+    </div>
+  </section>
+
+  <footer>
+    © Giacomo Donati — Nessun cookie, nessun tracciamento.
+  </footer>
+
+  <!-- SCRIPT PER CAMBIARE SEZIONE -->
+  <script>
+    function apriPagina(idPagina) {
+      document.querySelectorAll('.pagina').forEach(p => p.classList.remove('visibile'));
+      document.querySelectorAll('nav a').forEach(a => a.classList.remove('attivo'));
+      
+      document.getElementById(idPagina).classList.add('visibile');
+      
+      const linkAttivo = document.getElementById('link-' + idPagina);
+      if (linkAttivo) linkAttivo.classList.add('attivo');
+
+      history.replaceState(null, null, '#' + idPagina);
+      window.scrollTo(0, 0);
+    }
+
+    window.addEventListener('load', () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash && document.getElementById(hash)) {
+        apriPagina(hash);
+      }
+    });
+  </script>
+
+</body>
+</html>
