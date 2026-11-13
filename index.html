@@ -10,6 +10,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Montserrat', sans-serif;
       background-color: #FAF9F6;
@@ -34,7 +38,10 @@
       cursor: pointer;
     }
 
-    /* Link sobrio */
+    .nome-home:hover {
+      opacity: 0.65;
+    }
+
     .contatti a, .colonna-testo a {
       color: #111;
       text-decoration: underline;
@@ -49,7 +56,7 @@
 
     /* MENU DI NAVIGAZIONE TRA LE PAGINE */
     nav {
-      margin-bottom: 50px;
+      margin-bottom: 60px;
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
@@ -104,7 +111,6 @@
       padding-bottom: 3px;
     }
 
-    /* Contenitore dello statement con gioco di profondità */
     .statement-wrapper {
       position: relative;
       max-width: 680px;
@@ -119,7 +125,6 @@
       line-height: 1.8;
     }
 
-    /* Schizzi che vanno parzialmente sotto al testo */
     .schizzo {
       position: absolute;
       z-index: 1;
@@ -140,7 +145,164 @@
       width: 300px;
     }
 
-    /* --- STILI PER LE ALTRE SEZIONI (PROGETTI, FOTO, SUONO, ECC.) --- */
+    /* --- SEZIONE PROGETTI --- */
+    .progetto-sezione {
+      max-width: 1120px;
+      margin: 0 auto 150px auto;
+      padding-bottom: 80px;
+      border-bottom: 1px solid #000;
+    }
+
+    .progetto-sezione:last-child {
+      border-bottom: none;
+      margin-bottom: 60px;
+    }
+
+    .progetto-header-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 48px;
+      align-items: start;
+      margin-bottom: 48px;
+    }
+
+    .progetto-header-grid.confessioni-top {
+      grid-template-columns: 0.78fr 1.22fr;
+    }
+
+    .progetto-header-grid.asportissima-top {
+      grid-template-columns: 1.15fr 0.85fr;
+    }
+
+    .scheda-info {
+      max-width: 480px;
+    }
+
+    .progetto-titolo {
+      font-size: 19px;
+      font-weight: 700;
+      margin: 0 0 6px 0;
+    }
+
+    .progetto-meta {
+      font-size: 12px;
+      line-height: 1.5;
+      padding-bottom: 6px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid #000;
+      display: inline-block;
+    }
+
+    .descrizione-opera {
+      font-size: 13.5px;
+      line-height: 1.75;
+      margin: 0;
+      color: #111;
+    }
+
+    .nota {
+      font-size: 11.5px;
+      margin-top: 10px;
+      padding-bottom: 3px;
+      border-bottom: 1px solid #000;
+      display: inline-block;
+    }
+
+    .crediti-foto {
+      font-size: 11px;
+      line-height: 1.5;
+      color: #444;
+      margin-top: 10px;
+    }
+
+    img.opera, video.opera {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    img.disegno-tecnico {
+      width: 100%;
+      height: auto;
+      display: block;
+      mix-blend-mode: multiply;
+    }
+
+    /* 01. Sender-Receiver (Video) */
+    .sr-video-doc-grid {
+      display: grid;
+      grid-template-columns: 0.63fr 1.37fr;
+      gap: 32px;
+      align-items: start;
+      margin-top: 36px;
+      margin-bottom: 52px;
+    }
+
+    .sr-video-stills-block {
+      max-width: 820px;
+    }
+
+    .sr-video-stills-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* 02. Sender-Receiver (Installazione) */
+    .pausa-disegno {
+      max-width: 860px;
+      margin: 72px auto;
+    }
+
+    .griglia-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .chiusura-verticale-centrata {
+      max-width: 480px;
+      margin: 48px auto 0 auto;
+    }
+
+    /* 04. Confessioni */
+    .confessioni-seconda-riga {
+      display: grid;
+      grid-template-columns: 0.62fr 1.38fr;
+      gap: 40px;
+      align-items: start;
+      margin-bottom: 44px;
+    }
+
+    .griglia-3-dettagli {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 680px;
+    }
+
+    /* 05. Asportissima */
+    .griglia-3col-allineata {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .pausa-stampa-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin: 48px 0;
+    }
+
+    .pausa-stampa-grid .stampa-centrale {
+      grid-column: 2;
+    }
+
+    /* --- STILI PER LE ALTRE SEZIONI (FOTO, SUONO, BIO, RICERCA) --- */
     .blocco-sinistra {
       width: 48%;
       margin-left: 2%;
@@ -159,46 +321,12 @@
       margin-bottom: 90px;
     }
 
-    .blocco-gigante {
-      width: 82%;
-      margin-left: 10%;
-      margin-bottom: 120px;
-    }
-
-    img.opera, video.opera {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
     audio {
       width: 100%;
       max-width: 450px;
       display: block;
     }
 
-    .nota {
-      font-size: 12px;
-      margin-top: 10px;
-      padding-bottom: 4px;
-      border-bottom: 1px solid #000;
-      display: inline-block;
-    }
-
-    .descrizione-opera {
-      font-size: 13px;
-      line-height: 1.65;
-      margin-top: 12px;
-      color: #222;
-    }
-
-    .crediti-foto {
-      font-size: 11px;
-      color: #555;
-      margin-top: 6px;
-    }
-
-    /* Stile per Bio - CV e Ricerca */
     .colonna-testo {
       max-width: 720px;
       line-height: 1.7;
@@ -226,17 +354,53 @@
       color: #555;
     }
 
-    /* Adattamento per smartphone */
-    @media (max-width: 700px) {
-      .blocco-sinistra, .blocco-destra, .blocco-centro-piccolo, .blocco-gigante {
+    /* ADATTAMENTO PER SMARTPHONE */
+    @media (max-width: 768px) {
+      .progetto-header-grid,
+      .progetto-header-grid.confessioni-top,
+      .progetto-header-grid.asportissima-top,
+      .sr-video-doc-grid,
+      .griglia-2col,
+      .confessioni-seconda-riga,
+      .griglia-3col-allineata,
+      .pausa-stampa-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .pausa-stampa-grid {
+        margin: 32px 0;
+      }
+
+      .pausa-stampa-grid .stampa-centrale {
+        grid-column: 1;
+      }
+
+      .sr-video-stills-row,
+      .griglia-3-dettagli {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .pausa-disegno {
+        margin: 40px auto;
+      }
+
+      .chiusura-verticale-centrata {
+        margin: 28px auto 0 auto;
+      }
+
+      .blocco-sinistra, .blocco-destra, .blocco-centro-piccolo {
         width: 98%;
         margin-left: 0;
         margin-bottom: 70px;
       }
+
       .schizzo-1 {
         left: -10px;
         width: 180px;
       }
+
       .schizzo-2 {
         right: 0;
         width: 200px;
@@ -256,6 +420,7 @@
 
   <!-- MENU SEZIONI -->
   <nav>
+    <a id="link-home" class="attivo" onclick="apriPagina('home')">Home</a>
     <a id="link-progetti" onclick="apriPagina('progetti')">Progetti</a>
     <a id="link-bio" onclick="apriPagina('bio')">Bio - CV</a>
     <a id="link-fotografia" onclick="apriPagina('fotografia')">Fotografia</a>
@@ -276,7 +441,6 @@
     </div>
 
     <div class="statement-wrapper">
-      <!-- Disegni posizionati dietro al testo -->
       <img src="schizzo1.jpg" alt="" class="schizzo schizzo-1">
       <img src="schizzo2.jpg" alt="" class="schizzo schizzo-2">
 
@@ -294,57 +458,171 @@
   </section>
 
   <!-- ========================================================= -->
-  <!-- 2. SEZIONE PROGETTI (DA PORTFOLIO 2022–2026)              -->
+  <!-- 2. SEZIONE PROGETTI                                       -->
   <!-- ========================================================= -->
   <section id="progetti" class="pagina">
 
-    <!-- PROGETTO 1: Sender-Receiver (Video) -->
-    <div class="blocco-destra">
-      <img src="sender-receiver-video.jpg" alt="Sender-Receiver (video)" class="opera">
-      <div class="nota"><strong>Sender-Receiver</strong>, 2026 — Video, 9'15"</div>
-      <p class="descrizione-opera">
-        Di notte, un odore chimico proveniente dalla zona industriale spinge a uscire di casa per cercarne l'origine. La narrazione di questa esperienza viene riprodotta negli stessi luoghi in cui è avvenuta, attraverso un registratore a cassette lasciato nello spazio. La voce risuona, viene cambiata dalle distanze, dai riverberi, dai rumori ambientali. Il percorso si trasforma progressivamente in un'esperienza di controllo e sorveglianza delineando un ambiente che reagisce a una presenza inattesa. La voce è intesa come un corpo sonoro che cambia lo spazio, lo chiama, lo interpella, lo attraversa.
-      </p>
-    </div>
-
-    <!-- PROGETTO 2: Sender-Receiver (Installazione) -->
-    <div class="blocco-gigante">
-      <img src="sender-receiver-installazione.jpg" alt="Sender-Receiver (installazione)" class="opera">
-      <div class="nota"><strong>Sender-Receiver</strong>, 2026 — Installazione, registratori a nastro, nastro magnetico, audio in loop 8'30"</div>
-      <p class="descrizione-opera">
-        Sei registratori a cassetta interagiscono nello spazio attraverso i nastri magnetici modificati: dei loop costruiscono circuiti chiusi portando il nastro fuori dal guscio delle cassette. Un'opera completamente analogica, dove il segnale rimane fisico in un continuo transitare tra forze meccaniche, elettriche e magnetiche. I nastri spezzati e riconfigurati in più loop interrompono la narrazione fino a far perdere la linearità del racconto. Lo scorrere del nastro diventa la manifestazione materiale di un campo di risonanze attraversato da tensioni e trasformazioni reciproche. Lo spazio smette di configurarsi come semplice sfondo per emergere come una moltitudine di voci, presenze e corpi che interrogano e rispondono.
-      </p>
-      <div class="crediti-foto">
-        Documentazione fotografica a cura di Alessio Belloni — Coordinate N. 6, <em>All the world is breathing through me</em>, a cura di Juan Pablo Macias e Alessandra Poggianti, Fondazione MG 48° 50°, Livorno.
+    <!-- 01. SENDER-RECEIVER (VIDEO) -->
+    <article class="progetto-sezione">
+      <div class="scheda-info" style="max-width: 640px;">
+        <h2 class="progetto-titolo">Sender-Receiver</h2>
+        <div class="progetto-meta">2026 — video, 9'15"</div>
+        <p class="descrizione-opera">
+          Di notte, un odore chimico proveniente dalla zona industriale spinge a uscire di casa per cercarne l'origine. La narrazione di questa esperienza viene riprodotta negli stessi luoghi in cui è avvenuta, attraverso un registratore a cassette lasciato nello spazio. La voce risuona, viene cambiata dalle distanze, dai riverberi, dai rumori ambientali. Il percorso si trasforma progressivamente in un'esperienza di controllo e sorveglianza delineando un ambiente che reagisce a una presenza inattesa. La voce è intesa come un corpo sonoro che cambia lo spazio, lo chiama, lo interpella, lo attraversa.
+        </p>
       </div>
-    </div>
 
-    <!-- PROGETTO 3: Asportissima -->
-    <div class="blocco-sinistra">
-      <img src="asportissima.jpg" alt="Asportissima" class="opera">
-      <div class="nota"><strong>Asportissima</strong>, 2026 — Progetto fotografico, happening (stampe in vinile monomerico 40x40 cm)</div>
-      <p class="descrizione-opera">
-        Asportissima è un progetto fotografico e performativo che attiva una mostra itinerante all'interno del sistema di delivery urbano. In collaborazione con i rider, le borse termiche utilizzate per le consegne diventano supporti espositivi mobili: immagini fotografiche vengono applicate sulle superfici delle borse e circolano nella città durante le normali attività di lavoro. La distribuzione delle opere non è stabile né controllata, ma dipende dai percorsi, dai tempi e dalle logiche della piattaforma di consegna, producendo una visibilità intermittente e decentralizzata nello spazio urbano. Il progetto utilizza l'infrastruttura del delivery come dispositivo espositivo, in cui la circolazione economica e quella delle immagini si sovrappongono, generando un sistema temporaneo di diffusione artistica non istituzionale.
-      </p>
-    </div>
+      <div class="sr-video-doc-grid">
+        <div>
+          <img src="s_r_documentazione_mostra_video_2.jpg" alt="Sender-Receiver documentazione mostra 2" class="opera">
+        </div>
+        <div>
+          <img src="s_r_documentazione_mostra_video_1.jpg" alt="Sender-Receiver documentazione mostra 1" class="opera">
+        </div>
+      </div>
 
-    <!-- PROGETTO 4: Confessioni -->
-    <div class="blocco-destra">
-      <img src="confessioni.jpg" alt="Confessioni" class="opera">
-      <div class="nota"><strong>Confessioni</strong>, 2025 — Installazione multimediale</div>
-      <p class="descrizione-opera">
-        Attraverso una pratica disfunzionale la telecamera diventa un display. Lo strumento di osservazione diventa oggetto osservato, disarmo di una funzione sorvegliante che determina anche una inversione di una asimmetria di potere. Due telecamere poste a terra, in corrispondenza di angoli, si osservano reciprocamente, in uno spazio confidenziale, dove, private della loro funzione originaria, diventano supporti per uno scambio di racconti e sogni.
-      </p>
-    </div>
+      <div class="sr-video-stills-block">
+        <div class="sr-video-stills-row">
+          <img src="s_r_screenshot_video_1.png" alt="Still frame Sender-Receiver 1" class="opera">
+          <img src="s_r_screenshot_video_2.png" alt="Still frame Sender-Receiver 2" class="opera">
+          <img src="s_r_screenshot_video_3.png" alt="Still frame Sender-Receiver 3" class="opera">
+        </div>
+        <div class="nota">Still frame da video: Sender-Receiver</div>
+      </div>
+    </article>
 
-    <!-- PROGETTO 5: Modificando l'ordine -->
-    <div class="blocco-gigante">
-      <img src="modificando-ordine.jpg" alt="Modificando l'ordine" class="opera">
-      <div class="nota"><strong>Modificando l'ordine</strong>, 2022 — Stampa fotografica, 200x37,5 cm</div>
-      <p class="descrizione-opera">
-        Partendo da una immagine raffigurante tetti e infrastrutture di comunicazione, l'immagine viene sottoposta a un processo analitico di frammentazione e ricomposizione fino a comprometterne gradualmente la leggibilità. Un procedimento formale volto a interrogare i limiti dell'osservazione e dei sistemi contemporanei di produzione delle immagini.
-      </p>
-    </div>
+    <!-- 02. SENDER-RECEIVER (INSTALLAZIONE) -->
+    <article class="progetto-sezione">
+      <div class="progetto-header-grid">
+        <div class="scheda-info">
+          <h2 class="progetto-titolo">Sender-Receiver</h2>
+          <div class="progetto-meta">2026 — Installazione, registratori a nastro, nastro magnetico, audio in loop 8'30"</div>
+          <p class="descrizione-opera">
+            Sei registratori a cassetta interagiscono nello spazio attraverso i nastri magnetici modificati: dei loop costruiscono circuiti chiusi portando il nastro fuori dal guscio delle cassette. Un'opera completamente analogica, dove il segnale rimane fisico in un continuo transitare tra forze meccaniche, elettriche e magnetiche. I nastri spezzati e riconfigurati in più loop interrompono la narrazione fino a far perdere la linearità del racconto. Lo scorrere del nastro diventa la manifestazione materiale di un campo di risonanze attraversato da tensioni e trasformazioni reciproche. Lo spazio smette di configurarsi come semplice sfondo per emergere come una moltitudine di voci, presenze e corpi che interrogano e rispondono.
+          </p>
+        </div>
+        <div>
+          <img src="s_r_disegni_1.jpg" alt="Schema circuito registratori 1" class="disegno-tecnico">
+        </div>
+      </div>
+
+      <div class="griglia-2col">
+        <div>
+          <img src="s_r_documentazione_mostra_installazione_3.jpg" alt="Sender-Receiver installazione vista d'insieme" class="opera">
+        </div>
+        <div>
+          <img src="s_r_documentazione_mostra_installazione_5.jpg" alt="Sender-Receiver installazione dettaglio nastro" class="opera">
+          <div class="crediti-foto">
+            Documentazione fotografica a cura di Alessio Belloni.<br>
+            Coordinate N. 6, <em>All the world is breathing through me</em>, a cura di Juan Pablo Macias e Alessandra Poggianti.
+          </div>
+        </div>
+      </div>
+
+      <div class="pausa-disegno">
+        <img src="s_r_disegni_2.jpg" alt="Schema circuito registratori 2" class="disegno-tecnico">
+      </div>
+
+      <!-- Seconda parte documentazione: due orizzontali allineate + verticale centrata -->
+      <div class="griglia-2col">
+        <div>
+          <img src="s_r_documentazione_mostra_installazione_4.jpg" alt="Sender-Receiver installazione dettaglio 4" class="opera">
+        </div>
+        <div>
+          <img src="s_r_documentazione_mostra_installazione_2.jpg" alt="Sender-Receiver installazione dettaglio 2" class="opera">
+        </div>
+      </div>
+
+      <div class="chiusura-verticale-centrata">
+        <img src="s_r_documentazione_mostra_installazione_1.jpg" alt="Sender-Receiver installazione vista verticale" class="opera">
+      </div>
+    </article>
+
+    <!-- 03. MODIFICANDO L'ORDINE (Titolo > Dida > Immagine > Testo) -->
+    <article class="progetto-sezione">
+      <div>
+        <h2 class="progetto-titolo">Modificando l'ordine</h2>
+        <div class="progetto-meta">2022 — Stampa fotografica, 200 x 37,5 cm</div>
+      </div>
+
+      <div style="margin: 12px 0 24px 0;">
+        <img src="Modificando l'ordine.jpg" alt="Modificando l'ordine" class="opera">
+      </div>
+
+      <div class="scheda-info" style="max-width: 640px;">
+        <p class="descrizione-opera">
+          Partendo da una immagine raffigurante tetti e infrastrutture di comunicazione, l'immagine viene sottoposta a un processo analitico di frammentazione e ricomposizione fino a comprometterne gradualmente la leggibilità. Un procedimento formale volto a interrogare i limiti dell'osservazione e dei sistemi contemporanei di produzione delle immagini.
+        </p>
+      </div>
+    </article>
+
+    <!-- 04. CONFESSIONI -->
+    <article class="progetto-sezione">
+      <div class="progetto-header-grid confessioni-top">
+        <div class="scheda-info">
+          <h2 class="progetto-titolo">Confessioni</h2>
+          <div class="progetto-meta">2025 — Installazione multimediale</div>
+          <p class="descrizione-opera">
+            Attraverso una pratica disfunzionale la telecamera diventa un display. Lo strumento di osservazione diventa oggetto osservato, disarmo di una funzione sorvegliante che determina anche una inversione di una asimmetria di potere. Due telecamere poste a terra, in corrispondenza di angoli, si osservano reciprocamente, in uno spazio confidenziale, dove, private della loro funzione originaria, diventano supporti per uno scambio di racconti e sogni.
+          </p>
+        </div>
+        <div>
+          <img src="confessioni_1.jpg" alt="Confessioni vista principale" class="opera">
+        </div>
+      </div>
+
+      <div class="confessioni-seconda-riga">
+        <div>
+          <img src="confessioni_2.jpg" alt="Confessioni vista secondaria" class="opera">
+        </div>
+        <div>
+          <img src="confessioni_3.jpg" alt="Confessioni vista frontale" class="opera">
+        </div>
+      </div>
+
+      <div class="griglia-3-dettagli">
+        <img src="confessioni_scritta_1.jpg" alt="Manca qualcuno che non verrà" class="opera">
+        <img src="confessioni_scritta_2.jpg" alt="Io ho i pantaloni del pigiama" class="opera">
+        <img src="confessioni_scritta_3.jpg" alt="Ma vogliono ucciderci" class="opera">
+      </div>
+    </article>
+
+    <!-- 05. ASPORTISSIMA -->
+    <article class="progetto-sezione">
+      <div class="progetto-header-grid asportissima-top">
+        <div class="scheda-info">
+          <h2 class="progetto-titolo">Asportissima</h2>
+          <div class="progetto-meta">2026 — Progetto fotografico, happening | Stampe in vinile monomerico 40x40 cm</div>
+          <p class="descrizione-opera">
+            Asportissima è un progetto fotografico e performativo che attiva una mostra itinerante all'interno del sistema di delivery urbano. In collaborazione con i rider, le borse termiche utilizzate per le consegne diventano supporti espositivi mobili: immagini fotografiche vengono applicate sulle superfici delle borse e circolano nella città durante le normali attività di lavoro. La distribuzione delle opere non è stabile né controllata, ma dipende dai percorsi, dai tempi e dalle logiche della piattaforma di consegna, producendo una visibilità intermittente e decentralizzata nello spazio urbano. Il progetto utilizza l'infrastruttura del delivery come dispositivo espositivo, in cui la circolazione economica e quella delle immagini si sovrappongono, generando un sistema temporaneo di diffusione artistica non istituzionale.
+          </p>
+        </div>
+        <div>
+          <img src="asportissima_stampa_1.PNG" alt="Asportissima stampa 1" class="opera">
+        </div>
+      </div>
+
+      <!-- Prima fascia di 3 foto dei rider allineate -->
+      <div class="griglia-3col-allineata">
+        <img src="riders_11.png" alt="Asportissima documentazione 1" class="opera">
+        <img src="riders_13.png" alt="Asportissima documentazione 2" class="opera">
+        <img src="riders_14.png" alt="Asportissima documentazione 3" class="opera">
+      </div>
+
+      <!-- Pausa visiva centrale con stampa 2 scalata alla stessa larghezza e allineata all'asse verticale centrale -->
+      <div class="pausa-stampa-grid">
+        <div class="stampa-centrale">
+          <img src="asportissima_stampa_2.PNG" alt="Asportissima stampa 2" class="opera">
+        </div>
+      </div>
+
+      <!-- Seconda fascia di 3 foto dei rider allineate -->
+      <div class="griglia-3col-allineata">
+        <img src="riders_17.png" alt="Asportissima documentazione 4" class="opera">
+        <img src="riders_6.png" alt="Asportissima documentazione 5" class="opera">
+        <img src="riders_7.png" alt="Asportissima documentazione 6" class="opera">
+      </div>
+    </article>
 
   </section>
 
