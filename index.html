@@ -85,7 +85,7 @@
       display: block;
     }
 
-    /* --- PAGINA HOME: CITAZIONE + STATEMENT CON IMMAGINI SPARSE --- */
+    /* --- PAGINA HOME: CITAZIONE + STATEMENT + MEGAFONI --- */
     #home {
       position: relative;
     }
@@ -100,7 +100,7 @@
       align-items: center;
       text-align: center;
       padding: 40px 15px;
-      margin-bottom: 60px;
+      margin-bottom: 30px;
     }
 
     .citazione-testo {
@@ -121,7 +121,7 @@
       position: relative;
       z-index: 2;
       max-width: 680px;
-      margin: 0 auto 140px auto;
+      margin: 0 auto 40px auto;
       padding: 40px 20px;
     }
 
@@ -141,13 +141,6 @@
       height: auto;
     }
 
-    .megafono-1 {
-      top: -1%;
-      left: 1%;
-      width: 490px;
-      transform: rotate(-7deg);
-    }
-
     .megafono-2 {
       top: 26%;
       right: 8%;
@@ -162,11 +155,25 @@
       transform: rotate(4deg);
     }
 
+    .megafono-inline {
+      position: relative;
+      z-index: 2;
+      display: block;
+      max-width: 100%;
+      height: auto;
+      opacity: 0.55;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+    }
+
+    .megafono-1 {
+      width: 490px;
+      margin: 0 auto 30px auto;
+    }
+
     .megafono-4 {
-      bottom: -40px;
-      right: 6%;
       width: 470px;
-      transform: rotate(-5deg);
+      margin: 0 auto 120px auto;
     }
 
     /* --- SEZIONE PROGETTI --- */
@@ -424,8 +431,6 @@
       }
 
       .megafono-1 {
-        top: -1%;
-        left: -30px;
         width: 310px;
       }
 
@@ -442,9 +447,8 @@
       }
 
       .megafono-4 {
-        bottom: -30px;
-        right: -15px;
         width: 280px;
+        margin-bottom: 70px;
       }
     }
   </style>
@@ -474,11 +478,9 @@
   <!-- ========================================================= -->
   <section id="home" class="pagina visibile">
     
-    <!-- Quattro immagini sparse sullo sfondo -->
-    <img src="megafono1.jpg" alt="" class="sfondo-home megafono-1">
+    <!-- Immagini 2 e 3 fisse sullo sfondo -->
     <img src="megafono2.jpg" alt="" class="sfondo-home megafono-2">
     <img src="megafono3.jpg" alt="" class="sfondo-home megafono-3">
-    <img src="megafono4.jpg" alt="" class="sfondo-home megafono-4">
 
     <div class="spazio-citazione">
       <div class="citazione-testo">
@@ -486,6 +488,9 @@
       </div>
       <div class="citazione-autore">Roland Barthes</div>
     </div>
+
+    <!-- Megafono 1 raddrizzato tra citazione e statement -->
+    <img src="megafono1.jpg" alt="" class="megafono-inline megafono-1">
 
     <div class="statement-wrapper">
       <div class="statement-testo">
@@ -498,6 +503,9 @@
         </p>
       </div>
     </div>
+
+    <!-- Megafono 4 raddrizzato sotto lo statement -->
+    <img src="megafono4.jpg" alt="" class="megafono-inline megafono-4">
 
   </section>
 
