@@ -338,7 +338,170 @@
       grid-column: 2;
     }
 
-    /* --- STILI PER LE ALTRE SEZIONI (FOTO, SUONO, BIO, RICERCA, CONTATTI) --- */
+    /* --- SEZIONE FOTOGRAFIA: CARTELLE / PROGETTI --- */
+    .foto-contenitore {
+      max-width: 1120px;
+      margin: 0 auto 80px auto;
+    }
+
+    .cartelle-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 36px;
+      align-items: start;
+    }
+
+    .cartella-card {
+      cursor: pointer;
+      border-bottom: 1px solid #000;
+      padding-bottom: 14px;
+      transition: opacity 0.2s ease;
+    }
+
+    .cartella-card:hover {
+      opacity: 0.72;
+    }
+
+    .cartella-linguetta {
+      display: inline-block;
+      font-size: 10.5px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border: 1px solid #000;
+      border-bottom: none;
+      padding: 4px 10px;
+      background-color: #FAF9F6;
+    }
+
+    .cartella-copertina {
+      border: 1px solid #000;
+      padding: 8px;
+      margin-bottom: 14px;
+      background-color: #FAF9F6;
+    }
+
+    .cartella-copertina img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      display: block;
+    }
+
+    .cartella-titolo {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0 0 4px 0;
+    }
+
+    .cartella-meta {
+      font-size: 12px;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cartella-aperta {
+      display: none;
+    }
+
+    .cartella-aperta.visibile {
+      display: block;
+    }
+
+    .torna-cartelle {
+      display: inline-block;
+      font-size: 12.5px;
+      color: #111;
+      text-decoration: none;
+      border-bottom: 1px solid #000;
+      padding-bottom: 3px;
+      margin-bottom: 32px;
+      cursor: pointer;
+    }
+
+    .torna-cartelle:hover {
+      opacity: 0.65;
+    }
+
+    .cartella-aperta-header {
+      margin-bottom: 40px;
+    }
+
+    .galleria-serie {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .galleria-serie img.opera {
+      cursor: zoom-in;
+      transition: opacity 0.2s ease;
+    }
+
+    .galleria-serie img.opera:hover {
+      opacity: 0.85;
+    }
+
+    /* LIGHTBOX PER INGRANDIMENTO SINGOLA FOTO */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background-color: rgba(250, 249, 246, 0.96);
+      padding: 24px;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lightbox.aperto {
+      display: flex;
+    }
+
+    .lightbox-top {
+      position: fixed;
+      top: 20px;
+      right: 24px;
+      left: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .lightbox-btn {
+      background: none;
+      border: none;
+      border-bottom: 1px solid #000;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12.5px;
+      color: #111;
+      padding: 3px 0;
+      cursor: pointer;
+    }
+
+    .lightbox-btn:hover {
+      opacity: 0.65;
+    }
+
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 78vh;
+      width: auto;
+      height: auto;
+      display: block;
+    }
+
+    .lightbox-nav {
+      margin-top: 18px;
+      display: flex;
+      gap: 32px;
+    }
+
+    /* --- STILI PER LE ALTRE SEZIONI (SUONO, BIO, RICERCA, CONTATTI) --- */
     .blocco-sinistra {
       width: 48%;
       margin-left: 2%;
@@ -481,7 +644,7 @@
         margin: 0 auto 60px auto;
       }
 
-      /* Progetti su smartphone: impaginazione pulita a 1 colonna */
+      /* Progetti e Fotografia su smartphone: impaginazione pulita a 1 colonna */
       .progetto-sezione {
         margin: 0 auto 72px auto;
         padding-bottom: 48px;
@@ -496,7 +659,9 @@
       .confessioni-seconda-riga,
       .griglia-3-dettagli,
       .griglia-3col-allineata,
-      .pausa-stampa-grid {
+      .pausa-stampa-grid,
+      .cartelle-grid,
+      .galleria-serie {
         grid-template-columns: 1fr;
         gap: 20px;
       }
@@ -531,6 +696,10 @@
         grid-column: 1;
         max-width: 280px;
         margin: 0 auto;
+      }
+
+      .cartella-aperta-header {
+        margin-bottom: 24px;
       }
 
       /* Altre sezioni su smartphone */
@@ -873,17 +1042,63 @@
   </section>
 
   <!-- ========================================================= -->
-  <!-- 4. SEZIONE FOTOGRAFIA                                     -->
+  <!-- 4. SEZIONE FOTOGRAFIA (ARCHIVIO A CARTELLE / PROGETTI)    -->
   <!-- ========================================================= -->
   <section id="fotografia" class="pagina">
-    <div class="blocco-sinistra">
-      <img src="foto1.jpg" alt="Fotografia 1" class="opera">
-      <div class="nota">Serie I — Scatto #01, 2025.</div>
-    </div>
+    <div class="foto-contenitore">
 
-    <div class="blocco-destra">
-      <img src="foto2.jpg" alt="Fotografia 2" class="opera">
-      <div class="nota">Serie I — Scatto #02, 2025.</div>
+      <!-- ELENCO CARTELLE / PROGETTI -->
+      <div id="foto-elenco-cartelle" class="cartelle-grid">
+        <div class="cartella-card" onclick="apriCartellaFoto('paesaggio-09-08-2026')">
+          <div class="cartella-linguetta">Cartella 01</div>
+          <div class="cartella-copertina">
+            <img src="ARGINE_1.jpg" alt="Paesaggio 09/08/2026">
+          </div>
+          <h2 class="cartella-titolo">Paesaggio 09/08/2026</h2>
+          <div class="cartella-meta">
+            <span>24 fotografie</span>
+            <span>Apri →</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARTELLA APERTA: PAESAGGIO 09/08/2026 -->
+      <div id="cartella-paesaggio-09-08-2026" class="cartella-aperta">
+        <a class="torna-cartelle" onclick="chiudiCartellaFoto()">← Torna alle cartelle</a>
+        
+        <div class="cartella-aperta-header">
+          <h2 class="progetto-titolo">Paesaggio 09/08/2026</h2>
+          <div class="progetto-meta">Serie fotografica — 24 immagini</div>
+        </div>
+
+        <div class="galleria-serie">
+          <img src="ARGINE_1.jpg" alt="ARGINE_1" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="ARGINE_3.jpg" alt="ARGINE_3" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="ARGINE_5.jpg" alt="ARGINE_5" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="ARGINE_6.jpg" alt="ARGINE_6" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="CANTIERE_1.jpg" alt="CANTIERE_1" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="CANTIERE_6.jpg" alt="CANTIERE_6" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="CANTIERE_7.jpg" alt="CANTIERE_7" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="CANTIERE_8.jpg" alt="CANTIERE_8" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="CANTIERE_10.jpg" alt="CANTIERE_10" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="CANTIERE_11.jpg" alt="CANTIERE_11" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="FABBRICA_1.jpg" alt="FABBRICA_1" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="FABBRICA_3.jpg" alt="FABBRICA_3" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="FABBRICA_4.jpg" alt="FABBRICA_4" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="FABBRICA_5.jpg" alt="FABBRICA_5" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="PINETA.jpg" alt="PINETA" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="PINETA_1.jpg" alt="PINETA_1" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="PINETA_2.jpg" alt="PINETA_2" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="PINETA_3.jpg" alt="PINETA_3" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="PINETA_4.jpg" alt="PINETA_4" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="VERDE_1.jpg" alt="VERDE_1" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="VERDE_3.jpg" alt="VERDE_3" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="VERDE_4.jpg" alt="VERDE_4" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="VERDE_5.jpg" alt="VERDE_5" class="opera" loading="lazy" onclick="apriLightbox(this)">
+          <img src="VERDE_6.jpg" alt="VERDE_6" class="opera" loading="lazy" onclick="apriLightbox(this)">
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -944,11 +1159,24 @@
     </div>
   </section>
 
+  <!-- LIGHTBOX PER VISUALIZZAZIONE SINGOLA FOTOGRAFIA -->
+  <div id="lightbox-foto" class="lightbox" onclick="chiudiLightbox(event)">
+    <div class="lightbox-top">
+      <span id="lightbox-contatore">1 / 24</span>
+      <button class="lightbox-btn" onclick="chiudiLightbox()">Chiudi ×</button>
+    </div>
+    <img id="lightbox-img" src="" alt="">
+    <div class="lightbox-nav">
+      <button class="lightbox-btn" onclick="cambiaFotoLightbox(-1)">← Precedente</button>
+      <button class="lightbox-btn" onclick="cambiaFotoLightbox(1)">Successiva →</button>
+    </div>
+  </div>
+
   <footer>
     © Giacomo Donati — Nessun cookie, nessun tracciamento.
   </footer>
 
-  <!-- SCRIPT PER CAMBIARE SEZIONE -->
+  <!-- SCRIPT PER CAMBIARE SEZIONE E GESTIRE CARTELLE FOTOGRAFIA -->
   <script>
     function apriPagina(idPagina) {
       document.querySelectorAll('.pagina').forEach(p => p.classList.remove('visibile'));
@@ -959,9 +1187,65 @@
       const linkAttivo = document.getElementById('link-' + idPagina);
       if (linkAttivo) linkAttivo.classList.add('attivo');
 
+      if (idPagina === 'fotografia') {
+        chiudiCartellaFoto(false);
+      }
+
       history.replaceState(null, null, '#' + idPagina);
       window.scrollTo(0, 0);
     }
+
+    function apriCartellaFoto(idCartella) {
+      document.getElementById('foto-elenco-cartelle').style.display = 'none';
+      document.querySelectorAll('.cartella-aperta').forEach(c => c.classList.remove('visibile'));
+      const cartella = document.getElementById('cartella-' + idCartella);
+      if (cartella) cartella.classList.add('visibile');
+      window.scrollTo(0, 0);
+    }
+
+    function chiudiCartellaFoto(tornaSu = true) {
+      document.querySelectorAll('.cartella-aperta').forEach(c => c.classList.remove('visibile'));
+      document.getElementById('foto-elenco-cartelle').style.display = 'grid';
+      if (tornaSu) window.scrollTo(0, 0);
+    }
+
+    let galleriaCorrente = [];
+    let indiceFotoCorrente = 0;
+
+    function apriLightbox(imgElement) {
+      const contenitore = imgElement.closest('.galleria-serie');
+      galleriaCorrente = Array.from(contenitore.querySelectorAll('img.opera'));
+      indiceFotoCorrente = galleriaCorrente.indexOf(imgElement);
+      aggiornaLightbox();
+      document.getElementById('lightbox-foto').classList.add('aperto');
+    }
+
+    function aggiornaLightbox() {
+      const img = galleriaCorrente[indiceFotoCorrente];
+      if (!img) return;
+      document.getElementById('lightbox-img').src = img.src;
+      document.getElementById('lightbox-contatore').textContent = (indiceFotoCorrente + 1) + ' / ' + galleriaCorrente.length;
+    }
+
+    function cambiaFotoLightbox(direzione) {
+      if (!galleriaCorrente.length) return;
+      indiceFotoCorrente = (indiceFotoCorrente + direzione + galleriaCorrente.length) % galleriaCorrente.length;
+      aggiornaLightbox();
+    }
+
+    function chiudiLightbox(event) {
+      if (!event || event.target.id === 'lightbox-foto') {
+        document.getElementById('lightbox-foto').classList.remove('aperto');
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const lb = document.getElementById('lightbox-foto');
+      if (!lb.classList.contains('aperto')) return;
+      if (e.key === 'Escape') chiudiLightbox();
+      if (e.key === 'ArrowRight') cambiaFotoLightbox(1);
+      if (e.key === 'ArrowLeft') cambiaFotoLightbox(-1);
+    });
 
     window.addEventListener('load', () => {
       const hash = window.location.hash.replace('#', '');
