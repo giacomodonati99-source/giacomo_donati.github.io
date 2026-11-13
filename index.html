@@ -23,7 +23,7 @@
       overflow-x: hidden;
     }
 
-    /* INTESTAZIONE E CONTATTI */
+    /* INTESTAZIONE */
     header {
       border-bottom: 2px solid #000;
       padding-bottom: 10px;
@@ -42,14 +42,14 @@
       opacity: 0.65;
     }
 
-    .contatti a, .colonna-testo a {
+    .colonna-testo a {
       color: #111;
       text-decoration: underline;
       text-underline-offset: 3px;
       text-decoration-thickness: 1px;
     }
 
-    .contatti a:hover, .colonna-testo a:hover {
+    .colonna-testo a:hover {
       text-decoration-style: dotted;
       color: #555;
     }
@@ -338,7 +338,7 @@
       grid-column: 2;
     }
 
-    /* --- STILI PER LE ALTRE SEZIONI (FOTO, SUONO, BIO, RICERCA) --- */
+    /* --- STILI PER LE ALTRE SEZIONI (FOTO, SUONO, BIO, RICERCA, CONTATTI) --- */
     .blocco-sinistra {
       width: 48%;
       margin-left: 2%;
@@ -399,10 +399,8 @@
       }
 
       header {
-        display: block;
-        width: 100%;
         font-size: 13px;
-        line-height: 1.65;
+        line-height: 1.5;
         margin-bottom: 20px;
       }
 
@@ -416,19 +414,42 @@
         padding: 4px 0;
       }
 
-      /* Home su smartphone: megafoni discreti ai lati senza coprire i testi */
+      /* Home su smartphone: i disegni circondano e si alternano al testo senza andarci dietro */
+      .sfondo-home {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        display: block;
+        max-width: 100%;
+        opacity: 0.7;
+      }
+
+      .megafono-1 {
+        width: 240px;
+        margin: 0 auto 12px 0;
+        transform: rotate(-5deg);
+      }
+
       .spazio-citazione {
-        min-height: 30vh;
-        padding: 32px 10px;
-        margin-bottom: 28px;
+        min-height: auto;
+        padding: 16px 8px;
+        margin-bottom: 16px;
       }
 
       .citazione-testo {
         font-size: 16px;
       }
 
+      .megafono-2 {
+        width: 165px;
+        margin: 0 0 24px auto;
+        transform: rotate(6deg);
+      }
+
       .statement-wrapper {
-        padding: 24px 6px;
+        padding: 12px 4px;
         margin-bottom: 24px;
       }
 
@@ -437,31 +458,16 @@
         line-height: 1.75;
       }
 
-      .sfondo-home {
-        opacity: 0.28;
-      }
-
-      .megafono-1 {
-        top: -8px;
-        left: -24px;
-        width: 165px;
-      }
-
-      .megafono-2 {
-        top: 14px;
-        right: -18px;
-        width: 130px;
-      }
-
       .megafono-3 {
-        top: 56%;
-        left: -20px;
-        width: 145px;
+        width: 180px;
+        margin: 0 auto 24px 0;
+        transform: rotate(4deg);
       }
 
       .megafono-4 {
-        width: 240px;
-        margin: 8px auto 60px auto;
+        width: 260px;
+        opacity: 0.7;
+        margin: 0 auto 60px auto;
       }
 
       /* Progetti su smartphone: impaginazione pulita a 1 colonna */
@@ -533,10 +539,7 @@
 
   <!-- INTESTAZIONE FISSA -->
   <header>
-    <a class="nome-home" onclick="apriPagina('home')">GIACOMO DONATI</a> — Archivio (2022–2026)<br>
-    <span class="contatti">
-      Contatti: +39 3890349309 | <a href="mailto:giacomo.donati99@gmail.com">giacomo.donati99@gmail.com</a> | <a href="https://instagram.com/_giacomodonati_" target="_blank">@_giacomodonati_</a>
-    </span>
+    <a class="nome-home" onclick="apriPagina('home')">GIACOMO DONATI</a> — Archivio (2022–2026)
   </header>
 
   <!-- MENU SEZIONI -->
@@ -547,6 +550,7 @@
     <a id="link-fotografia" onclick="apriPagina('fotografia')">Fotografia</a>
     <a id="link-suono" onclick="apriPagina('suono')">Suono</a>
     <a id="link-ricerca" onclick="apriPagina('ricerca')">Ricerca</a>
+    <a id="link-contatti" onclick="apriPagina('contatti')">Contatti</a>
   </nav>
 
   <!-- ========================================================= -->
@@ -554,10 +558,8 @@
   <!-- ========================================================= -->
   <section id="home" class="pagina visibile">
     
-    <!-- Immagini 1, 2 e 3 sullo sfondo -->
+    <!-- Immagine 1: sullo sfondo a sinistra su PC, prima della citazione su smartphone -->
     <img src="megafono1.jpg" alt="" class="sfondo-home megafono-1">
-    <img src="megafono2.jpg" alt="" class="sfondo-home megafono-2">
-    <img src="megafono3.jpg" alt="" class="sfondo-home megafono-3">
 
     <div class="spazio-citazione">
       <div class="citazione-testo">
@@ -565,6 +567,9 @@
       </div>
       <div class="citazione-autore">Roland Barthes</div>
     </div>
+
+    <!-- Immagine 2: sullo sfondo a destra su PC, tra citazione e statement su smartphone -->
+    <img src="megafono2.jpg" alt="" class="sfondo-home megafono-2">
 
     <div class="statement-wrapper">
       <div class="statement-testo">
@@ -578,7 +583,10 @@
       </div>
     </div>
 
-    <!-- Megafono 4 raddrizzato sotto lo statement -->
+    <!-- Immagine 3: sullo sfondo a sinistra su PC, dopo lo statement su smartphone -->
+    <img src="megafono3.jpg" alt="" class="sfondo-home megafono-3">
+
+    <!-- Megafono 4 raddrizzato in chiusura -->
     <img src="megafono4.jpg" alt="" class="megafono-inline megafono-4">
 
   </section>
@@ -904,6 +912,24 @@
     <div class="blocco-destra">
       <img src="ricerca2.jpg" alt="Prova materiale" class="opera">
       <div class="nota">Test materiale, 2026</div>
+    </div>
+  </section>
+
+  <!-- ========================================================= -->
+  <!-- 7. SEZIONE CONTATTI                                       -->
+  <!-- ========================================================= -->
+  <section id="contatti" class="pagina">
+    <div class="colonna-testo">
+      <p><strong>Contatti</strong></p>
+      <div class="voce-cv">
+        <strong>Telefono</strong> — <a href="tel:+393890349309">+39 3890349309</a>
+      </div>
+      <div class="voce-cv">
+        <strong>Email</strong> — <a href="mailto:giacomo.donati99@gmail.com">giacomo.donati99@gmail.com</a>
+      </div>
+      <div class="voce-cv">
+        <strong>Instagram</strong> — <a href="https://instagram.com/_giacomodonati_" target="_blank">@_giacomodonati_</a>
+      </div>
     </div>
   </section>
 
