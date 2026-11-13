@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -17,7 +16,7 @@
 
     body {
       font-family: 'Montserrat', sans-serif;
-      background-color: ##FFFFFF;
+      background-color: #FAF9F6;
       color: #111;
       margin: 0;
       padding: 20px;
@@ -391,69 +390,141 @@
       color: #555;
     }
 
-    /* ADATTAMENTO PER SMARTPHONE */
+    /* ========================================================= */
+    /* ADATTAMENTO ORDINATO PER SMARTPHONE E TABLET              */
+    /* ========================================================= */
     @media (max-width: 768px) {
-      .progetto-header-grid,
-      .progetto-header-grid.confessioni-top,
-      .progetto-header-grid.asportissima-top,
-      .sr-video-doc-grid,
-      .griglia-2col,
-      .confessioni-seconda-riga,
-      .griglia-3col-allineata,
-      .pausa-stampa-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
+      body {
+        padding: 16px;
       }
 
-      .pausa-stampa-grid {
-        margin: 64px 0;
+      header {
+        display: block;
+        width: 100%;
+        font-size: 13px;
+        line-height: 1.65;
+        margin-bottom: 20px;
       }
 
-      .pausa-stampa-grid .stampa-centrale {
-        grid-column: 1;
+      nav {
+        margin-bottom: 36px;
+        gap: 14px 20px;
       }
 
-      .sr-video-stills-row,
-      .griglia-3-dettagli {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
+      nav a {
+        font-size: 14px;
+        padding: 4px 0;
       }
 
-      .pausa-disegno {
-        margin: 18px auto;
+      /* Home su smartphone: megafoni discreti ai lati senza coprire i testi */
+      .spazio-citazione {
+        min-height: 30vh;
+        padding: 32px 10px;
+        margin-bottom: 28px;
       }
 
-      .chiusura-verticale-centrata {
-        margin: 28px auto 0 auto;
+      .citazione-testo {
+        font-size: 16px;
       }
 
-      .blocco-sinistra, .blocco-destra, .blocco-centro-piccolo {
-        width: 98%;
-        margin-left: 0;
-        margin-bottom: 70px;
+      .statement-wrapper {
+        padding: 24px 6px;
+        margin-bottom: 24px;
+      }
+
+      .statement-testo {
+        font-size: 14px;
+        line-height: 1.75;
+      }
+
+      .sfondo-home {
+        opacity: 0.28;
       }
 
       .megafono-1 {
-        top: -1%;
-        left: -30px;
-        width: 310px;
+        top: -8px;
+        left: -24px;
+        width: 165px;
       }
 
       .megafono-2 {
-        top: 25px;
-        right: -10px;
-        width: 150px;
+        top: 14px;
+        right: -18px;
+        width: 130px;
       }
 
       .megafono-3 {
-        top: 62%;
-        left: -5px;
+        top: 56%;
+        left: -20px;
         width: 145px;
       }
 
       .megafono-4 {
-        width: 280px;
-        margin-bottom: 70px;
+        width: 240px;
+        margin: 8px auto 60px auto;
+      }
+
+      /* Progetti su smartphone: impaginazione pulita a 1 colonna */
+      .progetto-sezione {
+        margin: 0 auto 72px auto;
+        padding-bottom: 48px;
+      }
+
+      .progetto-header-grid,
+      .progetto-header-grid.confessioni-top,
+      .progetto-header-grid.asportissima-top,
+      .sr-video-doc-grid,
+      .sr-video-stills-row,
+      .griglia-2col,
+      .confessioni-seconda-riga,
+      .griglia-3-dettagli,
+      .griglia-3col-allineata,
+      .pausa-stampa-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .progetto-header-grid {
+        margin-bottom: 28px;
+      }
+
+      .sr-video-doc-grid {
+        margin-top: 24px;
+        margin-bottom: 32px;
+      }
+
+      .confessioni-seconda-riga {
+        margin-bottom: 24px;
+      }
+
+      .pausa-disegno {
+        margin: 32px auto;
+      }
+
+      .chiusura-verticale-centrata {
+        max-width: 100%;
+        margin: 24px auto 0 auto;
+      }
+
+      .pausa-stampa-grid {
+        margin: 48px 0;
+      }
+
+      .pausa-stampa-grid .stampa-centrale {
+        grid-column: 1;
+        max-width: 280px;
+        margin: 0 auto;
+      }
+
+      /* Altre sezioni su smartphone */
+      .blocco-sinistra, .blocco-destra, .blocco-centro-piccolo {
+        width: 100%;
+        margin-left: 0;
+        margin-bottom: 56px;
+      }
+
+      footer {
+        margin-top: 72px;
       }
     }
   </style>
@@ -865,5 +936,3 @@
 
 </body>
 </html>
-
-
