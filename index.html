@@ -85,8 +85,14 @@
       display: block;
     }
 
-    /* --- PAGINA HOME: CITAZIONE + STATEMENT CON SCHIZZI --- */
+    /* --- PAGINA HOME: CITAZIONE + STATEMENT CON IMMAGINI SPARSE --- */
+    #home {
+      position: relative;
+    }
+
     .spazio-citazione {
+      position: relative;
+      z-index: 2;
       min-height: 40vh;
       display: flex;
       flex-direction: column;
@@ -113,6 +119,7 @@
 
     .statement-wrapper {
       position: relative;
+      z-index: 2;
       max-width: 680px;
       margin: 0 auto 140px auto;
       padding: 40px 20px;
@@ -125,24 +132,41 @@
       line-height: 1.8;
     }
 
-    .schizzo {
+    .sfondo-home {
       position: absolute;
       z-index: 1;
       opacity: 0.55;
       mix-blend-mode: multiply;
       pointer-events: none;
+      height: auto;
     }
 
-    .schizzo-1 {
-      top: -30px;
-      left: -60px;
-      width: 260px;
+    .megafono-1 {
+      top: -1%;
+      left: 1%;
+      width: 490px;
+      transform: rotate(-7deg);
     }
 
-    .schizzo-2 {
-      bottom: -60px;
-      right: -40px;
-      width: 300px;
+    .megafono-2 {
+      top: 26%;
+      right: 8%;
+      width: 250px;
+      transform: rotate(6deg);
+    }
+
+    .megafono-3 {
+      top: 58%;
+      left: 11%;
+      width: 240px;
+      transform: rotate(4deg);
+    }
+
+    .megafono-4 {
+      bottom: -40px;
+      right: 6%;
+      width: 470px;
+      transform: rotate(-5deg);
     }
 
     /* --- SEZIONE PROGETTI --- */
@@ -399,14 +423,28 @@
         margin-bottom: 70px;
       }
 
-      .schizzo-1 {
-        left: -10px;
-        width: 180px;
+      .megafono-1 {
+        top: -1%;
+        left: -30px;
+        width: 310px;
       }
 
-      .schizzo-2 {
-        right: 0;
-        width: 200px;
+      .megafono-2 {
+        top: 28%;
+        right: -10px;
+        width: 150px;
+      }
+
+      .megafono-3 {
+        top: 62%;
+        left: -5px;
+        width: 145px;
+      }
+
+      .megafono-4 {
+        bottom: -30px;
+        right: -15px;
+        width: 280px;
       }
     }
   </style>
@@ -432,10 +470,16 @@
   </nav>
 
   <!-- ========================================================= -->
-  <!-- 1. PAGINA PRINCIPALE (CITAZIONE + STATEMENT CON SCHIZZI)  -->
+  <!-- 1. PAGINA PRINCIPALE (CITAZIONE + STATEMENT + MEGAFONI)   -->
   <!-- ========================================================= -->
   <section id="home" class="pagina visibile">
     
+    <!-- Quattro immagini sparse sullo sfondo -->
+    <img src="megafono1.jpg" alt="" class="sfondo-home megafono-1">
+    <img src="megafono2.jpg" alt="" class="sfondo-home megafono-2">
+    <img src="megafono3.jpg" alt="" class="sfondo-home megafono-3">
+    <img src="megafono4.jpg" alt="" class="sfondo-home megafono-4">
+
     <div class="spazio-citazione">
       <div class="citazione-testo">
         “Sono come quei bambini che smontano una sveglia per sapere che cos’è il tempo.”
@@ -444,9 +488,6 @@
     </div>
 
     <div class="statement-wrapper">
-      <img src="schizzo1.jpg" alt="" class="schizzo schizzo-1">
-      <img src="schizzo2.jpg" alt="" class="schizzo schizzo-2">
-
       <div class="statement-testo">
         <p><strong>Statement</strong></p>
         <p>
