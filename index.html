@@ -165,7 +165,7 @@
     }
 
     .megafono-2 {
-      bottom: 200px;
+      top: calc(40vh + 95px);
       right: 8%;
       width: 250px;
       transform: rotate(6deg);
@@ -215,6 +215,10 @@
     .progetto-header-grid.asportissima-top {
       grid-template-columns: 1fr calc((100% - 48px) / 3);
       gap: 24px;
+      margin-bottom: 0;
+    }
+
+    .asportissima-top .stampa-1-box {
       margin-bottom: 120px;
     }
 
@@ -675,9 +679,12 @@
         max-width: 240px;
       }
 
-      .progetto-header-grid,
-      .progetto-header-grid.asportissima-top {
+      .progetto-header-grid {
         margin-bottom: 28px;
+      }
+
+      .progetto-header-grid.asportissima-top {
+        margin-bottom: 48px;
       }
 
       .sr-video-doc-grid {
@@ -766,7 +773,7 @@
       <div class="citazione-autore">Roland Barthes</div>
     </div>
 
-    <!-- Megafono 2: più in basso dello statement su PC, tra citazione e statement su smartphone -->
+    <!-- Megafono 2: all'altezza della parola Statement a destra su PC, tra citazione e statement su smartphone -->
     <img src="megafono2.jpg" alt="" class="sfondo-home megafono-2">
 
     <div class="statement-wrapper">
