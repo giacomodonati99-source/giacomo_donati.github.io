@@ -165,17 +165,10 @@
     }
 
     .megafono-2 {
-      top: 40px;
+      bottom: 200px;
       right: 8%;
       width: 250px;
       transform: rotate(6deg);
-    }
-
-    .megafono-3 {
-      top: 49%;
-      left: 11%;
-      width: 240px;
-      transform: rotate(4deg);
     }
 
     .megafono-inline {
@@ -220,7 +213,9 @@
     }
 
     .progetto-header-grid.asportissima-top {
-      grid-template-columns: 1.15fr 0.85fr;
+      grid-template-columns: 1fr calc((100% - 48px) / 3);
+      gap: 24px;
+      margin-bottom: 120px;
     }
 
     .scheda-info {
@@ -304,7 +299,7 @@
     /* 02. Sender-Receiver (Installazione) */
     .pausa-disegno {
       max-width: 860px;
-      margin: 26px auto;
+      margin: 4px auto;
     }
 
     .griglia-2col {
@@ -630,26 +625,9 @@
         font-size: 16px;
       }
 
-      /* Megafono 3 a sinistra e Megafono 2 a destra affiancati tra citazione e statement */
-      .megafoni-coppia-mobile {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 14px;
-        margin: 8px 0 24px 0;
-      }
-
-      .megafono-3 {
-        width: 48%;
-        max-width: 175px;
-        margin: 0;
-        transform: rotate(4deg);
-      }
-
       .megafono-2 {
-        width: 44%;
-        max-width: 160px;
-        margin: 0;
+        width: 175px;
+        margin: 4px 0 20px auto;
         transform: rotate(6deg);
       }
 
@@ -697,7 +675,8 @@
         max-width: 240px;
       }
 
-      .progetto-header-grid {
+      .progetto-header-grid,
+      .progetto-header-grid.asportissima-top {
         margin-bottom: 28px;
       }
 
@@ -711,7 +690,7 @@
       }
 
       .pausa-disegno {
-        margin: 32px auto;
+        margin: 8px auto;
       }
 
       .chiusura-verticale-centrata {
@@ -787,11 +766,8 @@
       <div class="citazione-autore">Roland Barthes</div>
     </div>
 
-    <!-- Megafono 3 e Megafono 2: sullo sfondo su PC, affiancati tra citazione e statement su smartphone -->
-    <div class="megafoni-coppia-mobile">
-      <img src="megafono3.jpg" alt="" class="sfondo-home megafono-3">
-      <img src="megafono2.jpg" alt="" class="sfondo-home megafono-2">
-    </div>
+    <!-- Megafono 2: più in basso dello statement su PC, tra citazione e statement su smartphone -->
+    <img src="megafono2.jpg" alt="" class="sfondo-home megafono-2">
 
     <div class="statement-wrapper">
       <div class="statement-testo">
