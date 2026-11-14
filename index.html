@@ -30,6 +30,8 @@
       align-items: flex-start;
       gap: 20px;
       margin-bottom: 25px;
+      position: relative;
+      z-index: 10;
     }
 
     header {
@@ -76,6 +78,8 @@
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
+      position: relative;
+      z-index: 10;
     }
 
     nav a {
@@ -101,14 +105,24 @@
       display: block;
     }
 
-    /* --- PAGINA HOME: CITAZIONE + STATEMENT + MEGAFONI --- */
+    /* --- PAGINA HOME: CITAZIONE + STATEMENT + MEGAFONI INTERATTIVI --- */
     #home {
       position: relative;
     }
 
+    #canvas-interattivo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
     .spazio-citazione {
       position: relative;
-      z-index: 2;
+      z-index: 3;
       min-height: 40vh;
       display: flex;
       flex-direction: column;
@@ -117,6 +131,7 @@
       text-align: center;
       padding: 40px 15px;
       margin-bottom: 60px;
+      pointer-events: none;
     }
 
     .citazione-testo {
@@ -125,50 +140,67 @@
       max-width: 620px;
       line-height: 1.6;
       margin-bottom: 12px;
+      pointer-events: auto;
     }
 
     .citazione-autore {
       font-size: 12px;
       border-bottom: 1px solid #000;
       padding-bottom: 3px;
+      pointer-events: auto;
     }
 
     .statement-wrapper {
       position: relative;
-      z-index: 2;
+      z-index: 3;
       max-width: 680px;
       margin: 0 auto 40px auto;
       padding: 40px 20px;
+      pointer-events: none;
     }
 
     .statement-testo {
       position: relative;
-      z-index: 2;
+      z-index: 3;
       font-size: 15px;
       line-height: 1.8;
+      pointer-events: auto;
     }
 
     .sfondo-home {
       position: absolute;
-      z-index: 1;
+      z-index: 2;
       opacity: 0.55;
       mix-blend-mode: multiply;
-      pointer-events: none;
       height: auto;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      will-change: transform;
+      transition: opacity 0.2s ease;
+    }
+
+    .sfondo-home:hover,
+    .megafono-inline:hover {
+      opacity: 0.78;
+    }
+
+    .sfondo-home.trascinamento,
+    .megafono-inline.trascinamento {
+      cursor: grabbing;
+      opacity: 0.85;
     }
 
     .megafono-1 {
       top: -1%;
       left: 1%;
       width: 490px;
-      transform: rotate(-7deg);
     }
 
     .megafono-2 {
       top: calc(40vh + 95px);
       right: 8%;
       width: 250px;
-      transform: rotate(6deg);
     }
 
     .megafono-inline {
@@ -179,7 +211,11 @@
       height: auto;
       opacity: 0.55;
       mix-blend-mode: multiply;
-      pointer-events: none;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      will-change: transform;
+      transition: opacity 0.2s ease;
     }
 
     .megafono-4 {
@@ -566,6 +602,8 @@
       margin-top: 120px;
       font-size: 11px;
       color: #555;
+      position: relative;
+      z-index: 10;
     }
 
     /* ========================================================= */
@@ -611,12 +649,12 @@
         display: block;
         max-width: 100%;
         opacity: 0.7;
+        cursor: pointer;
       }
 
       .megafono-1 {
         width: 240px;
         margin: 0 auto 12px 0;
-        transform: rotate(-5deg);
       }
 
       .spazio-citazione {
@@ -632,7 +670,6 @@
       .megafono-2 {
         width: 175px;
         margin: 4px 0 20px auto;
-        transform: rotate(6deg);
       }
 
       .statement-wrapper {
@@ -649,6 +686,7 @@
         width: 260px;
         opacity: 0.7;
         margin: 0 auto 60px auto;
+        cursor: pointer;
       }
 
       /* Progetti e Fotografia su smartphone: impaginazione pulita a 1 colonna */
@@ -763,8 +801,11 @@
   <!-- ========================================================= -->
   <section id="home" class="pagina visibile">
     
+    <!-- Campo interattivo per le onde sonore dei megafoni -->
+    <canvas id="canvas-interattivo"></canvas>
+
     <!-- Immagine 1: sullo sfondo a sinistra su PC, prima della citazione su smartphone -->
-    <img src="megafono1.jpg" alt="" class="sfondo-home megafono-1">
+    <img src="megafono1.jpg" alt="" draggable="false" class="sfondo-home megafono-1" data-base-rot="-7" data-phase="0">
 
     <div class="spazio-citazione">
       <div class="citazione-testo">
@@ -774,7 +815,7 @@
     </div>
 
     <!-- Megafono 2: all'altezza della parola Statement a destra su PC, tra citazione e statement su smartphone -->
-    <img src="megafono2.jpg" alt="" class="sfondo-home megafono-2">
+    <img src="megafono2.jpg" alt="" draggable="false" class="sfondo-home megafono-2" data-base-rot="6" data-phase="2.1">
 
     <div class="statement-wrapper">
       <div class="statement-testo">
@@ -789,7 +830,7 @@
     </div>
 
     <!-- Megafono 4 raddrizzato in chiusura -->
-    <img src="megafono4.jpg" alt="" class="megafono-inline megafono-4">
+    <img src="megafono4.jpg" alt="" draggable="false" class="megafono-inline megafono-4" data-base-rot="0" data-phase="4.2">
 
   </section>
 
@@ -1171,7 +1212,7 @@
     © Giacomo Donati — Nessun cookie, nessun tracciamento.
   </footer>
 
-  <!-- SCRIPT PER CAMBIARE SEZIONE E GESTIRE CARTELLE FOTOGRAFIA -->
+  <!-- SCRIPT PER NAVIGAZIONE, CARTELLE FOTOGRAFIA E INTERAZIONE HOME -->
   <script>
     function apriPagina(idPagina) {
       document.querySelectorAll('.pagina').forEach(p => p.classList.remove('visibile'));
@@ -1184,6 +1225,10 @@
 
       if (idPagina === 'fotografia') {
         chiudiCartellaFoto(false);
+      }
+
+      if (idPagina === 'home') {
+        ridimensionaCanvasHome();
       }
 
       history.replaceState(null, null, '#' + idPagina);
@@ -1242,11 +1287,257 @@
       if (e.key === 'ArrowLeft') cambiaFotoLightbox(-1);
     });
 
+    /* ========================================================= */
+    /* SISTEMA INTERATTIVO NELLA HOME (ONDE + MEGAFONI MOBILI)   */
+    /* ========================================================= */
+    const homeEl = document.getElementById('home');
+    const canvas = document.getElementById('canvas-interattivo');
+    const ctx = canvas.getContext('2d');
+    const megafoni = Array.from(document.querySelectorAll('#home .megafono-1, #home .megafono-2, #home .megafono-4'));
+
+    const statoMegafoni = megafoni.map(el => ({
+      el,
+      baseRot: parseFloat(el.dataset.baseRot || '0'),
+      phase: parseFloat(el.dataset.phase || '0'),
+      offsetX: 0,
+      offsetY: 0,
+      dragging: false,
+      dragMoved: false,
+      startX: 0,
+      startY: 0,
+      origX: 0,
+      origY: 0,
+      hovered: false,
+      nextHoverWave: 0,
+      bumpStart: 0,
+      lastTrigger: 0
+    }));
+
+    let onde = [];
+    let pointer = { x: null, y: null, active: false };
+
+    function randomTra(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    function ridimensionaCanvasHome() {
+      if (!homeEl.classList.contains('visibile')) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = homeEl.offsetWidth;
+      const h = homeEl.offsetHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function getCentroMegafono(el) {
+      const homeRect = homeEl.getBoundingClientRect();
+      const rect = el.getBoundingClientRect();
+      return {
+        x: rect.left - homeRect.left + rect.width / 2,
+        y: rect.top - homeRect.top + rect.height / 2
+      };
+    }
+
+    function creaOnda(x, y, maxRaggio, alphaIniziale, velocita) {
+      onde.push({
+        x: x + randomTra(-10, 10),
+        y: y + randomTra(-10, 10),
+        r: randomTra(6, 14),
+        maxR: maxRaggio,
+        alpha: alphaIniziale,
+        vel: velocita
+      });
+    }
+
+    function generaOndaHoverRandom(item, now) {
+      const centro = getCentroMegafono(item.el);
+      creaOnda(
+        centro.x,
+        centro.y,
+        randomTra(150, 265),
+        randomTra(0.14, 0.24),
+        randomTra(0.62, 1.12)
+      );
+      item.nextHoverWave = now + randomTra(380, 1320);
+    }
+
+    function attivaBumpEOndaGrande(item) {
+      const now = performance.now();
+      if (now - item.lastTrigger < 120) return;
+      item.lastTrigger = now;
+      item.bumpStart = now;
+
+      const centro = getCentroMegafono(item.el);
+      creaOnda(
+        centro.x,
+        centro.y,
+        randomTra(310, 390),
+        randomTra(0.28, 0.36),
+        randomTra(0.95, 1.35)
+      );
+
+      setTimeout(() => {
+        if (homeEl.classList.contains('visibile')) {
+          const centro2 = getCentroMegafono(item.el);
+          creaOnda(
+            centro2.x,
+            centro2.y,
+            randomTra(220, 310),
+            randomTra(0.14, 0.22),
+            randomTra(0.72, 1.08)
+          );
+        }
+      }, randomTra(170, 360));
+    }
+
+    // Eventi sui megafoni: onde irregolari su hover e bump + onda grande al click/tocco
+    statoMegafoni.forEach(item => {
+      item.el.addEventListener('mouseenter', () => {
+        item.hovered = true;
+        generaOndaHoverRandom(item, performance.now());
+      });
+
+      item.el.addEventListener('mouseleave', () => {
+        item.hovered = false;
+      });
+
+      item.el.addEventListener('mousedown', (e) => {
+        if (window.innerWidth <= 768) return;
+        e.preventDefault();
+        item.dragging = true;
+        item.dragMoved = false;
+        item.el.classList.add('trascinamento');
+        item.startX = e.clientX;
+        item.startY = e.clientY;
+        item.origX = item.offsetX;
+        item.origY = item.offsetY;
+      });
+
+      item.el.addEventListener('click', () => {
+        if (item.dragMoved) {
+          item.dragMoved = false;
+          return;
+        }
+        attivaBumpEOndaGrande(item);
+      });
+
+      item.el.addEventListener('touchstart', () => {
+        attivaBumpEOndaGrande(item);
+      }, { passive: true });
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      const homeRect = homeEl.getBoundingClientRect();
+      pointer.x = e.clientX - homeRect.left;
+      pointer.y = e.clientY - homeRect.top;
+      pointer.active = true;
+
+      statoMegafoni.forEach(item => {
+        if (item.dragging) {
+          const dx = e.clientX - item.startX;
+          const dy = e.clientY - item.startY;
+          if (Math.hypot(dx, dy) > 5) {
+            item.dragMoved = true;
+          }
+          item.offsetX = item.origX + dx;
+          item.offsetY = item.origY + dy;
+        }
+      });
+    });
+
+    window.addEventListener('mouseup', () => {
+      statoMegafoni.forEach(item => {
+        if (item.dragging) {
+          item.dragging = false;
+          item.el.classList.remove('trascinamento');
+        }
+      });
+    });
+
+    function animaHome(t) {
+      requestAnimationFrame(animaHome);
+      if (!homeEl.classList.contains('visibile')) return;
+
+      const sec = t * 0.001;
+      const w = homeEl.offsetWidth;
+      const h = homeEl.offsetHeight;
+      if (canvas.width === 0 || canvas.height === 0) ridimensionaCanvasHome();
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Aggiorna oscillamento continuo, onde randomiche su hover e bump su click
+      statoMegafoni.forEach(item => {
+        const centro = getCentroMegafono(item.el);
+
+        // Genera onde a intervalli randomici finché il cursore resta sopra il megafono
+        if (item.hovered && !item.dragging && t >= item.nextHoverWave) {
+          generaOndaHoverRandom(item, t);
+        }
+
+        const respiroY = Math.sin(sec * 1.1 + item.phase) * 5;
+        const respiroRot = Math.sin(sec * 0.85 + item.phase) * 1.8;
+
+        let reazioneRot = 0;
+        if (pointer.active && !item.dragging) {
+          const dx = pointer.x - centro.x;
+          const dy = pointer.y - centro.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < 420) {
+            reazioneRot = (dx / 420) * 4.5;
+          }
+        }
+
+        // Leggero bump elastico al click/tocco
+        let bumpScale = 0;
+        if (item.bumpStart > 0) {
+          const elapsed = t - item.bumpStart;
+          const duration = 380;
+          if (elapsed < duration) {
+            const p = elapsed / duration;
+            bumpScale = Math.sin(p * Math.PI) * (1 - p * 0.4) * 0.085;
+          } else {
+            item.bumpStart = 0;
+          }
+        }
+
+        const scala = 1 + bumpScale;
+        const rotTotale = item.baseRot + respiroRot + reazioneRot;
+        const yTotale = item.offsetY + respiroY;
+
+        item.el.style.transform = `translate3d(${item.offsetX}px, ${yTotale}px, 0) rotate(${rotTotale}deg) scale(${scala})`;
+      });
+
+      // Disegna ed espande lentamente le onde sonore
+      for (let i = onde.length - 1; i >= 0; i--) {
+        const o = onde[i];
+        o.r += o.vel;
+        o.vel = Math.max(0.32, o.vel * 0.996);
+        const progresso = o.r / o.maxR;
+        const alphaCorrente = o.alpha * (1 - progresso);
+
+        if (alphaCorrente <= 0.004 || o.r >= o.maxR) {
+          onde.splice(i, 1);
+          continue;
+        }
+
+        ctx.beginPath();
+        ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(17, 17, 17, ${alphaCorrente})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+
+    window.addEventListener('resize', ridimensionaCanvasHome);
+
     window.addEventListener('load', () => {
       const hash = window.location.hash.replace('#', '');
       if (hash && document.getElementById(hash)) {
         apriPagina(hash);
       }
+      ridimensionaCanvasHome();
+      requestAnimationFrame(animaHome);
     });
   </script>
 
