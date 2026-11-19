@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spettrogramma Live</title>
+  <style>
+    body {
+      margin: 0;
+      background: #0b0d12;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 14px;
+      background: #151922;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid #262c3a;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { background: #1d4ed8; }
+    button.stop { background: #dc2626; }
+    label { font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
+    select, input[type="range"] { cursor: pointer; }
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 1100px;
+      height: 520px;
+      border: 1px solid #262c3a;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #000;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #overlayCanvas { pointer-events: none; }
+    #readout {
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: #38bdf8;
+      min-width: 190px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="controls">
+    <button id="toggleBtn">Avvia Microfono</button>
+
+    <label>Risoluzione FFT:
+      <select id="fftSelect">
+        <option value="4096">4096 (Veloce)</option>
+        <option value="8192" selected>8192 (Bilanciata)</option>
+        <option value="16384">16384 (Alta precisione)</option>
+      </select>
+    </label>
+
+    <label>Sensibilità (Min dB):
+      <input type="range" id="minDb" min="-120" max="-50" value="-95">
+    </label>
+
+    <span id="readout">Passa il mouse sul grafico</span>
+  </div>
+
+  <div class="canvas-wrapper" id="wrapper">
+    <canvas id="specCanvas"></canvas>
+    <canvas id="overlayCanvas"></canvas>
+  </div>
+
+  <script>
+    const toggleBtn = document.getElementById('toggleBtn');
+    const fftSelect = document.getElementById('fftSelect');
+    const minDbInput = document.getElementById('minDb');
+    const readout = document.getElementById('readout');
+    const wrapper = document.getElementById('wrapper');
+    const specCanvas = document.getElementById('specCanvas');
+    const overlayCanvas = document.getElementById('overlayCanvas');
+    const specCtx = specCanvas.getContext('2d', { willReadFrequently: false });
+    const overCtx = overlayCanvas.getContext('2d');
+
+    const MIN_FREQ = 20;
+    const MAX_FREQ = 20000;
+    const MAX_DB = -15;
+
+    let audioCtx = null;
+    let analyser = null;
+    let mediaStream = null;
+    let animId = null;
+    let freqData = null;
+    let lastColumnDb = null;
+
+    // Pre-calcolo palette colori (stile Inferno) per prestazioni massime
+    const colorLUT = new Uint8Array(256 * 3);
+    (function buildPalette() {
+      const stops = [
+        [0.0,   [0, 0, 4]],
+        [0.2,   [40, 11, 84]],
+        [0.4,   [101, 21, 110]],
+        [0.6,   [159, 42, 99]],
+        [0.8,   [212, 72, 66]],
+        [0.92,  [245, 125, 21]],
+        [1.0,   [252, 255, 164]]
+      ];
+      for (let i = 0; i < 256; i++) {
+        const t = i / 255;
+        let s0 = stops[0], s1 = stops[stops.length - 1];
+        for (let j = 0; j < stops.length - 1; j++) {
+          if (t >= stops[j][0] && t <= stops[j + 1][0]) {
+            s0 = stops[j];
+            s1 = stops[j + 1];
+            break;
+          }
+        }
+        const f = (t - s0[0]) / (s1[0] - s0[0] || 1);
+        colorLUT[i * 3]     = Math.round(s0[1][0] + f * (s1[1][0] - s0[1][0]));
+        colorLUT[i * 3 + 1] = Math.round(s0[1][1] + f * (s1[1][1] - s0[1][1]));
+        colorLUT[i * 3 + 2] = Math.round(s0[1][2] + f * (s1[1][2] - s0[1][2]));
+      }
+    })();
+
+    function resizeCanvases() {
+      const rect = wrapper.getBoundingClientRect();
+      specCanvas.width = Math.floor(rect.width);
+      specCanvas.height = Math.floor(rect.height);
+      overlayCanvas.width = specCanvas.width;
+      overlayCanvas.height = specCanvas.height;
+      lastColumnDb = new Float32Array(specCanvas.height).fill(-120);
+      drawGrid(null, null);
+    }
+
+    function yToFreq(y, height) {
+      const normY = 1 - (y / (height - 1));
+      return MIN_FREQ * Math.pow(MAX_FREQ / MIN_FREQ, normY);
+    }
+
+    function freqToY(freq, height) {
+      const normY = Math.log(freq / MIN_FREQ) / Math.log(MAX_FREQ / MIN_FREQ);
+      return (1 - normY) * (height - 1);
+    }
+
+    function drawGrid(mouseX, mouseY) {
+      const w = overlayCanvas.width;
+      const h = overlayCanvas.height;
+      overCtx.clearRect(0, 0, w, h);
+
+      const ticks = [30, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 16000];
+      overCtx.font = '11px monospace';
+      overCtx.textBaseline = 'middle';
+
+      ticks.forEach(freq => {
+        const y = Math.round(freqToY(freq, h)) + 0.5;
+        overCtx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+        overCtx.beginPath();
+        overCtx.moveTo(0, y);
+        overCtx.lineTo(w, y);
+        overCtx.stroke();
+
+        const label = freq >= 1000 ? `${freq / 1000} kHz` : `${freq} Hz`;
+        overCtx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+        overCtx.fillRect(6, y - 8, 52, 16);
+        overCtx.fillStyle = '#cbd5e1';
+        overCtx.fillText(label, 10, y);
+      });
+
+      if (mouseX !== null && mouseY !== null) {
+        overCtx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
+        overCtx.beginPath();
+        overCtx.moveTo(0, mouseY + 0.5);
+        overCtx.lineTo(w, mouseY + 0.5);
+        overCtx.moveTo(mouseX + 0.5, 0);
+        overCtx.lineTo(mouseX + 0.5, h);
+        overCtx.stroke();
+      }
+    }
+
+    function renderLoop() {
+      if (!analyser) return;
+
+      const w = specCanvas.width;
+      const h = specCanvas.height;
+      const minDb = parseFloat(minDbInput.value);
+      const nyquist = audioCtx.sampleRate / 2;
+      const binCount = analyser.frequencyBinCount;
+
+      analyser.getFloatFrequencyData(freqData);
+
+      // Sposta lo storico di 2 pixel a sinistra
+      const stepX = 2;
+      specCtx.drawImage(specCanvas, -stepX, 0);
+
+      const colImage = specCtx.createImageData(stepX, h);
+      const pixels = colImage.data;
+
+      for (let y = 0; y < h; y++) {
+        const freq = yToFreq(y, h);
+        const exactBin = (freq / nyquist) * (binCount - 1);
+        const b0 = Math.floor(exactBin);
+        const b1 = Math.min(binCount - 1, b0 + 1);
+        const frac = exactBin - b0;
+
+        // Interpolazione lineare tra bin adiacenti per evitare gradini nei bassi
+        const db = freqData[b0] * (1 - frac) + freqData[b1] * frac;
+        lastColumnDb[y] = db;
+
+        const norm = Math.max(0, Math.min(1, (db - minDb) / (MAX_DB - minDb)));
+        const colorIdx = Math.floor(norm * 255) * 3;
+
+        for (let dx = 0; dx < stepX; dx++) {
+          const pIdx = (y * stepX + dx) * 4;
+          pixels[pIdx]     = colorLUT[colorIdx];
+          pixels[pIdx + 1] = colorLUT[colorIdx + 1];
+          pixels[pIdx + 2] = colorLUT[colorIdx + 2];
+          pixels[pIdx + 3] = 255;
+        }
+      }
+
+      specCtx.putImageData(colImage, w - stepX, 0);
+      animId = requestAnimationFrame(renderLoop);
+    }
+
+    async function startAudio() {
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false,
+            channelCount: 1
+          }
+        });
+
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioCtx.createMediaStreamSource(mediaStream);
+
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = parseInt(fftSelect.value, 10);
+        analyser.smoothingTimeConstant = 0; // Zero sfocatura temporale
+
+        freqData = new Float32Array(analyser.frequencyBinCount);
+        source.connect(analyser);
+
+        toggleBtn.textContent = 'Ferma Microfono';
+        toggleBtn.classList.add('stop');
+        renderLoop();
+      } catch (err) {
+        alert('Impossibile accedere al microfono. Assicurati di usare HTTPS o localhost e di aver concesso i permessi.\n\nDettaglio: ' + err.message);
+      }
+    }
+
+    function stopAudio() {
+      if (animId) cancelAnimationFrame(animId);
+      if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
+      if (audioCtx) audioCtx.close();
+      analyser = null;
+      audioCtx = null;
+      toggleBtn.textContent = 'Avvia Microfono';
+      toggleBtn.classList.remove('stop');
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      if (audioCtx) stopAudio();
+      else startAudio();
+    });
+
+    fftSelect.addEventListener('change', () => {
+      if (analyser) {
+        analyser.fftSize = parseInt(fftSelect.value, 10);
+        freqData = new Float32Array(analyser.frequencyBinCount);
+      }
+    });
+
+    wrapper.addEventListener('mousemove', (e) => {
+      const rect = wrapper.getBoundingClientRect();
+      const x = Math.floor(e.clientX - rect.left);
+      const y = Math.floor(e.clientY - rect.top);
+      const freq = yToFreq(y, overlayCanvas.height);
+      const db = lastColumnDb ? lastColumnDb[y] : -120;
+      readout.textContent = `${freq >= 1000 ? (freq/1000).toFixed(2) + ' kHz' : Math.round(freq) + ' Hz'} | ${db.toFixed(1)} dB`;
+      drawGrid(x, y);
+    });
+
+    wrapper.addEventListener('mouseleave', () => {
+      readout.textContent = 'Passa il mouse sul grafico';
+      drawGrid(null, null);
+    });
+
+    window.addEventListener('resize', resizeCanvases);
+    resizeCanvases();
+  </script>
+</body>
+</html>
