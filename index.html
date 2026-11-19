@@ -2,313 +2,1104 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spettrogramma Live</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SPECTRA // CIPHER — Terminale Acustico</title>
   <style>
+    :root {
+      --bg-void: #06080d;
+      --bg-panel: #0d121c;
+      --bg-card: #131a29;
+      --border: #1e293b;
+      --border-glow: #0ea5e9;
+      --cyan: #00f0ff;
+      --cyan-dim: rgba(0, 240, 255, 0.14);
+      --amber: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      background: #0b0d12;
-      color: #e2e8f0;
-      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-void);
+      background-image:
+        radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.06) 0%, transparent 55%),
+        linear-gradient(rgba(30, 41, 59, 0.25) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(30, 41, 59, 0.25) 1px, transparent 1px);
+      background-size: 100% 100%, 28px 28px, 28px 28px;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px;
+      padding: 16px;
     }
-    .controls {
+
+    .app-shell {
+      width: 100%;
+      max-width: 1120px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(0, 240, 255, 0.05);
+      overflow: hidden;
+    }
+
+    /* Header & Navigation Tabs */
+    .topbar {
       display: flex;
       flex-wrap: wrap;
-      gap: 14px;
+      justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
-      background: #151922;
-      padding: 10px 16px;
-      border-radius: 8px;
-      border: 1px solid #262c3a;
+      gap: 12px;
+      padding: 14px 20px;
+      background: rgba(6, 8, 13, 0.7);
+      border-bottom: 1px solid var(--border);
     }
-    button {
-      background: #2563eb;
-      color: white;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      font-size: 1rem;
+      color: var(--cyan);
+      text-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #475569;
+      box-shadow: 0 0 6px #475569;
+      transition: all 0.25s ease;
+    }
+    .status-dot.rx-active { background: var(--success); box-shadow: 0 0 10px var(--success); }
+    .status-dot.tx-active { background: var(--amber); box-shadow: 0 0 10px var(--amber); }
+
+    .tabs {
+      display: flex;
+      background: var(--bg-void);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      gap: 4px;
+    }
+
+    .tab-btn {
+      background: transparent;
       border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
       font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 7px;
       cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 7px;
     }
-    button:hover { background: #1d4ed8; }
-    button.stop { background: #dc2626; }
-    label { font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
-    select, input[type="range"] { cursor: pointer; }
-    .canvas-wrapper {
+
+    .tab-btn:hover { color: var(--text-main); }
+
+    .tab-btn.active {
+      background: var(--cyan-dim);
+      color: var(--cyan);
+      box-shadow: inset 0 0 0 1px rgba(0, 240, 255, 0.35);
+    }
+
+    /* Global Frequency Sync Bar */
+    .sync-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 20px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+
+    .sync-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Tab Panels */
+    .panel { display: none; padding: 18px 20px 22px; }
+    .panel.active { display: block; }
+
+    /* Controls & Inputs */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .control-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-void);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    select, input[type="text"], input[type="number"] {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      outline: none;
+    }
+    select:focus, input[type="text"]:focus { border-color: var(--cyan); }
+
+    input[type="range"] {
+      accent-color: var(--cyan);
+      cursor: pointer;
+      width: 90px;
+    }
+
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 8px 15px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: var(--cyan);
+      color: #03131a;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
+    }
+    .btn-primary:hover { filter: brightness(1.1); }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.25); }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border-color: var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+    .btn-secondary.active-state {
+      background: rgba(245, 158, 11, 0.18);
+      border-color: var(--amber);
+      color: #fcd34d;
+    }
+
+    /* Viewports */
+    .viewport {
       position: relative;
       width: 100%;
-      max-width: 1100px;
-      height: 520px;
-      border: 1px solid #262c3a;
-      border-radius: 8px;
+      height: 460px;
+      background: #020305;
+      border: 1px solid var(--border);
+      border-radius: 10px;
       overflow: hidden;
-      background: #000;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9);
     }
-    canvas {
+
+    .viewport canvas {
       position: absolute;
-      top: 0;
-      left: 0;
+      inset: 0;
       width: 100%;
       height: 100%;
+      display: block;
     }
-    #overlayCanvas { pointer-events: none; }
-    #readout {
-      font-family: monospace;
+
+    #overlayCanvas, #txScanCanvas { pointer-events: none; }
+
+    /* Drawing Canvas specific */
+    .draw-viewport {
+      height: auto;
+      aspect-ratio: 16 / 7;
+      min-height: 240px;
+      max-height: 420px;
+      touch-action: none; /* Impedisce lo scroll mentre si disegna col dito */
+      cursor: crosshair;
+    }
+
+    .readout-badge {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--cyan);
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      padding: 5px 10px;
+      border-radius: 6px;
+      margin-left: auto;
+    }
+
+    .text-injector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      background: var(--bg-void);
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+
+    .text-injector input[type="text"] {
+      flex: 1;
+      min-width: 180px;
       font-size: 0.9rem;
-      color: #38bdf8;
-      min-width: 190px;
+      padding: 7px 10px;
+      text-transform: uppercase;
+    }
+
+    .hint-footer {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    @media (max-width: 640px) {
+      .viewport { height: 360px; }
+      .readout-badge { margin-left: 0; width: 100%; text-align: center; }
     }
   </style>
 </head>
 <body>
 
-  <div class="controls">
-    <button id="toggleBtn">Avvia Microfono</button>
+<div class="app-shell">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand">
+      <span class="status-dot" id="globalStatusDot"></span>
+      <span>SPECTRA // CIPHER</span>
+    </div>
 
-    <label>Risoluzione FFT:
-      <select id="fftSelect">
-        <option value="4096">4096 (Veloce)</option>
-        <option value="8192" selected>8192 (Bilanciata)</option>
-        <option value="16384">16384 (Alta precisione)</option>
-      </select>
-    </label>
-
-    <label>Sensibilità (Min dB):
-      <input type="range" id="minDb" min="-120" max="-50" value="-95">
-    </label>
-
-    <span id="readout">Passa il mouse sul grafico</span>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="rxPanel">📡 RICEVITORE (LIVE)</button>
+      <button class="tab-btn" data-tab="txPanel">🎛️ TRASMETTITORE (CODIFICA)</button>
+    </div>
   </div>
 
-  <div class="canvas-wrapper" id="wrapper">
-    <canvas id="specCanvas"></canvas>
-    <canvas id="overlayCanvas"></canvas>
+  <!-- BANDA SINCRONIZZATA TRA RX E TX -->
+  <div class="sync-bar">
+    <div class="sync-group">
+      <span style="color: var(--cyan); font-family: var(--font-mono); font-weight: 600;">CANALE OPERATIVO:</span>
+      <label class="control-chip">Banda Frequenze:
+        <select id="bandSelect">
+          <option value="public" selected>Spazio Pubblico (600 Hz – 8.5 kHz)</option>
+          <option value="stealth">Acuta / Discreta (3.5 kHz – 12.5 kHz)</option>
+          <option value="wide">Spettro Completo (100 Hz – 16 kHz)</option>
+        </select>
+      </label>
+      <label class="control-chip">Scala Asse Y:
+        <select id="scaleSelect">
+          <option value="linear" selected>Lineare (Testo 1:1 nitido)</option>
+          <option value="log">Logaritmica (Musicale)</option>
+        </select>
+      </label>
+    </div>
+    <div style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">
+      TX &amp; RX SINCRONIZZATI
+    </div>
   </div>
 
-  <script>
-    const toggleBtn = document.getElementById('toggleBtn');
-    const fftSelect = document.getElementById('fftSelect');
-    const minDbInput = document.getElementById('minDb');
-    const readout = document.getElementById('readout');
-    const wrapper = document.getElementById('wrapper');
-    const specCanvas = document.getElementById('specCanvas');
-    const overlayCanvas = document.getElementById('overlayCanvas');
-    const specCtx = specCanvas.getContext('2d', { willReadFrequently: false });
-    const overCtx = overlayCanvas.getContext('2d');
+  <!-- ==================== SCHEDA 1: RICEVITORE ==================== -->
+  <div class="panel active" id="rxPanel">
+    <div class="toolbar">
+      <button class="btn btn-primary" id="rxToggleBtn">▶ AVVIA ASCOLTO</button>
+      <button class="btn btn-secondary" id="rxFreezeBtn">⏸ CONGELA</button>
+      <button class="btn btn-secondary" id="rxClearBtn">🧹 PULISCI</button>
 
-    const MIN_FREQ = 20;
-    const MAX_FREQ = 20000;
-    const MAX_DB = -15;
+      <label class="control-chip">Soglia Rumore:
+        <input type="range" id="minDbInput" min="-115" max="-45" value="-88">
+        <span id="minDbVal" style="font-family: var(--font-mono); min-width: 44px;">-88dB</span>
+      </label>
 
-    let audioCtx = null;
-    let analyser = null;
-    let mediaStream = null;
-    let animId = null;
-    let freqData = null;
-    let lastColumnDb = null;
+      <label class="control-chip">Velocità:
+        <select id="speedSelect">
+          <option value="1">Lenta (1x)</option>
+          <option value="2" selected>Normale (2x)</option>
+          <option value="3">Rapida (3x)</option>
+        </select>
+      </label>
 
-    // Pre-calcolo palette colori (stile Inferno) per prestazioni massime
-    const colorLUT = new Uint8Array(256 * 3);
-    (function buildPalette() {
-      const stops = [
-        [0.0,   [0, 0, 4]],
-        [0.2,   [40, 11, 84]],
-        [0.4,   [101, 21, 110]],
-        [0.6,   [159, 42, 99]],
-        [0.8,   [212, 72, 66]],
-        [0.92,  [245, 125, 21]],
-        [1.0,   [252, 255, 164]]
-      ];
-      for (let i = 0; i < 256; i++) {
-        const t = i / 255;
-        let s0 = stops[0], s1 = stops[stops.length - 1];
-        for (let j = 0; j < stops.length - 1; j++) {
-          if (t >= stops[j][0] && t <= stops[j + 1][0]) {
-            s0 = stops[j];
-            s1 = stops[j + 1];
-            break;
-          }
+      <label class="control-chip">Tema:
+        <select id="paletteSelect">
+          <option value="inferno" selected>Inferno</option>
+          <option value="cyber">Cyber Cyan</option>
+          <option value="matrix">Radar Verde</option>
+        </select>
+      </label>
+
+      <div class="readout-badge" id="rxReadout">IN ATTESA DEL SEGNALE</div>
+    </div>
+
+    <div class="viewport" id="rxWrapper">
+      <canvas id="specCanvas"></canvas>
+      <canvas id="overlayCanvas"></canvas>
+    </div>
+
+    <div class="hint-footer">
+      <span>Suggerimento: in ambienti rumorosi alza la <b>Soglia Rumore</b> (es. -72 dB) per isolare solo il messaggio.</span>
+      <span>Usa <b>CONGELA</b> per bloccare lo scorrimento e decifrare il testo.</span>
+    </div>
+  </div>
+
+  <!-- ==================== SCHEDA 2: TRASMETTITORE ==================== -->
+  <div class="panel" id="txPanel">
+    <div class="text-injector">
+      <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--cyan);">TESTO RAPIDO:</span>
+      <input type="text" id="secretTextInput" maxlength="24" placeholder="Es. CODICE 749 / NORD">
+      <button class="btn btn-secondary" id="stampTextBtn">✍️ STAMPA SU LAVAGNA</button>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn btn-primary" id="txPlayBtn">🔊 TRASMETTI SUONO</button>
+      <button class="btn btn-secondary" id="txLoopBtn">🔁 LOOP: OFF</button>
+      <button class="btn btn-secondary" id="txDownloadBtn">💾 SCARICA .WAV</button>
+
+      <label class="control-chip">Durata Scansione:
+        <select id="durationSelect">
+          <option value="3">3 sec (Veloce)</option>
+          <option value="5" selected>5 sec (Consigliata)</option>
+          <option value="8">8 sec (Alta leggibilità)</option>
+        </select>
+      </label>
+
+      <label class="control-chip">Pennello:
+        <select id="brushSelect">
+          <option value="5">Sottile</option>
+          <option value="10" selected>Medio</option>
+          <option value="18">Spesso</option>
+          <option value="eraser">Gomma</option>
+        </select>
+      </label>
+
+      <button class="btn btn-danger" id="txClearBtn" style="margin-left: auto;">🗑️ SVUOTA</button>
+    </div>
+
+    <div class="viewport draw-viewport" id="txWrapper">
+      <canvas id="drawCanvas" width="640" height="280"></canvas>
+      <canvas id="txScanCanvas" width="640" height="280"></canvas>
+    </div>
+
+    <div class="hint-footer">
+      <span>Disegna col dito o col mouse sulla lavagna nera: l'asse verticale corrisponde alle frequenze, quello orizzontale al tempo.</span>
+      <span id="txStatusText" style="font-family: var(--font-mono); color: var(--amber);">PRONTO ALLA CODIFICA</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  /* ==================== CONFIGURAZIONE CONDIVISA ==================== */
+  const BANDS = {
+    public:  { min: 600,  max: 8500 },
+    stealth: { min: 3500, max: 12500 },
+    wide:    { min: 100,  max: 16000 }
+  };
+
+  let currentBand = BANDS.public;
+  let scaleMode = 'linear'; // 'linear' | 'log'
+  const MAX_DB = -18;
+
+  // Mappatura Y (0 = alto/maxFreq, height-1 = basso/minFreq) identica per RX e TX
+  function yToFreq(y, height) {
+    const normY = 1 - (y / Math.max(1, height - 1));
+    if (scaleMode === 'log') {
+      return currentBand.min * Math.pow(currentBand.max / currentBand.min, normY);
+    }
+    return currentBand.min + normY * (currentBand.max - currentBand.min);
+  }
+
+  function freqToY(freq, height) {
+    let normY;
+    if (scaleMode === 'log') {
+      normY = Math.log(freq / currentBand.min) / Math.log(currentBand.max / currentBand.min);
+    } else {
+      normY = (freq - currentBand.min) / (currentBand.max - currentBand.min);
+    }
+    return (1 - normY) * (height - 1);
+  }
+
+  /* ==================== GESTIONE SCHEDE (TABS) ==================== */
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'rxPanel') resizeRxCanvases();
+      else drawTxGuideGrid();
+    });
+  });
+
+  const bandSelect = document.getElementById('bandSelect');
+  const scaleSelect = document.getElementById('scaleSelect');
+
+  bandSelect.addEventListener('change', () => {
+    currentBand = BANDS[bandSelect.value];
+    drawRxGrid(null, null);
+    drawTxGuideGrid();
+  });
+
+  scaleSelect.addEventListener('change', () => {
+    scaleMode = scaleSelect.value;
+    drawRxGrid(null, null);
+    drawTxGuideGrid();
+  });
+
+  /* ==================== PALETTE COLORI (LUT 256) ==================== */
+  const PALETTES = {
+    inferno: [
+      [0.0, [2, 3, 6]],
+      [0.2, [42, 11, 84]],
+      [0.45, [120, 28, 109]],
+      [0.7, [205, 64, 71]],
+      [0.88, [248, 137, 18]],
+      [1.0, [252, 255, 175]]
+    ],
+    cyber: [
+      [0.0, [2, 5, 10]],
+      [0.3, [6, 40, 72]],
+      [0.6, [0, 130, 175]],
+      [0.85, [0, 240, 255]],
+      [1.0, [235, 255, 255]]
+    ],
+    matrix: [
+      [0.0, [1, 6, 3]],
+      [0.35, [6, 55, 24]],
+      [0.7, [16, 185, 95]],
+      [0.9, [110, 255, 150]],
+      [1.0, [235, 255, 240]]
+    ]
+  };
+
+  let colorLUT = new Uint8Array(256 * 3);
+  function buildColorLUT(name) {
+    const stops = PALETTES[name] || PALETTES.inferno;
+    for (let i = 0; i < 256; i++) {
+      const t = i / 255;
+      let s0 = stops[0], s1 = stops[stops.length - 1];
+      for (let j = 0; j < stops.length - 1; j++) {
+        if (t >= stops[j][0] && t <= stops[j + 1][0]) {
+          s0 = stops[j];
+          s1 = stops[j + 1];
+          break;
         }
-        const f = (t - s0[0]) / (s1[0] - s0[0] || 1);
-        colorLUT[i * 3]     = Math.round(s0[1][0] + f * (s1[1][0] - s0[1][0]));
-        colorLUT[i * 3 + 1] = Math.round(s0[1][1] + f * (s1[1][1] - s0[1][1]));
-        colorLUT[i * 3 + 2] = Math.round(s0[1][2] + f * (s1[1][2] - s0[1][2]));
       }
-    })();
+      const f = (t - s0[0]) / (s1[0] - s0[0] || 1);
+      colorLUT[i * 3]     = Math.round(s0[1][0] + f * (s1[1][0] - s0[1][0]));
+      colorLUT[i * 3 + 1] = Math.round(s0[1][1] + f * (s1[1][1] - s0[1][1]));
+      colorLUT[i * 3 + 2] = Math.round(s0[1][2] + f * (s1[1][2] - s0[1][2]));
+    }
+  }
+  buildColorLUT('inferno');
 
-    function resizeCanvases() {
-      const rect = wrapper.getBoundingClientRect();
-      specCanvas.width = Math.floor(rect.width);
-      specCanvas.height = Math.floor(rect.height);
-      overlayCanvas.width = specCanvas.width;
-      overlayCanvas.height = specCanvas.height;
-      lastColumnDb = new Float32Array(specCanvas.height).fill(-120);
-      drawGrid(null, null);
+  /* ==================== MODULO 1: RICEVITORE (RX) ==================== */
+  const globalStatusDot = document.getElementById('globalStatusDot');
+  const rxToggleBtn = document.getElementById('rxToggleBtn');
+  const rxFreezeBtn = document.getElementById('rxFreezeBtn');
+  const rxClearBtn = document.getElementById('rxClearBtn');
+  const minDbInput = document.getElementById('minDbInput');
+  const minDbVal = document.getElementById('minDbVal');
+  const speedSelect = document.getElementById('speedSelect');
+  const paletteSelect = document.getElementById('paletteSelect');
+  const rxReadout = document.getElementById('rxReadout');
+  const rxWrapper = document.getElementById('rxWrapper');
+  const specCanvas = document.getElementById('specCanvas');
+  const overlayCanvas = document.getElementById('overlayCanvas');
+  const specCtx = specCanvas.getContext('2d');
+  const overCtx = overlayCanvas.getContext('2d');
+
+  let rxAudioCtx = null;
+  let rxAnalyser = null;
+  let rxStream = null;
+  let rxAnimId = null;
+  let rxFreqData = null;
+  let rxFrozen = false;
+  let lastColumnDb = null;
+
+  minDbInput.addEventListener('input', () => {
+    minDbVal.textContent = `${minDbInput.value}dB`;
+  });
+
+  paletteSelect.addEventListener('change', () => {
+    buildColorLUT(paletteSelect.value);
+  });
+
+  function resizeRxCanvases() {
+    const rect = rxWrapper.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+    specCanvas.width = Math.floor(rect.width);
+    specCanvas.height = Math.floor(rect.height);
+    overlayCanvas.width = specCanvas.width;
+    overlayCanvas.height = specCanvas.height;
+    lastColumnDb = new Float32Array(specCanvas.height).fill(-120);
+    drawRxGrid(null, null);
+  }
+
+  function drawRxGrid(mouseX, mouseY) {
+    const w = overlayCanvas.width;
+    const h = overlayCanvas.height;
+    overCtx.clearRect(0, 0, w, h);
+
+    // Calcola 7 tacche equidistanti visivamente sull'asse Y
+    const steps = 6;
+    overCtx.font = '11px monospace';
+    overCtx.textBaseline = 'middle';
+
+    for (let i = 1; i < steps; i++) {
+      const y = Math.round((i / steps) * h) + 0.5;
+      const freq = yToFreq(y, h);
+
+      overCtx.strokeStyle = 'rgba(0, 240, 255, 0.14)';
+      overCtx.beginPath();
+      overCtx.moveTo(0, y);
+      overCtx.lineTo(w, y);
+      overCtx.stroke();
+
+      const label = freq >= 1000 ? `${(freq / 1000).toFixed(1)} kHz` : `${Math.round(freq)} Hz`;
+      overCtx.fillStyle = 'rgba(6, 8, 13, 0.78)';
+      overCtx.fillRect(8, y - 9, 62, 18);
+      overCtx.fillStyle = '#94a3b8';
+      overCtx.fillText(label, 12, y);
     }
 
-    function yToFreq(y, height) {
-      const normY = 1 - (y / (height - 1));
-      return MIN_FREQ * Math.pow(MAX_FREQ / MIN_FREQ, normY);
+    if (mouseX !== null && mouseY !== null) {
+      overCtx.strokeStyle = 'rgba(0, 240, 255, 0.8)';
+      overCtx.beginPath();
+      overCtx.moveTo(0, mouseY + 0.5);
+      overCtx.lineTo(w, mouseY + 0.5);
+      overCtx.moveTo(mouseX + 0.5, 0);
+      overCtx.lineTo(mouseX + 0.5, h);
+      overCtx.stroke();
+    }
+  }
+
+  function rxRenderLoop() {
+    if (!rxAnalyser) return;
+    rxAnimId = requestAnimationFrame(rxRenderLoop);
+    if (rxFrozen) return;
+
+    const w = specCanvas.width;
+    const h = specCanvas.height;
+    const minDb = parseFloat(minDbInput.value);
+    const nyquist = rxAudioCtx.sampleRate / 2;
+    const binCount = rxAnalyser.frequencyBinCount;
+    const stepX = parseInt(speedSelect.value, 10);
+
+    rxAnalyser.getFloatFrequencyData(rxFreqData);
+
+    specCtx.drawImage(specCanvas, -stepX, 0);
+    const colImage = specCtx.createImageData(stepX, h);
+    const pixels = colImage.data;
+
+    for (let y = 0; y < h; y++) {
+      const freq = yToFreq(y, h);
+      const exactBin = (freq / nyquist) * (binCount - 1);
+      const b0 = Math.max(0, Math.min(binCount - 1, Math.floor(exactBin)));
+      const b1 = Math.min(binCount - 1, b0 + 1);
+      const frac = exactBin - b0;
+
+      const db = rxFreqData[b0] * (1 - frac) + rxFreqData[b1] * frac;
+      lastColumnDb[y] = db;
+
+      const norm = Math.max(0, Math.min(1, (db - minDb) / (MAX_DB - minDb)));
+      const cIdx = Math.floor(norm * 255) * 3;
+
+      for (let dx = 0; dx < stepX; dx++) {
+        const pIdx = (y * stepX + dx) * 4;
+        pixels[pIdx]     = colorLUT[cIdx];
+        pixels[pIdx + 1] = colorLUT[cIdx + 1];
+        pixels[pIdx + 2] = colorLUT[cIdx + 2];
+        pixels[pIdx + 3] = 255;
+      }
     }
 
-    function freqToY(freq, height) {
-      const normY = Math.log(freq / MIN_FREQ) / Math.log(MAX_FREQ / MIN_FREQ);
-      return (1 - normY) * (height - 1);
-    }
+    specCtx.putImageData(colImage, w - stepX, 0);
+  }
 
-    function drawGrid(mouseX, mouseY) {
-      const w = overlayCanvas.width;
-      const h = overlayCanvas.height;
-      overCtx.clearRect(0, 0, w, h);
-
-      const ticks = [30, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 16000];
-      overCtx.font = '11px monospace';
-      overCtx.textBaseline = 'middle';
-
-      ticks.forEach(freq => {
-        const y = Math.round(freqToY(freq, h)) + 0.5;
-        overCtx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
-        overCtx.beginPath();
-        overCtx.moveTo(0, y);
-        overCtx.lineTo(w, y);
-        overCtx.stroke();
-
-        const label = freq >= 1000 ? `${freq / 1000} kHz` : `${freq} Hz`;
-        overCtx.fillStyle = 'rgba(0, 0, 0, 0.65)';
-        overCtx.fillRect(6, y - 8, 52, 16);
-        overCtx.fillStyle = '#cbd5e1';
-        overCtx.fillText(label, 10, y);
+  async function startRx() {
+    try {
+      rxStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+          channelCount: 1
+        }
       });
 
-      if (mouseX !== null && mouseY !== null) {
-        overCtx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
-        overCtx.beginPath();
-        overCtx.moveTo(0, mouseY + 0.5);
-        overCtx.lineTo(w, mouseY + 0.5);
-        overCtx.moveTo(mouseX + 0.5, 0);
-        overCtx.lineTo(mouseX + 0.5, h);
-        overCtx.stroke();
-      }
+      rxAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const source = rxAudioCtx.createMediaStreamSource(rxStream);
+
+      rxAnalyser = rxAudioCtx.createAnalyser();
+      rxAnalyser.fftSize = 8192;
+      rxAnalyser.smoothingTimeConstant = 0;
+
+      rxFreqData = new Float32Array(rxAnalyser.frequencyBinCount);
+      source.connect(rxAnalyser);
+
+      rxFrozen = false;
+      rxFreezeBtn.classList.remove('active-state');
+      rxFreezeBtn.textContent = '⏸ CONGELA';
+      rxToggleBtn.textContent = '⏹ FERMA ASCOLTO';
+      rxToggleBtn.classList.remove('btn-primary');
+      rxToggleBtn.classList.add('btn-danger');
+      rxReadout.textContent = 'IN ASCOLTO ATTIVO...';
+      globalStatusDot.classList.add('rx-active');
+
+      rxRenderLoop();
+    } catch (err) {
+      alert('Accesso al microfono negato o non disponibile (richiede HTTPS).\n' + err.message);
+    }
+  }
+
+  function stopRx() {
+    if (rxAnimId) cancelAnimationFrame(rxAnimId);
+    if (rxStream) rxStream.getTracks().forEach(t => t.stop());
+    if (rxAudioCtx) rxAudioCtx.close();
+    rxAnalyser = null;
+    rxAudioCtx = null;
+    rxToggleBtn.textContent = '▶ AVVIA ASCOLTO';
+    rxToggleBtn.classList.remove('btn-danger');
+    rxToggleBtn.classList.add('btn-primary');
+    rxReadout.textContent = 'RICEVITORE IN PAUSA';
+    globalStatusDot.classList.remove('rx-active');
+  }
+
+  rxToggleBtn.addEventListener('click', () => rxAudioCtx ? stopRx() : startRx());
+
+  rxFreezeBtn.addEventListener('click', () => {
+    rxFrozen = !rxFrozen;
+    rxFreezeBtn.classList.toggle('active-state', rxFrozen);
+    rxFreezeBtn.textContent = rxFrozen ? '▶ RIPRENDI' : '⏸ CONGELA';
+    rxReadout.textContent = rxFrozen ? 'SCHERMO CONGELATO' : 'IN ASCOLTO ATTIVO...';
+  });
+
+  rxClearBtn.addEventListener('click', () => {
+    specCtx.fillStyle = '#020305';
+    specCtx.fillRect(0, 0, specCanvas.width, specCanvas.height);
+  });
+
+  rxWrapper.addEventListener('mousemove', (e) => {
+    const rect = rxWrapper.getBoundingClientRect();
+    const x = Math.floor(e.clientX - rect.left);
+    const y = Math.floor(e.clientY - rect.top);
+    const freq = yToFreq(y, overlayCanvas.height);
+    const db = lastColumnDb ? lastColumnDb[y] : -120;
+    rxReadout.textContent = `${freq >= 1000 ? (freq / 1000).toFixed(2) + ' kHz' : Math.round(freq) + ' Hz'} | ${db.toFixed(1)} dB`;
+    drawRxGrid(x, y);
+  });
+
+  rxWrapper.addEventListener('mouseleave', () => {
+    drawRxGrid(null, null);
+  });
+
+  /* ==================== MODULO 2: TRASMETTITORE (TX) ==================== */
+  const drawCanvas = document.getElementById('drawCanvas');
+  const txScanCanvas = document.getElementById('txScanCanvas');
+  const drawCtx = drawCanvas.getContext('2d');
+  const scanCtx = txScanCanvas.getContext('2d');
+
+  const secretTextInput = document.getElementById('secretTextInput');
+  const stampTextBtn = document.getElementById('stampTextBtn');
+  const txPlayBtn = document.getElementById('txPlayBtn');
+  const txLoopBtn = document.getElementById('txLoopBtn');
+  const txDownloadBtn = document.getElementById('txDownloadBtn');
+  const durationSelect = document.getElementById('durationSelect');
+  const brushSelect = document.getElementById('brushSelect');
+  const txClearBtn = document.getElementById('txClearBtn');
+  const txStatusText = document.getElementById('txStatusText');
+
+  let isDrawing = false;
+  let lastPt = null;
+  let txAudioCtx = null;
+  let txSourceNode = null;
+  let txLooping = false;
+  let txAnimId = null;
+
+  function clearDrawBoard() {
+    drawCtx.fillStyle = '#000000';
+    drawCtx.fillRect(0, 0, drawCanvas.width, drawCanvas.height);
+  }
+  clearDrawBoard();
+
+  function drawTxGuideGrid() {
+    const w = txScanCanvas.width;
+    const h = txScanCanvas.height;
+    scanCtx.clearRect(0, 0, w, h);
+
+    // Linee guida frequenza e margini di sicurezza
+    scanCtx.strokeStyle = 'rgba(0, 240, 255, 0.14)';
+    scanCtx.font = '11px monospace';
+    scanCtx.fillStyle = 'rgba(148, 163, 184, 0.75)';
+
+    [0.2, 0.5, 0.8].forEach(ratio => {
+      const y = Math.round(ratio * h) + 0.5;
+      const f = yToFreq(y, h);
+      scanCtx.beginPath();
+      scanCtx.moveTo(0, y);
+      scanCtx.lineTo(w, y);
+      scanCtx.stroke();
+      scanCtx.fillText(f >= 1000 ? `${(f / 1000).toFixed(1)}kHz` : `${Math.round(f)}Hz`, 8, y - 4);
+    });
+  }
+  drawTxGuideGrid();
+
+  // Disegno con Pointer Events (Mouse + Dito Touchscreen)
+  function getCanvasCoords(e) {
+    const rect = drawCanvas.getBoundingClientRect();
+    return {
+      x: ((e.clientX - rect.left) / rect.width) * drawCanvas.width,
+      y: ((e.clientY - rect.top) / rect.height) * drawCanvas.height
+    };
+  }
+
+  drawCanvas.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    drawCanvas.setPointerCapture(e.pointerId);
+    isDrawing = true;
+    lastPt = getCanvasCoords(e);
+    drawStroke(lastPt, lastPt);
+  });
+
+  drawCanvas.addEventListener('pointermove', (e) => {
+    if (!isDrawing) return;
+    e.preventDefault();
+    const pt = getCanvasCoords(e);
+    drawStroke(lastPt, pt);
+    lastPt = pt;
+  });
+
+  drawCanvas.addEventListener('pointerup', () => { isDrawing = false; lastPt = null; });
+  drawCanvas.addEventListener('pointercancel', () => { isDrawing = false; lastPt = null; });
+
+  function drawStroke(p0, p1) {
+    const mode = brushSelect.value;
+    drawCtx.lineCap = 'round';
+    drawCtx.lineJoin = 'round';
+
+    if (mode === 'eraser') {
+      drawCtx.strokeStyle = '#000000';
+      drawCtx.lineWidth = 22;
+      drawCtx.shadowBlur = 0;
+    } else {
+      drawCtx.strokeStyle = '#ffffff';
+      drawCtx.lineWidth = parseInt(mode, 10);
+      drawCtx.shadowColor = '#00f0ff';
+      drawCtx.shadowBlur = 4;
     }
 
-    function renderLoop() {
-      if (!analyser) return;
+    drawCtx.beginPath();
+    drawCtx.moveTo(p0.x, p0.y);
+    drawCtx.lineTo(p1.x, p1.y);
+    drawCtx.stroke();
+    drawCtx.shadowBlur = 0;
+  }
 
-      const w = specCanvas.width;
-      const h = specCanvas.height;
-      const minDb = parseFloat(minDbInput.value);
-      const nyquist = audioCtx.sampleRate / 2;
-      const binCount = analyser.frequencyBinCount;
+  // Stampa testo ad alto contrasto sulla lavagna
+  stampTextBtn.addEventListener('click', () => {
+    const text = secretTextInput.value.trim().toUpperCase();
+    if (!text) return;
 
-      analyser.getFloatFrequencyData(freqData);
+    clearDrawBoard();
+    const w = drawCanvas.width;
+    const h = drawCanvas.height;
 
-      // Sposta lo storico di 2 pixel a sinistra
-      const stepX = 2;
-      specCtx.drawImage(specCanvas, -stepX, 0);
+    // Adatta automaticamente la dimensione del font alla larghezza della lavagna
+    let fontSize = 110;
+    drawCtx.font = `900 ${fontSize}px monospace`;
+    while (drawCtx.measureText(text).width > w * 0.86 && fontSize > 24) {
+      fontSize -= 4;
+      drawCtx.font = `900 ${fontSize}px monospace`;
+    }
 
-      const colImage = specCtx.createImageData(stepX, h);
-      const pixels = colImage.data;
+    drawCtx.fillStyle = '#ffffff';
+    drawCtx.textAlign = 'center';
+    drawCtx.textBaseline = 'middle';
+    drawCtx.fillText(text, w / 2, h / 2);
+    txStatusText.textContent = `TESTO "${text}" PRONTO`;
+  });
 
-      for (let y = 0; y < h; y++) {
-        const freq = yToFreq(y, h);
-        const exactBin = (freq / nyquist) * (binCount - 1);
-        const b0 = Math.floor(exactBin);
-        const b1 = Math.min(binCount - 1, b0 + 1);
-        const frac = exactBin - b0;
+  txClearBtn.addEventListener('click', () => {
+    stopTxPlayback();
+    clearDrawBoard();
+    txStatusText.textContent = 'LAVAGNA PULITA';
+  });
 
-        // Interpolazione lineare tra bin adiacenti per evitare gradini nei bassi
-        const db = freqData[b0] * (1 - frac) + freqData[b1] * frac;
-        lastColumnDb[y] = db;
+  /* ==================== SINTESI AUDIO DALL'IMMAGINE ==================== */
+  function synthesizeCanvasToSamples(sampleRate, durationSec) {
+    const W = drawCanvas.width;
+    const H = drawCanvas.height;
+    const imgData = drawCtx.getImageData(0, 0, W, H).data;
 
-        const norm = Math.max(0, Math.min(1, (db - minDb) / (MAX_DB - minDb)));
-        const colorIdx = Math.floor(norm * 255) * 3;
+    // Campioniamo 140 bande verticali (ogni 2px) e 160 colonne temporali (ogni 4px)
+    const numRows = Math.floor(H / 2);
+    const numCols = Math.floor(W / 4);
+    const activeOscillators = [];
 
-        for (let dx = 0; dx < stepX; dx++) {
-          const pIdx = (y * stepX + dx) * 4;
-          pixels[pIdx]     = colorLUT[colorIdx];
-          pixels[pIdx + 1] = colorLUT[colorIdx + 1];
-          pixels[pIdx + 2] = colorLUT[colorIdx + 2];
-          pixels[pIdx + 3] = 255;
+    for (let r = 0; r < numRows; r++) {
+      const y = r * 2 + 1;
+      const rowAmps = new Float32Array(numCols);
+      let hasEnergy = false;
+
+      for (let c = 0; c < numCols; c++) {
+        const x = c * 4 + 2;
+        const idx = (y * W + x) * 4;
+        // Luminosità normalizzata [0..1]
+        const brightness = (imgData[idx] + imgData[idx + 1] + imgData[idx + 2]) / (3 * 255);
+        if (brightness > 0.06) {
+          // Curva gamma per rendere nitidi i tratti sullo spettrogramma
+          rowAmps[c] = Math.pow(brightness, 1.3);
+          hasEnergy = true;
         }
       }
 
-      specCtx.putImageData(colImage, w - stepX, 0);
-      animId = requestAnimationFrame(renderLoop);
-    }
-
-    async function startAudio() {
-      try {
-        mediaStream = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: false,
-            noiseSuppression: false,
-            autoGainControl: false,
-            channelCount: 1
-          }
+      if (hasEnergy) {
+        const freq = yToFreq(y, H);
+        const omega = (2 * Math.PI * freq) / sampleRate;
+        const phase0 = Math.random() * 2 * Math.PI; // Fase casuale evita picchi di clipping
+        activeOscillators.push({
+          amps: rowAmps,
+          cosW: Math.cos(omega),
+          sinW: Math.sin(omega),
+          re: Math.cos(phase0),
+          im: Math.sin(phase0)
         });
-
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const source = audioCtx.createMediaStreamSource(mediaStream);
-
-        analyser = audioCtx.createAnalyser();
-        analyser.fftSize = parseInt(fftSelect.value, 10);
-        analyser.smoothingTimeConstant = 0; // Zero sfocatura temporale
-
-        freqData = new Float32Array(analyser.frequencyBinCount);
-        source.connect(analyser);
-
-        toggleBtn.textContent = 'Ferma Microfono';
-        toggleBtn.classList.add('stop');
-        renderLoop();
-      } catch (err) {
-        alert('Impossibile accedere al microfono. Assicurati di usare HTTPS o localhost e di aver concesso i permessi.\n\nDettaglio: ' + err.message);
       }
     }
 
-    function stopAudio() {
-      if (animId) cancelAnimationFrame(animId);
-      if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
-      if (audioCtx) audioCtx.close();
-      analyser = null;
-      audioCtx = null;
-      toggleBtn.textContent = 'Avvia Microfono';
-      toggleBtn.classList.remove('stop');
+    const totalSamples = Math.floor(sampleRate * durationSec);
+    const out = new Float32Array(totalSamples);
+
+    if (activeOscillators.length === 0) return out;
+
+    const fadeSamples = Math.floor(sampleRate * 0.025); // 25ms fade-in/out anti-click
+
+    for (let i = 0; i < totalSamples; i++) {
+      const pos = (i / totalSamples) * (numCols - 1);
+      const c0 = Math.floor(pos);
+      const c1 = Math.min(numCols - 1, c0 + 1);
+      const frac = pos - c0;
+
+      let sample = 0;
+      for (let k = 0; k < activeOscillators.length; k++) {
+        const osc = activeOscillators[k];
+        const amp = osc.amps[c0] * (1 - frac) + osc.amps[c1] * frac;
+        if (amp > 0.002) {
+          sample += amp * osc.im;
+        }
+        // Rotazione fasore ultra-rapida senza Math.sin nel loop interno
+        const nextRe = osc.re * osc.cosW - osc.im * osc.sinW;
+        const nextIm = osc.re * osc.sinW + osc.im * osc.cosW;
+        osc.re = nextRe;
+        osc.im = nextIm;
+      }
+
+      // Rinormalizzazione periodica del fasore per stabilità numerica
+      if ((i & 1023) === 1023) {
+        for (let k = 0; k < activeOscillators.length; k++) {
+          const osc = activeOscillators[k];
+          const inv = 1 / Math.hypot(osc.re, osc.im);
+          osc.re *= inv;
+          osc.im *= inv;
+        }
+      }
+
+      // Envelope anti-click
+      let env = 1;
+      if (i < fadeSamples) env = i / fadeSamples;
+      else if (i > totalSamples - fadeSamples) env = (totalSamples - i) / fadeSamples;
+
+      out[i] = sample * env;
     }
 
-    toggleBtn.addEventListener('click', () => {
-      if (audioCtx) stopAudio();
-      else startAudio();
-    });
+    // Normalizzazione picco al 90%
+    let maxVal = 0;
+    for (let i = 0; i < totalSamples; i++) {
+      const abs = Math.abs(out[i]);
+      if (abs > maxVal) maxVal = abs;
+    }
+    if (maxVal > 0) {
+      const gain = 0.9 / maxVal;
+      for (let i = 0; i < totalSamples; i++) out[i] *= gain;
+    }
 
-    fftSelect.addEventListener('change', () => {
-      if (analyser) {
-        analyser.fftSize = parseInt(fftSelect.value, 10);
-        freqData = new Float32Array(analyser.frequencyBinCount);
+    return out;
+  }
+
+  function stopTxPlayback() {
+    if (txAnimId) cancelAnimationFrame(txAnimId);
+    if (txSourceNode) {
+      try { txSourceNode.stop(); } catch (_) {}
+      txSourceNode = null;
+    }
+    txPlayBtn.textContent = '🔊 TRASMETTI SUONO';
+    txPlayBtn.classList.remove('btn-danger');
+    txPlayBtn.classList.add('btn-primary');
+    globalStatusDot.classList.remove('tx-active');
+    drawTxGuideGrid();
+  }
+
+  txPlayBtn.addEventListener('click', async () => {
+    if (txSourceNode) {
+      stopTxPlayback();
+      txStatusText.textContent = 'TRASMISSIONE INTERROTTA';
+      return;
+    }
+
+    if (!txAudioCtx) {
+      txAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (txAudioCtx.state === 'suspended') await txAudioCtx.resume();
+
+    const duration = parseFloat(durationSelect.value);
+    txStatusText.textContent = 'CODIFICA IN CORSO...';
+
+    const samples = synthesizeCanvasToSamples(txAudioCtx.sampleRate, duration);
+    const audioBuffer = txAudioCtx.createBuffer(1, samples.length, txAudioCtx.sampleRate);
+    audioBuffer.copyToChannel(samples, 0);
+
+    txSourceNode = txAudioCtx.createBufferSource();
+    txSourceNode.buffer = audioBuffer;
+    txSourceNode.loop = txLooping;
+    txSourceNode.connect(txAudioCtx.destination);
+
+    const startTime = txAudioCtx.currentTime;
+    txSourceNode.start(startTime);
+
+    txPlayBtn.textContent = '⏹ FERMA SUONO';
+    txPlayBtn.classList.remove('btn-primary');
+    txPlayBtn.classList.add('btn-danger');
+    globalStatusDot.classList.add('tx-active');
+    txStatusText.textContent = txLooping ? 'TRASMISSIONE IN LOOP...' : 'TRASMISSIONE ATTIVA...';
+
+    txSourceNode.onended = () => {
+      if (!txLooping) {
+        stopTxPlayback();
+        txStatusText.textContent = 'TRASMISSIONE COMPLETATA';
       }
-    });
+    };
 
-    wrapper.addEventListener('mousemove', (e) => {
-      const rect = wrapper.getBoundingClientRect();
-      const x = Math.floor(e.clientX - rect.left);
-      const y = Math.floor(e.clientY - rect.top);
-      const freq = yToFreq(y, overlayCanvas.height);
-      const db = lastColumnDb ? lastColumnDb[y] : -120;
-      readout.textContent = `${freq >= 1000 ? (freq/1000).toFixed(2) + ' kHz' : Math.round(freq) + ' Hz'} | ${db.toFixed(1)} dB`;
-      drawGrid(x, y);
-    });
+    // Animazione barra laser di scansione orizzontale
+    function animateScanner() {
+      if (!txSourceNode) return;
+      const elapsed = txAudioCtx.currentTime - startTime;
+      if (!txLooping && elapsed >= duration) return;
 
-    wrapper.addEventListener('mouseleave', () => {
-      readout.textContent = 'Passa il mouse sul grafico';
-      drawGrid(null, null);
-    });
+      const progress = (elapsed % duration) / duration;
+      drawTxGuideGrid();
 
-    window.addEventListener('resize', resizeCanvases);
-    resizeCanvases();
-  </script>
+      const scanX = progress * txScanCanvas.width;
+      scanCtx.strokeStyle = '#f59e0b';
+      scanCtx.lineWidth = 3;
+      scanCtx.shadowColor = '#f59e0b';
+      scanCtx.shadowBlur = 12;
+      scanCtx.beginPath();
+      scanCtx.moveTo(scanX, 0);
+      scanCtx.lineTo(scanX, txScanCanvas.height);
+      scanCtx.stroke();
+      scanCtx.shadowBlur = 0;
+
+      txAnimId = requestAnimationFrame(animateScanner);
+    }
+    animateScanner();
+  });
+
+  txLoopBtn.addEventListener('click', () => {
+    txLooping = !txLooping;
+    txLoopBtn.classList.toggle('active-state', txLooping);
+    txLoopBtn.textContent = txLooping ? '🔁 LOOP: ON' : '🔁 LOOP: OFF';
+    if (txSourceNode) txSourceNode.loop = txLooping;
+  });
+
+  // Esportazione diretta in file .WAV PCM 16-bit
+  txDownloadBtn.addEventListener('click', () => {
+    const sampleRate = 44100;
+    const duration = parseFloat(durationSelect.value);
+    const samples = synthesizeCanvasToSamples(sampleRate, duration);
+
+    const buffer = new ArrayBuffer(44 + samples.length * 2);
+    const view = new DataView(buffer);
+    const writeStr = (offset, str) => {
+      for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+    };
+
+    writeStr(0, 'RIFF');
+    view.setUint32(4, 36 + samples.length * 2, true);
+    writeStr(8, 'WAVE');
+    writeStr(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeStr(36, 'data');
+    view.setUint32(40, samples.length * 2, true);
+
+    let offset = 44;
+    for (let i = 0; i < samples.length; i++, offset += 2) {
+      const s = Math.max(-1, Math.min(1, samples[i]));
+      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    }
+
+    const blob = new Blob([buffer], { type: 'audio/wav' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `messaggio-criptato-${Date.now()}.wav`;
+    a.click();
+    URL.revokeObjectURL(url);
+    txStatusText.textContent = 'FILE .WAV ESPORTATO';
+  });
+
+  window.addEventListener('resize', resizeRxCanvases);
+  resizeRxCanvases();
+})();
+</script>
 </body>
 </html>
