@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SPECTRA // CIPHER — Terminale Acustico</title>
+  <title>DECODER</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -195,7 +195,6 @@
       margin-bottom: 18px;
     }
 
-    /* Pulsante primario rettangolare essenziale */
     .btn-action {
       background: transparent;
       color: var(--cyan);
@@ -234,7 +233,6 @@
       color: var(--bg-void);
     }
 
-    /* Pulsanti secondari come link sottolineati in stile portfolio */
     .btn-link {
       background: none;
       border: none;
@@ -269,7 +267,6 @@
       opacity: 1;
     }
 
-    /* Controlli inline */
     .control-inline {
       display: inline-flex;
       align-items: center;
@@ -315,7 +312,6 @@
       margin-left: auto;
     }
 
-    /* RIGA INSERIMENTO TESTO TRASMETTITORE */
     .text-injector {
       display: flex;
       flex-wrap: wrap;
@@ -332,7 +328,6 @@
       text-transform: uppercase;
     }
 
-    /* AREA CANVAS SPETTROGRAMMA E LAVAGNA */
     .viewport {
       position: relative;
       width: 100%;
@@ -365,7 +360,6 @@
       cursor: crosshair;
     }
 
-    /* NOTE A PIE' DI GRAFICO */
     .nota-footer {
       margin-top: 12px;
       display: flex;
@@ -440,7 +434,7 @@
   <!-- INTESTAZIONE E STATO IN ALTO A DESTRA -->
   <div class="top-bar">
     <header>
-      <span class="site-title">SPECTRA // CIPHER</span> — Terminale Acustico (9 Canali)
+      <span class="site-title">DECODER</span> — Terminale Acustico (9 Canali)
     </header>
     <div class="status-avviso" id="globalStatusText">Stato: Inattivo</div>
   </div>
@@ -1324,7 +1318,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `spectra-CH${activeTxCh}-${Date.now()}.wav`;
+      a.download = `decoder-CH${activeTxCh}-${Date.now()}.wav`;
       a.click();
       URL.revokeObjectURL(url);
       txStatusText.textContent = `File .wav CH ${activeTxCh} esportato`;
