@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SPECTRA // CIPHER — Terminale Acustico</title>
+  <title>SPECTRA // CIPHER 9-CH — Terminale Multi-Canale</title>
   <style>
     :root {
       --bg-void: #06080d;
       --bg-panel: #0d121c;
       --bg-card: #131a29;
       --border: #1e293b;
-      --border-glow: #0ea5e9;
       --cyan: #00f0ff;
       --cyan-dim: rgba(0, 240, 255, 0.14);
       --amber: #f59e0b;
+      --amber-dim: rgba(245, 158, 11, 0.16);
       --danger: #ef4444;
       --success: #10b981;
       --text-main: #e2e8f0;
@@ -29,8 +29,8 @@
       background-color: var(--bg-void);
       background-image:
         radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.06) 0%, transparent 55%),
-        linear-gradient(rgba(30, 41, 59, 0.25) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(30, 41, 59, 0.25) 1px, transparent 1px);
+        linear-gradient(rgba(30, 41, 59, 0.22) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(30, 41, 59, 0.22) 1px, transparent 1px);
       background-size: 100% 100%, 28px 28px, 28px 28px;
       color: var(--text-main);
       font-family: var(--font-sans);
@@ -38,20 +38,20 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 16px;
+      padding: 14px;
     }
 
     .app-shell {
       width: 100%;
-      max-width: 1120px;
+      max-width: 1160px;
       background: var(--bg-panel);
       border: 1px solid var(--border);
       border-radius: 14px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(0, 240, 255, 0.05);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 240, 255, 0.05);
       overflow: hidden;
     }
 
-    /* Header & Navigation Tabs */
+    /* Topbar & Tabs */
     .topbar {
       display: flex;
       flex-wrap: wrap;
@@ -59,7 +59,7 @@
       align-items: center;
       gap: 12px;
       padding: 14px 20px;
-      background: rgba(6, 8, 13, 0.7);
+      background: rgba(6, 8, 13, 0.8);
       border-bottom: 1px solid var(--border);
     }
 
@@ -70,9 +70,9 @@
       font-family: var(--font-mono);
       font-weight: 700;
       letter-spacing: 0.08em;
-      font-size: 1rem;
+      font-size: 0.98rem;
       color: var(--cyan);
-      text-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+      text-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
     }
 
     .status-dot {
@@ -80,7 +80,6 @@
       height: 9px;
       border-radius: 50%;
       background: #475569;
-      box-shadow: 0 0 6px #475569;
       transition: all 0.25s ease;
     }
     .status-dot.rx-active { background: var(--success); box-shadow: 0 0 10px var(--success); }
@@ -106,9 +105,6 @@
       border-radius: 7px;
       cursor: pointer;
       transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 7px;
     }
 
     .tab-btn:hover { color: var(--text-main); }
@@ -119,36 +115,78 @@
       box-shadow: inset 0 0 0 1px rgba(0, 240, 255, 0.35);
     }
 
-    /* Global Frequency Sync Bar */
-    .sync-bar {
+    /* Panels */
+    .panel { display: none; padding: 18px 20px 22px; }
+    .panel.active { display: block; }
+
+    /* Channel Selector Matrix */
+    .channel-bar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 10px 20px;
+      gap: 10px;
       background: var(--bg-card);
-      border-bottom: 1px solid var(--border);
-      font-size: 0.82rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
     }
 
-    .sync-group {
+    .channel-grid {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
-      gap: 12px;
+      gap: 6px;
     }
 
-    /* Tab Panels */
-    .panel { display: none; padding: 18px 20px 22px; }
-    .panel.active { display: block; }
+    .ch-pill {
+      background: var(--bg-void);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 11px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
 
-    /* Controls & Inputs */
+    .ch-pill:hover {
+      border-color: var(--cyan);
+      color: var(--text-main);
+    }
+
+    .ch-pill.selected {
+      background: var(--amber-dim);
+      border-color: var(--amber);
+      color: #fcd34d;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+    }
+
+    .ch-pill.rx-selected {
+      background: var(--cyan-dim);
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+    }
+
+    .freq-badge {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #fcd34d;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 5px 10px;
+      border-radius: 6px;
+    }
+
+    /* Toolbars & Controls */
     .toolbar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 14px;
     }
 
@@ -158,13 +196,13 @@
       gap: 8px;
       background: var(--bg-void);
       border: 1px solid var(--border);
-      padding: 6px 12px;
+      padding: 6px 11px;
       border-radius: 8px;
       font-size: 0.8rem;
       color: var(--text-muted);
     }
 
-    select, input[type="text"], input[type="number"] {
+    select, input[type="text"] {
       background: var(--bg-card);
       color: var(--text-main);
       border: 1px solid var(--border);
@@ -179,14 +217,14 @@
     input[type="range"] {
       accent-color: var(--cyan);
       cursor: pointer;
-      width: 90px;
+      width: 88px;
     }
 
     .btn {
       font-family: var(--font-mono);
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 700;
-      padding: 8px 15px;
+      padding: 8px 14px;
       border-radius: 8px;
       border: 1px solid transparent;
       cursor: pointer;
@@ -199,16 +237,16 @@
     .btn-primary {
       background: var(--cyan);
       color: #03131a;
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
+      box-shadow: 0 0 14px rgba(0, 240, 255, 0.25);
     }
     .btn-primary:hover { filter: brightness(1.1); }
 
     .btn-danger {
-      background: rgba(239, 68, 68, 0.15);
+      background: rgba(239, 68, 68, 0.16);
       color: #fca5a5;
       border-color: rgba(239, 68, 68, 0.5);
     }
-    .btn-danger:hover { background: rgba(239, 68, 68, 0.25); }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.28); }
 
     .btn-secondary {
       background: var(--bg-card);
@@ -217,7 +255,7 @@
     }
     .btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
     .btn-secondary.active-state {
-      background: rgba(245, 158, 11, 0.18);
+      background: var(--amber-dim);
       border-color: var(--amber);
       color: #fcd34d;
     }
@@ -226,7 +264,7 @@
     .viewport {
       position: relative;
       width: 100%;
-      height: 460px;
+      height: 510px;
       background: #020305;
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -244,23 +282,22 @@
 
     #overlayCanvas, #txScanCanvas { pointer-events: none; }
 
-    /* Drawing Canvas specific */
     .draw-viewport {
       height: auto;
-      aspect-ratio: 16 / 7;
-      min-height: 240px;
-      max-height: 420px;
-      touch-action: none; /* Impedisce lo scroll mentre si disegna col dito */
+      aspect-ratio: 16 / 6;
+      min-height: 220px;
+      max-height: 360px;
+      touch-action: none;
       cursor: crosshair;
     }
 
     .readout-badge {
       font-family: var(--font-mono);
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--cyan);
       background: rgba(0, 240, 255, 0.08);
       border: 1px solid rgba(0, 240, 255, 0.25);
-      padding: 5px 10px;
+      padding: 6px 10px;
       border-radius: 6px;
       margin-left: auto;
     }
@@ -274,7 +311,7 @@
       padding: 8px 12px;
       border-radius: 8px;
       border: 1px solid var(--border);
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .text-injector input[type="text"] {
@@ -295,8 +332,8 @@
       gap: 8px;
     }
 
-    @media (max-width: 640px) {
-      .viewport { height: 360px; }
+    @media (max-width: 680px) {
+      .viewport { height: 420px; }
       .readout-badge { margin-left: 0; width: 100%; text-align: center; }
     }
   </style>
@@ -308,48 +345,47 @@
   <div class="topbar">
     <div class="brand">
       <span class="status-dot" id="globalStatusDot"></span>
-      <span>SPECTRA // CIPHER</span>
+      <span>SPECTRA // CIPHER 9-CH</span>
     </div>
 
     <div class="tabs">
       <button class="tab-btn active" data-tab="rxPanel">📡 RICEVITORE (LIVE)</button>
-      <button class="tab-btn" data-tab="txPanel">🎛️ TRASMETTITORE (CODIFICA)</button>
-    </div>
-  </div>
-
-  <!-- BANDA SINCRONIZZATA TRA RX E TX -->
-  <div class="sync-bar">
-    <div class="sync-group">
-      <span style="color: var(--cyan); font-family: var(--font-mono); font-weight: 600;">CANALE OPERATIVO:</span>
-      <label class="control-chip">Banda Frequenze:
-        <select id="bandSelect">
-          <option value="public" selected>Spazio Pubblico (600 Hz – 8.5 kHz)</option>
-          <option value="stealth">Acuta / Discreta (3.5 kHz – 12.5 kHz)</option>
-          <option value="wide">Spettro Completo (100 Hz – 16 kHz)</option>
-        </select>
-      </label>
-      <label class="control-chip">Scala Asse Y:
-        <select id="scaleSelect">
-          <option value="linear" selected>Lineare (Testo 1:1 nitido)</option>
-          <option value="log">Logaritmica (Musicale)</option>
-        </select>
-      </label>
-    </div>
-    <div style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">
-      TX &amp; RX SINCRONIZZATI
+      <button class="tab-btn" data-tab="txPanel">🎛️ TRASMETTITORE (TX)</button>
     </div>
   </div>
 
   <!-- ==================== SCHEDA 1: RICEVITORE ==================== -->
   <div class="panel active" id="rxPanel">
+    <!-- Selettore modalità Radar / Singolo Canale -->
+    <div class="channel-bar">
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span style="font-family:var(--font-mono); font-size:0.78rem; color:var(--cyan); font-weight:700;">SINTONIA RX:</span>
+        <div class="channel-grid" id="rxChannelGrid">
+          <button class="ch-pill rx-selected" data-rx="all">RADAR (TUTTI 1–9)</button>
+          <button class="ch-pill" data-rx="1">CH 1</button>
+          <button class="ch-pill" data-rx="2">CH 2</button>
+          <button class="ch-pill" data-rx="3">CH 3</button>
+          <button class="ch-pill" data-rx="4">CH 4</button>
+          <button class="ch-pill" data-rx="5">CH 5</button>
+          <button class="ch-pill" data-rx="6">CH 6</button>
+          <button class="ch-pill" data-rx="7">CH 7</button>
+          <button class="ch-pill" data-rx="8">CH 8</button>
+          <button class="ch-pill" data-rx="9">CH 9</button>
+        </div>
+      </div>
+      <span class="freq-badge" id="rxBandBadge" style="color:var(--cyan); border-color:rgba(0,240,255,0.3); background:rgba(0,240,255,0.08);">
+        BANDA GLOBALE: 350 Hz – 12.1 kHz
+      </span>
+    </div>
+
     <div class="toolbar">
       <button class="btn btn-primary" id="rxToggleBtn">▶ AVVIA ASCOLTO</button>
       <button class="btn btn-secondary" id="rxFreezeBtn">⏸ CONGELA</button>
       <button class="btn btn-secondary" id="rxClearBtn">🧹 PULISCI</button>
 
       <label class="control-chip">Soglia Rumore:
-        <input type="range" id="minDbInput" min="-115" max="-45" value="-88">
-        <span id="minDbVal" style="font-family: var(--font-mono); min-width: 44px;">-88dB</span>
+        <input type="range" id="minDbInput" min="-115" max="-45" value="-86">
+        <span id="minDbVal" style="font-family:var(--font-mono); min-width:44px;">-86dB</span>
       </label>
 
       <label class="control-chip">Velocità:
@@ -377,16 +413,35 @@
     </div>
 
     <div class="hint-footer">
-      <span>Suggerimento: in ambienti rumorosi alza la <b>Soglia Rumore</b> (es. -72 dB) per isolare solo il messaggio.</span>
-      <span>Usa <b>CONGELA</b> per bloccare lo scorrimento e decifrare il testo.</span>
+      <span><b>RADAR (TUTTI 1–9):</b> mostra le 9 corsie impilate. <b>CH 1–9:</b> isola e ingrandisce un singolo giocatore.</span>
+      <span>Usa <b>CONGELA</b> per fermare lo scorrimento e decifrare i messaggi.</span>
     </div>
   </div>
 
   <!-- ==================== SCHEDA 2: TRASMETTITORE ==================== -->
   <div class="panel" id="txPanel">
+    <!-- Selettore Slot Canale TX -->
+    <div class="channel-bar">
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span style="font-family:var(--font-mono); font-size:0.78rem; color:var(--amber); font-weight:700;">CANALE TX ASSEGNATO:</span>
+        <div class="channel-grid" id="txChannelGrid">
+          <button class="ch-pill selected" data-tx="1">CH 1</button>
+          <button class="ch-pill" data-tx="2">CH 2</button>
+          <button class="ch-pill" data-tx="3">CH 3</button>
+          <button class="ch-pill" data-tx="4">CH 4</button>
+          <button class="ch-pill" data-tx="5">CH 5</button>
+          <button class="ch-pill" data-tx="6">CH 6</button>
+          <button class="ch-pill" data-tx="7">CH 7</button>
+          <button class="ch-pill" data-tx="8">CH 8</button>
+          <button class="ch-pill" data-tx="9">CH 9</button>
+        </div>
+      </div>
+      <span class="freq-badge" id="txBandBadge">CH 1: 500 Hz – 1.500 Hz</span>
+    </div>
+
     <div class="text-injector">
-      <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--cyan);">TESTO RAPIDO:</span>
-      <input type="text" id="secretTextInput" maxlength="24" placeholder="Es. CODICE 749 / NORD">
+      <span style="font-family:var(--font-mono); font-size:0.8rem; color:var(--cyan);">TESTO RAPIDO:</span>
+      <input type="text" id="secretTextInput" maxlength="20" placeholder="Es. PUNTO ALFA 42">
       <button class="btn btn-secondary" id="stampTextBtn">✍️ STAMPA SU LAVAGNA</button>
     </div>
 
@@ -395,68 +450,90 @@
       <button class="btn btn-secondary" id="txLoopBtn">🔁 LOOP: OFF</button>
       <button class="btn btn-secondary" id="txDownloadBtn">💾 SCARICA .WAV</button>
 
-      <label class="control-chip">Durata Scansione:
+      <label class="control-chip">Durata:
         <select id="durationSelect">
-          <option value="3">3 sec (Veloce)</option>
+          <option value="3">3 sec</option>
           <option value="5" selected>5 sec (Consigliata)</option>
-          <option value="8">8 sec (Alta leggibilità)</option>
+          <option value="8">8 sec</option>
         </select>
       </label>
 
       <label class="control-chip">Pennello:
         <select id="brushSelect">
           <option value="5">Sottile</option>
-          <option value="10" selected>Medio</option>
+          <option value="11" selected>Medio</option>
           <option value="18">Spesso</option>
           <option value="eraser">Gomma</option>
         </select>
       </label>
 
-      <button class="btn btn-danger" id="txClearBtn" style="margin-left: auto;">🗑️ SVUOTA</button>
+      <button class="btn btn-danger" id="txClearBtn" style="margin-left:auto;">🗑️ SVUOTA</button>
     </div>
 
     <div class="viewport draw-viewport" id="txWrapper">
-      <canvas id="drawCanvas" width="640" height="280"></canvas>
-      <canvas id="txScanCanvas" width="640" height="280"></canvas>
+      <canvas id="drawCanvas" width="640" height="240"></canvas>
+      <canvas id="txScanCanvas" width="640" height="240"></canvas>
     </div>
 
     <div class="hint-footer">
-      <span>Disegna col dito o col mouse sulla lavagna nera: l'asse verticale corrisponde alle frequenze, quello orizzontale al tempo.</span>
-      <span id="txStatusText" style="font-family: var(--font-mono); color: var(--amber);">PRONTO ALLA CODIFICA</span>
+      <span>Tieni il volume dello smartphone al <b>75–80%</b> per evitare armoniche fantasma sui canali superiori.</span>
+      <span id="txStatusText" style="font-family:var(--font-mono); color:var(--amber);">PRONTO SU CH 1</span>
     </div>
   </div>
 </div>
 
 <script>
 (() => {
-  /* ==================== CONFIGURAZIONE CONDIVISA ==================== */
-  const BANDS = {
-    public:  { min: 600,  max: 8500 },
-    stealth: { min: 3500, max: 12500 },
-    wide:    { min: 100,  max: 16000 }
-  };
+  /* ==================== DEFINIZIONE 9 CANALI FDMA ==================== */
+  // 9 canali larghi 1000 Hz separati da 300 Hz di banda di guardia
+  const CHANNELS = Array.from({ length: 9 }, (_, idx) => {
+    const id = idx + 1;
+    const min = 500 + idx * 1300;
+    const max = min + 1000;
+    return { id, min, max };
+  });
 
-  let currentBand = BANDS.public;
-  let scaleMode = 'linear'; // 'linear' | 'log'
+  const GLOBAL_RX_MIN = 350;
+  const GLOBAL_RX_MAX = 12050;
   const MAX_DB = -18;
 
-  // Mappatura Y (0 = alto/maxFreq, height-1 = basso/minFreq) identica per RX e TX
-  function yToFreq(y, height) {
-    const normY = 1 - (y / Math.max(1, height - 1));
-    if (scaleMode === 'log') {
-      return currentBand.min * Math.pow(currentBand.max / currentBand.min, normY);
+  // Lettura eventuale parametro URL ?ch=1..9
+  const urlCh = parseInt(new URLSearchParams(window.location.search).get('ch'), 10);
+  let activeTxCh = (urlCh >= 1 && urlCh <= 9) ? urlCh : 1;
+  let rxMode = 'all'; // 'all' | '1'..'9'
+
+  function getRxBounds() {
+    if (rxMode === 'all') {
+      return { min: GLOBAL_RX_MIN, max: GLOBAL_RX_MAX };
     }
-    return currentBand.min + normY * (currentBand.max - currentBand.min);
+    const ch = CHANNELS[parseInt(rxMode, 10) - 1];
+    // Piccolo margine superiore/inferiore di 60 Hz per non tagliare i bordi del testo
+    return { min: ch.min - 60, max: ch.max + 60 };
   }
 
-  function freqToY(freq, height) {
-    let normY;
-    if (scaleMode === 'log') {
-      normY = Math.log(freq / currentBand.min) / Math.log(currentBand.max / currentBand.min);
-    } else {
-      normY = (freq - currentBand.min) / (currentBand.max - currentBand.min);
-    }
+  function rxYToFreq(y, height) {
+    const { min, max } = getRxBounds();
+    const normY = 1 - (y / Math.max(1, height - 1));
+    return min + normY * (max - min);
+  }
+
+  function rxFreqToY(freq, height) {
+    const { min, max } = getRxBounds();
+    const normY = (freq - min) / (max - min);
     return (1 - normY) * (height - 1);
+  }
+
+  function txYToFreq(y, height) {
+    const ch = CHANNELS[activeTxCh - 1];
+    const normY = 1 - (y / Math.max(1, height - 1));
+    return ch.min + normY * (ch.max - ch.min);
+  }
+
+  function findChannelAtFreq(freq) {
+    for (const ch of CHANNELS) {
+      if (freq >= ch.min && freq <= ch.max) return ch;
+    }
+    return null;
   }
 
   /* ==================== GESTIONE SCHEDE (TABS) ==================== */
@@ -474,22 +551,7 @@
     });
   });
 
-  const bandSelect = document.getElementById('bandSelect');
-  const scaleSelect = document.getElementById('scaleSelect');
-
-  bandSelect.addEventListener('change', () => {
-    currentBand = BANDS[bandSelect.value];
-    drawRxGrid(null, null);
-    drawTxGuideGrid();
-  });
-
-  scaleSelect.addEventListener('change', () => {
-    scaleMode = scaleSelect.value;
-    drawRxGrid(null, null);
-    drawTxGuideGrid();
-  });
-
-  /* ==================== PALETTE COLORI (LUT 256) ==================== */
+  /* ==================== PALETTE COLORI ==================== */
   const PALETTES = {
     inferno: [
       [0.0, [2, 3, 6]],
@@ -515,7 +577,7 @@
     ]
   };
 
-  let colorLUT = new Uint8Array(256 * 3);
+  const colorLUT = new Uint8Array(256 * 3);
   function buildColorLUT(name) {
     const stops = PALETTES[name] || PALETTES.inferno;
     for (let i = 0; i < 256; i++) {
@@ -538,6 +600,8 @@
 
   /* ==================== MODULO 1: RICEVITORE (RX) ==================== */
   const globalStatusDot = document.getElementById('globalStatusDot');
+  const rxChannelGrid = document.getElementById('rxChannelGrid');
+  const rxBandBadge = document.getElementById('rxBandBadge');
   const rxToggleBtn = document.getElementById('rxToggleBtn');
   const rxFreezeBtn = document.getElementById('rxFreezeBtn');
   const rxClearBtn = document.getElementById('rxClearBtn');
@@ -559,6 +623,30 @@
   let rxFreqData = null;
   let rxFrozen = false;
   let lastColumnDb = null;
+
+  function clearRxWaterfall() {
+    specCtx.fillStyle = '#020305';
+    specCtx.fillRect(0, 0, specCanvas.width, specCanvas.height);
+  }
+
+  rxChannelGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.ch-pill');
+    if (!btn) return;
+    rxMode = btn.dataset.rx;
+
+    rxChannelGrid.querySelectorAll('.ch-pill').forEach(b => b.classList.remove('rx-selected'));
+    btn.classList.add('rx-selected');
+
+    if (rxMode === 'all') {
+      rxBandBadge.textContent = 'BANDA GLOBALE: 350 Hz – 12.1 kHz';
+    } else {
+      const ch = CHANNELS[parseInt(rxMode, 10) - 1];
+      rxBandBadge.textContent = `ZOOM CH ${ch.id}: ${ch.min} Hz – ${ch.max} Hz`;
+    }
+
+    clearRxWaterfall();
+    drawRxGrid(null, null);
+  });
 
   minDbInput.addEventListener('input', () => {
     minDbVal.textContent = `${minDbInput.value}dB`;
@@ -583,31 +671,82 @@
     const w = overlayCanvas.width;
     const h = overlayCanvas.height;
     overCtx.clearRect(0, 0, w, h);
-
-    // Calcola 7 tacche equidistanti visivamente sull'asse Y
-    const steps = 6;
-    overCtx.font = '11px monospace';
+    overCtx.font = 'bold 11px monospace';
     overCtx.textBaseline = 'middle';
 
-    for (let i = 1; i < steps; i++) {
-      const y = Math.round((i / steps) * h) + 0.5;
-      const freq = yToFreq(y, h);
+    if (rxMode === 'all') {
+      // Disegna le 9 corsie separate e le bande di guardia
+      CHANNELS.forEach((ch, idx) => {
+        const yTop = Math.round(rxFreqToY(ch.max, h)) + 0.5;
+        const yBot = Math.round(rxFreqToY(ch.min, h)) + 0.5;
+        const yMid = (yTop + yBot) / 2;
 
-      overCtx.strokeStyle = 'rgba(0, 240, 255, 0.14)';
+        // Evidenzia banda di guardia sopra ogni canale (tranne CH 9)
+        if (idx < CHANNELS.length - 1) {
+          const nextCh = CHANNELS[idx + 1];
+          const yGuardTop = rxFreqToY(nextCh.min, h);
+          overCtx.fillStyle = 'rgba(239, 68, 68, 0.08)';
+          overCtx.fillRect(0, yGuardTop, w, yTop - yGuardTop);
+        }
+
+        // Linee di confine del canale
+        overCtx.strokeStyle = 'rgba(0, 240, 255, 0.22)';
+        overCtx.setLineDash([4, 4]);
+        overCtx.beginPath();
+        overCtx.moveTo(0, yTop);
+        overCtx.lineTo(w, yTop);
+        overCtx.moveTo(0, yBot);
+        overCtx.lineTo(w, yBot);
+        overCtx.stroke();
+        overCtx.setLineDash([]);
+
+        // Etichetta corsia a sinistra
+        const tag = `CH ${ch.id}`;
+        overCtx.fillStyle = 'rgba(6, 8, 13, 0.82)';
+        overCtx.fillRect(6, yMid - 9, 44, 18);
+        overCtx.strokeStyle = 'rgba(0, 240, 255, 0.35)';
+        overCtx.strokeRect(6, yMid - 9, 44, 18);
+        overCtx.fillStyle = '#00f0ff';
+        overCtx.fillText(tag, 13, yMid);
+      });
+    } else {
+      // Vista singolo canale ingrandito
+      const ch = CHANNELS[parseInt(rxMode, 10) - 1];
+      const yTop = Math.round(rxFreqToY(ch.max, h)) + 0.5;
+      const yBot = Math.round(rxFreqToY(ch.min, h)) + 0.5;
+      const yMid = Math.round(rxFreqToY((ch.min + ch.max) / 2, h)) + 0.5;
+
+      // Zone fuori banda oscurate
+      overCtx.fillStyle = 'rgba(239, 68, 68, 0.14)';
+      overCtx.fillRect(0, 0, w, yTop);
+      overCtx.fillRect(0, yBot, w, h - yBot);
+
+      overCtx.strokeStyle = 'rgba(245, 158, 11, 0.55)';
       overCtx.beginPath();
-      overCtx.moveTo(0, y);
-      overCtx.lineTo(w, y);
+      overCtx.moveTo(0, yTop); overCtx.lineTo(w, yTop);
+      overCtx.moveTo(0, yBot); overCtx.lineTo(w, yBot);
       overCtx.stroke();
 
-      const label = freq >= 1000 ? `${(freq / 1000).toFixed(1)} kHz` : `${Math.round(freq)} Hz`;
-      overCtx.fillStyle = 'rgba(6, 8, 13, 0.78)';
-      overCtx.fillRect(8, y - 9, 62, 18);
-      overCtx.fillStyle = '#94a3b8';
-      overCtx.fillText(label, 12, y);
+      overCtx.strokeStyle = 'rgba(0, 240, 255, 0.16)';
+      overCtx.setLineDash([5, 5]);
+      overCtx.beginPath();
+      overCtx.moveTo(0, yMid); overCtx.lineTo(w, yMid);
+      overCtx.stroke();
+      overCtx.setLineDash([]);
+
+      overCtx.fillStyle = 'rgba(6, 8, 13, 0.8)';
+      overCtx.fillRect(8, yTop + 6, 115, 18);
+      overCtx.fillStyle = '#fcd34d';
+      overCtx.fillText(`MAX ${ch.max} Hz`, 14, yTop + 15);
+
+      overCtx.fillStyle = 'rgba(6, 8, 13, 0.8)';
+      overCtx.fillRect(8, yBot - 24, 115, 18);
+      overCtx.fillStyle = '#fcd34d';
+      overCtx.fillText(`MIN ${ch.min} Hz`, 14, yBot - 15);
     }
 
     if (mouseX !== null && mouseY !== null) {
-      overCtx.strokeStyle = 'rgba(0, 240, 255, 0.8)';
+      overCtx.strokeStyle = 'rgba(0, 240, 255, 0.85)';
       overCtx.beginPath();
       overCtx.moveTo(0, mouseY + 0.5);
       overCtx.lineTo(w, mouseY + 0.5);
@@ -636,7 +775,7 @@
     const pixels = colImage.data;
 
     for (let y = 0; y < h; y++) {
-      const freq = yToFreq(y, h);
+      const freq = rxYToFreq(y, h);
       const exactBin = (freq / nyquist) * (binCount - 1);
       const b0 = Math.max(0, Math.min(binCount - 1, Math.floor(exactBin)));
       const b1 = Math.min(binCount - 1, b0 + 1);
@@ -675,7 +814,8 @@
       const source = rxAudioCtx.createMediaStreamSource(rxStream);
 
       rxAnalyser = rxAudioCtx.createAnalyser();
-      rxAnalyser.fftSize = 8192;
+      // 16384 campioni garantiscono ~2.9 Hz per bin: ~340 righe distinte per singolo canale
+      rxAnalyser.fftSize = 16384;
       rxAnalyser.smoothingTimeConstant = 0;
 
       rxFreqData = new Float32Array(rxAnalyser.frequencyBinCount);
@@ -718,18 +858,17 @@
     rxReadout.textContent = rxFrozen ? 'SCHERMO CONGELATO' : 'IN ASCOLTO ATTIVO...';
   });
 
-  rxClearBtn.addEventListener('click', () => {
-    specCtx.fillStyle = '#020305';
-    specCtx.fillRect(0, 0, specCanvas.width, specCanvas.height);
-  });
+  rxClearBtn.addEventListener('click', clearRxWaterfall);
 
   rxWrapper.addEventListener('mousemove', (e) => {
     const rect = rxWrapper.getBoundingClientRect();
     const x = Math.floor(e.clientX - rect.left);
     const y = Math.floor(e.clientY - rect.top);
-    const freq = yToFreq(y, overlayCanvas.height);
+    const freq = rxYToFreq(y, overlayCanvas.height);
     const db = lastColumnDb ? lastColumnDb[y] : -120;
-    rxReadout.textContent = `${freq >= 1000 ? (freq / 1000).toFixed(2) + ' kHz' : Math.round(freq) + ' Hz'} | ${db.toFixed(1)} dB`;
+    const ch = findChannelAtFreq(freq);
+    const chLabel = ch ? `CH ${ch.id}` : 'GUARDIA';
+    rxReadout.textContent = `[${chLabel}] ${Math.round(freq)} Hz | ${db.toFixed(1)} dB`;
     drawRxGrid(x, y);
   });
 
@@ -738,6 +877,8 @@
   });
 
   /* ==================== MODULO 2: TRASMETTITORE (TX) ==================== */
+  const txChannelGrid = document.getElementById('txChannelGrid');
+  const txBandBadge = document.getElementById('txBandBadge');
   const drawCanvas = document.getElementById('drawCanvas');
   const txScanCanvas = document.getElementById('txScanCanvas');
   const drawCtx = drawCanvas.getContext('2d');
@@ -760,6 +901,24 @@
   let txLooping = false;
   let txAnimId = null;
 
+  function setTxChannel(chNum) {
+    activeTxCh = chNum;
+    const ch = CHANNELS[chNum - 1];
+    txChannelGrid.querySelectorAll('.ch-pill').forEach(b => {
+      b.classList.toggle('selected', parseInt(b.dataset.tx, 10) === chNum);
+    });
+    txBandBadge.textContent = `CH ${ch.id}: ${ch.min} Hz – ${ch.max} Hz`;
+    txStatusText.textContent = `PRONTO SU CH ${ch.id}`;
+    drawTxGuideGrid();
+  }
+
+  txChannelGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.ch-pill');
+    if (!btn) return;
+    stopTxPlayback();
+    setTxChannel(parseInt(btn.dataset.tx, 10));
+  });
+
   function clearDrawBoard() {
     drawCtx.fillStyle = '#000000';
     drawCtx.fillRect(0, 0, drawCanvas.width, drawCanvas.height);
@@ -771,24 +930,23 @@
     const h = txScanCanvas.height;
     scanCtx.clearRect(0, 0, w, h);
 
-    // Linee guida frequenza e margini di sicurezza
-    scanCtx.strokeStyle = 'rgba(0, 240, 255, 0.14)';
+    scanCtx.strokeStyle = 'rgba(245, 158, 11, 0.16)';
     scanCtx.font = '11px monospace';
-    scanCtx.fillStyle = 'rgba(148, 163, 184, 0.75)';
+    scanCtx.fillStyle = 'rgba(252, 211, 77, 0.75)';
 
-    [0.2, 0.5, 0.8].forEach(ratio => {
+    [0.15, 0.5, 0.85].forEach(ratio => {
       const y = Math.round(ratio * h) + 0.5;
-      const f = yToFreq(y, h);
+      const f = txYToFreq(y, h);
       scanCtx.beginPath();
       scanCtx.moveTo(0, y);
       scanCtx.lineTo(w, y);
       scanCtx.stroke();
-      scanCtx.fillText(f >= 1000 ? `${(f / 1000).toFixed(1)}kHz` : `${Math.round(f)}Hz`, 8, y - 4);
+      scanCtx.fillText(`${Math.round(f)} Hz`, 8, y - 4);
     });
   }
-  drawTxGuideGrid();
 
-  // Disegno con Pointer Events (Mouse + Dito Touchscreen)
+  setTxChannel(activeTxCh);
+
   function getCanvasCoords(e) {
     const rect = drawCanvas.getBoundingClientRect();
     return {
@@ -828,7 +986,7 @@
     } else {
       drawCtx.strokeStyle = '#ffffff';
       drawCtx.lineWidth = parseInt(mode, 10);
-      drawCtx.shadowColor = '#00f0ff';
+      drawCtx.shadowColor = '#f59e0b';
       drawCtx.shadowBlur = 4;
     }
 
@@ -839,7 +997,6 @@
     drawCtx.shadowBlur = 0;
   }
 
-  // Stampa testo ad alto contrasto sulla lavagna
   stampTextBtn.addEventListener('click', () => {
     const text = secretTextInput.value.trim().toUpperCase();
     if (!text) return;
@@ -848,10 +1005,9 @@
     const w = drawCanvas.width;
     const h = drawCanvas.height;
 
-    // Adatta automaticamente la dimensione del font alla larghezza della lavagna
-    let fontSize = 110;
+    let fontSize = 105;
     drawCtx.font = `900 ${fontSize}px monospace`;
-    while (drawCtx.measureText(text).width > w * 0.86 && fontSize > 24) {
+    while (drawCtx.measureText(text).width > w * 0.86 && fontSize > 22) {
       fontSize -= 4;
       drawCtx.font = `900 ${fontSize}px monospace`;
     }
@@ -860,47 +1016,45 @@
     drawCtx.textAlign = 'center';
     drawCtx.textBaseline = 'middle';
     drawCtx.fillText(text, w / 2, h / 2);
-    txStatusText.textContent = `TESTO "${text}" PRONTO`;
+    txStatusText.textContent = `TESTO "${text}" SU CH ${activeTxCh}`;
   });
 
   txClearBtn.addEventListener('click', () => {
     stopTxPlayback();
     clearDrawBoard();
-    txStatusText.textContent = 'LAVAGNA PULITA';
+    txStatusText.textContent = `LAVAGNA PULITA (CH ${activeTxCh})`;
   });
 
-  /* ==================== SINTESI AUDIO DALL'IMMAGINE ==================== */
+  /* ==================== SINTESI AUDIO NELLO SLOT SELEZIONATO ==================== */
   function synthesizeCanvasToSamples(sampleRate, durationSec) {
     const W = drawCanvas.width;
     const H = drawCanvas.height;
     const imgData = drawCtx.getImageData(0, 0, W, H).data;
 
-    // Campioniamo 140 bande verticali (ogni 2px) e 160 colonne temporali (ogni 4px)
-    const numRows = Math.floor(H / 2);
+    // 80 bande verticali dentro i 1000 Hz del canale (~12.5 Hz di passo)
+    const numRows = Math.floor(H / 3);
     const numCols = Math.floor(W / 4);
     const activeOscillators = [];
 
     for (let r = 0; r < numRows; r++) {
-      const y = r * 2 + 1;
+      const y = r * 3 + 1;
       const rowAmps = new Float32Array(numCols);
       let hasEnergy = false;
 
       for (let c = 0; c < numCols; c++) {
         const x = c * 4 + 2;
         const idx = (y * W + x) * 4;
-        // Luminosità normalizzata [0..1]
         const brightness = (imgData[idx] + imgData[idx + 1] + imgData[idx + 2]) / (3 * 255);
         if (brightness > 0.06) {
-          // Curva gamma per rendere nitidi i tratti sullo spettrogramma
           rowAmps[c] = Math.pow(brightness, 1.3);
           hasEnergy = true;
         }
       }
 
       if (hasEnergy) {
-        const freq = yToFreq(y, H);
+        const freq = txYToFreq(y, H);
         const omega = (2 * Math.PI * freq) / sampleRate;
-        const phase0 = Math.random() * 2 * Math.PI; // Fase casuale evita picchi di clipping
+        const phase0 = Math.random() * 2 * Math.PI;
         activeOscillators.push({
           amps: rowAmps,
           cosW: Math.cos(omega),
@@ -913,10 +1067,9 @@
 
     const totalSamples = Math.floor(sampleRate * durationSec);
     const out = new Float32Array(totalSamples);
-
     if (activeOscillators.length === 0) return out;
 
-    const fadeSamples = Math.floor(sampleRate * 0.025); // 25ms fade-in/out anti-click
+    const fadeSamples = Math.floor(sampleRate * 0.025);
 
     for (let i = 0; i < totalSamples; i++) {
       const pos = (i / totalSamples) * (numCols - 1);
@@ -931,14 +1084,12 @@
         if (amp > 0.002) {
           sample += amp * osc.im;
         }
-        // Rotazione fasore ultra-rapida senza Math.sin nel loop interno
         const nextRe = osc.re * osc.cosW - osc.im * osc.sinW;
         const nextIm = osc.re * osc.sinW + osc.im * osc.cosW;
         osc.re = nextRe;
         osc.im = nextIm;
       }
 
-      // Rinormalizzazione periodica del fasore per stabilità numerica
       if ((i & 1023) === 1023) {
         for (let k = 0; k < activeOscillators.length; k++) {
           const osc = activeOscillators[k];
@@ -948,7 +1099,6 @@
         }
       }
 
-      // Envelope anti-click
       let env = 1;
       if (i < fadeSamples) env = i / fadeSamples;
       else if (i > totalSamples - fadeSamples) env = (totalSamples - i) / fadeSamples;
@@ -956,14 +1106,13 @@
       out[i] = sample * env;
     }
 
-    // Normalizzazione picco al 90%
     let maxVal = 0;
     for (let i = 0; i < totalSamples; i++) {
       const abs = Math.abs(out[i]);
       if (abs > maxVal) maxVal = abs;
     }
     if (maxVal > 0) {
-      const gain = 0.9 / maxVal;
+      const gain = 0.85 / maxVal;
       for (let i = 0; i < totalSamples; i++) out[i] *= gain;
     }
 
@@ -986,7 +1135,7 @@
   txPlayBtn.addEventListener('click', async () => {
     if (txSourceNode) {
       stopTxPlayback();
-      txStatusText.textContent = 'TRASMISSIONE INTERROTTA';
+      txStatusText.textContent = `TRASMISSIONE INTERROTTA (CH ${activeTxCh})`;
       return;
     }
 
@@ -996,8 +1145,6 @@
     if (txAudioCtx.state === 'suspended') await txAudioCtx.resume();
 
     const duration = parseFloat(durationSelect.value);
-    txStatusText.textContent = 'CODIFICA IN CORSO...';
-
     const samples = synthesizeCanvasToSamples(txAudioCtx.sampleRate, duration);
     const audioBuffer = txAudioCtx.createBuffer(1, samples.length, txAudioCtx.sampleRate);
     audioBuffer.copyToChannel(samples, 0);
@@ -1014,16 +1161,15 @@
     txPlayBtn.classList.remove('btn-primary');
     txPlayBtn.classList.add('btn-danger');
     globalStatusDot.classList.add('tx-active');
-    txStatusText.textContent = txLooping ? 'TRASMISSIONE IN LOOP...' : 'TRASMISSIONE ATTIVA...';
+    txStatusText.textContent = `IN ONDA SU CH ${activeTxCh}...`;
 
     txSourceNode.onended = () => {
       if (!txLooping) {
         stopTxPlayback();
-        txStatusText.textContent = 'TRASMISSIONE COMPLETATA';
+        txStatusText.textContent = `TRASMISSIONE COMPLETATA (CH ${activeTxCh})`;
       }
     };
 
-    // Animazione barra laser di scansione orizzontale
     function animateScanner() {
       if (!txSourceNode) return;
       const elapsed = txAudioCtx.currentTime - startTime;
@@ -1055,7 +1201,6 @@
     if (txSourceNode) txSourceNode.loop = txLooping;
   });
 
-  // Esportazione diretta in file .WAV PCM 16-bit
   txDownloadBtn.addEventListener('click', () => {
     const sampleRate = 44100;
     const duration = parseFloat(durationSelect.value);
@@ -1091,10 +1236,10 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `messaggio-criptato-${Date.now()}.wav`;
+    a.download = `spectra-CH${activeTxCh}-${Date.now()}.wav`;
     a.click();
     URL.revokeObjectURL(url);
-    txStatusText.textContent = 'FILE .WAV ESPORTATO';
+    txStatusText.textContent = `FILE .WAV CH ${activeTxCh} ESPORTATO`;
   });
 
   window.addEventListener('resize', resizeRxCanvases);
