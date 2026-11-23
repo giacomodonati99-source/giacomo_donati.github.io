@@ -560,4 +560,770 @@
 
       <div class="nota-footer">
         <span>Il file .WAV include 0,25s di silenzio iniziale e finale per facilitare il montaggio con le registrazioni ambientali.</span>
-        <span class="nota-sottoline
+        <span class="nota-sottolineata">Scala lineare 1:1 — Nessuna deformazione geometrica</span>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Elaborazione locale nel browser — Nessun dato audio o immagine inviato a server esterni.
+  </footer>
+
+  <script>
+  (() => {
+    /* ==================== PROFILI BANDA ACUSTICA ==================== */
+    const PROFILES = {
+      horn:     { min: 550, max: 6200, label: 'Tromba / Megafono' },
+      extended: { min: 300, max: 10000, label: 'Spettro Esteso' }
+    };
+
+    let currentProfile = PROFILES.horn;
+
+    function yToFreq(y, height) {
+      const normY = 1 - (y / Math.max(1, height - 1));
+      return currentProfile.min + normY * (currentProfile.max - currentProfile.min);
+    }
+
+    function freqToY(freq, height) {
+      const normY = (freq - currentProfile.min) / (currentProfile.max - currentProfile.min);
+      return (1 - normY) * (height - 1);
+    }
+
+    /* ==================== NAVIGAZIONE SCHEDE ==================== */
+    const tabLinks = document.querySelectorAll('nav a[data-tab]');
+    const panels = document.querySelectorAll('.panel');
+    const bandProfileSelect = document.getElementById('bandProfileSelect');
+
+    tabLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        tabLinks.forEach(l => l.classList.remove('attivo'));
+        panels.forEach(p => p.classList.remove('active'));
+        link.classList.add('attivo');
+        document.getElementById(link.dataset.tab).classList.add('active');
+        if (link.dataset.tab === 'rxPanel') resizeRxCanvases();
+        else drawTxGrid();
+      });
+    });
+
+    bandProfileSelect.addEventListener('change', () => {
+      currentProfile = PROFILES[bandProfileSelect.value];
+      clearRxWaterfall();
+      drawRxGrid(null, null);
+      drawTxGrid();
+    });
+
+    /* ==================== PALETTE COLORI (LUT 256) ==================== */
+    const PALETTES = {
+      inferno: [
+        [0.0,  [2, 3, 6]],
+        [0.18, [36, 10, 78]],
+        [0.42, [118, 26, 108]],
+        [0.68, [206, 62, 70]],
+        [0.86, [249, 138, 18]],
+        [1.0,  [253, 255, 185]]
+      ],
+      mono: [
+        [0.0,  [2, 3, 6]],
+        [0.25, [35, 42, 54]],
+        [0.55, [125, 138, 155]],
+        [0.82, [215, 224, 235]],
+        [1.0,  [255, 255, 255]]
+      ],
+      cyber: [
+        [0.0,  [2, 5, 10]],
+        [0.28, [6, 42, 76]],
+        [0.58, [0, 136, 182]],
+        [0.84, [0, 240, 255]],
+        [1.0,  [240, 255, 255]]
+      ]
+    };
+
+    const colorLUT = new Uint8Array(256 * 3);
+    function buildColorLUT(name) {
+      const stops = PALETTES[name] || PALETTES.inferno;
+      for (let i = 0; i < 256; i++) {
+        const t = i / 255;
+        let s0 = stops[0], s1 = stops[stops.length - 1];
+        for (let j = 0; j < stops.length - 1; j++) {
+          if (t >= stops[j][0] && t <= stops[j + 1][0]) {
+            s0 = stops[j];
+            s1 = stops[j + 1];
+            break;
+          }
+        }
+        const f = (t - s0[0]) / (s1[0] - s0[0] || 1);
+        colorLUT[i * 3]     = Math.round(s0[1][0] + f * (s1[1][0] - s0[1][0]));
+        colorLUT[i * 3 + 1] = Math.round(s0[1][1] + f * (s1[1][1] - s0[1][1]));
+        colorLUT[i * 3 + 2] = Math.round(s0[1][2] + f * (s1[1][2] - s0[1][2]));
+      }
+    }
+    buildColorLUT('inferno');
+
+    /* ==================== MODULO 1: SPETTROGRAMMA LIVE (RX) ==================== */
+    const globalStatusText = document.getElementById('globalStatusText');
+    const rxToggleBtn = document.getElementById('rxToggleBtn');
+    const rxFreezeBtn = document.getElementById('rxFreezeBtn');
+    const rxSnapshotBtn = document.getElementById('rxSnapshotBtn');
+    const rxClearBtn = document.getElementById('rxClearBtn');
+    const minDbInput = document.getElementById('minDbInput');
+    const minDbVal = document.getElementById('minDbVal');
+    const contrastInput = document.getElementById('contrastInput');
+    const contrastVal = document.getElementById('contrastVal');
+    const fftSelect = document.getElementById('fftSelect');
+    const speedSelect = document.getElementById('speedSelect');
+    const paletteSelect = document.getElementById('paletteSelect');
+    const rxReadout = document.getElementById('rxReadout');
+    const rxWrapper = document.getElementById('rxWrapper');
+    const specCanvas = document.getElementById('specCanvas');
+    const overlayCanvas = document.getElementById('overlayCanvas');
+    const specCtx = specCanvas.getContext('2d', { alpha: false });
+    const overCtx = overlayCanvas.getContext('2d');
+
+    let rxAudioCtx = null;
+    let rxAnalyser = null;
+    let rxStream = null;
+    let rxAnimId = null;
+    let rxFreqData = null;
+    let rxFrozen = false;
+    let lastColumnDb = null;
+
+    function updateGlobalStatus() {
+      if (txSourceNode) {
+        globalStatusText.textContent = 'Stato: Riproduzione anteprima';
+        globalStatusText.className = 'status-avviso tx-active';
+      } else if (rxAudioCtx) {
+        globalStatusText.textContent = rxFrozen ? 'Stato: Fotogramma congelato' : 'Stato: Ascolto in diretta';
+        globalStatusText.className = 'status-avviso rx-active';
+      } else {
+        globalStatusText.textContent = 'Stato: Inattivo';
+        globalStatusText.className = 'status-avviso';
+      }
+    }
+
+    function clearRxWaterfall() {
+      specCtx.fillStyle = '#020305';
+      specCtx.fillRect(0, 0, specCanvas.width, specCanvas.height);
+    }
+
+    minDbInput.addEventListener('input', () => {
+      minDbVal.textContent = `${minDbInput.value} dB`;
+    });
+
+    contrastInput.addEventListener('input', () => {
+      contrastVal.textContent = `${contrastInput.value} dB`;
+    });
+
+    paletteSelect.addEventListener('change', () => {
+      buildColorLUT(paletteSelect.value);
+    });
+
+    fftSelect.addEventListener('change', () => {
+      if (rxAnalyser) {
+        rxAnalyser.fftSize = parseInt(fftSelect.value, 10);
+        rxFreqData = new Float32Array(rxAnalyser.frequencyBinCount);
+      }
+    });
+
+    function resizeRxCanvases() {
+      const rect = rxWrapper.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      specCanvas.width = Math.floor(rect.width * dpr);
+      specCanvas.height = Math.floor(rect.height * dpr);
+      overlayCanvas.width = specCanvas.width;
+      overlayCanvas.height = specCanvas.height;
+      lastColumnDb = new Float32Array(specCanvas.height).fill(-120);
+      clearRxWaterfall();
+      drawRxGrid(null, null);
+    }
+
+    function drawRxGrid(mouseX, mouseY) {
+      const w = overlayCanvas.width;
+      const h = overlayCanvas.height;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      overCtx.clearRect(0, 0, w, h);
+
+      const fontSize = Math.round(10.5 * dpr);
+      overCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
+      overCtx.textBaseline = 'middle';
+
+      const steps = 6;
+      for (let i = 1; i < steps; i++) {
+        const y = Math.round((i / steps) * h) + 0.5;
+        const freq = yToFreq(y, h);
+
+        overCtx.strokeStyle = 'rgba(226, 232, 240, 0.14)';
+        overCtx.lineWidth = 1;
+        overCtx.beginPath();
+        overCtx.moveTo(0, y);
+        overCtx.lineTo(w, y);
+        overCtx.stroke();
+
+        const label = freq >= 1000 ? `${(freq / 1000).toFixed(1)} kHz` : `${Math.round(freq)} Hz`;
+        const padX = 8 * dpr;
+        const boxW = 58 * dpr;
+        const boxH = 18 * dpr;
+        overCtx.fillStyle = 'rgba(6, 8, 13, 0.82)';
+        overCtx.fillRect(padX, y - boxH / 2, boxW, boxH);
+        overCtx.fillStyle = '#94a3b8';
+        overCtx.fillText(label, padX + 5 * dpr, y);
+      }
+
+      if (mouseX !== null && mouseY !== null) {
+        overCtx.strokeStyle = 'rgba(0, 240, 255, 0.75)';
+        overCtx.lineWidth = 1;
+        overCtx.beginPath();
+        overCtx.moveTo(0, mouseY + 0.5);
+        overCtx.lineTo(w, mouseY + 0.5);
+        overCtx.moveTo(mouseX + 0.5, 0);
+        overCtx.lineTo(mouseX + 0.5, h);
+        overCtx.stroke();
+      }
+    }
+
+    function rxRenderLoop() {
+      if (!rxAnalyser) return;
+      rxAnimId = requestAnimationFrame(rxRenderLoop);
+      if (rxFrozen) return;
+
+      const w = specCanvas.width;
+      const h = specCanvas.height;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const minDb = parseFloat(minDbInput.value);
+      const spanDb = parseFloat(contrastInput.value);
+      const maxDb = minDb + spanDb;
+      const nyquist = rxAudioCtx.sampleRate / 2;
+      const binCount = rxAnalyser.frequencyBinCount;
+      const stepX = Math.max(1, Math.round(parseInt(speedSelect.value, 10) * dpr));
+
+      rxAnalyser.getFloatFrequencyData(rxFreqData);
+
+      specCtx.drawImage(specCanvas, -stepX, 0);
+      const colImage = specCtx.createImageData(stepX, h);
+      const pixels = colImage.data;
+
+      for (let y = 0; y < h; y++) {
+        const freq = yToFreq(y, h);
+        const exactBin = (freq / nyquist) * (binCount - 1);
+        const b0 = Math.max(0, Math.min(binCount - 1, Math.floor(exactBin)));
+        const b1 = Math.min(binCount - 1, b0 + 1);
+        const frac = exactBin - b0;
+
+        const db = rxFreqData[b0] * (1 - frac) + rxFreqData[b1] * frac;
+        lastColumnDb[y] = db;
+
+        // Curva di contrasto leggermente espansa per far risaltare i dettagli fini
+        let norm = Math.max(0, Math.min(1, (db - minDb) / (maxDb - minDb)));
+        norm = Math.pow(norm, 1.15);
+        const cIdx = Math.floor(norm * 255) * 3;
+
+        for (let dx = 0; dx < stepX; dx++) {
+          const pIdx = (y * stepX + dx) * 4;
+          pixels[pIdx]     = colorLUT[cIdx];
+          pixels[pIdx + 1] = colorLUT[cIdx + 1];
+          pixels[pIdx + 2] = colorLUT[cIdx + 2];
+          pixels[pIdx + 3] = 255;
+        }
+      }
+
+      specCtx.putImageData(colImage, w - stepX, 0);
+    }
+
+    async function startRx() {
+      try {
+        rxStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false,
+            channelCount: 1
+          }
+        });
+
+        rxAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const source = rxAudioCtx.createMediaStreamSource(rxStream);
+
+        rxAnalyser = rxAudioCtx.createAnalyser();
+        rxAnalyser.fftSize = parseInt(fftSelect.value, 10);
+        rxAnalyser.smoothingTimeConstant = 0;
+
+        rxFreqData = new Float32Array(rxAnalyser.frequencyBinCount);
+        source.connect(rxAnalyser);
+
+        rxFrozen = false;
+        rxFreezeBtn.classList.remove('active-state');
+        rxFreezeBtn.textContent = 'Congela';
+        rxToggleBtn.textContent = 'Ferma spettrogramma';
+        rxToggleBtn.classList.add('is-stop');
+        rxReadout.textContent = `In ascolto (${rxAudioCtx.sampleRate} Hz)`;
+        updateGlobalStatus();
+
+        rxRenderLoop();
+      } catch (err) {
+        alert('Impossibile accedere al microfono. Verifica che il sito sia aperto in HTTPS e che i permessi siano attivi.\n' + err.message);
+      }
+    }
+
+    function stopRx() {
+      if (rxAnimId) cancelAnimationFrame(rxAnimId);
+      if (rxStream) rxStream.getTracks().forEach(t => t.stop());
+      if (rxAudioCtx) rxAudioCtx.close();
+      rxAnalyser = null;
+      rxAudioCtx = null;
+      rxToggleBtn.textContent = 'Attiva spettrogramma';
+      rxToggleBtn.classList.remove('is-stop');
+      rxReadout.textContent = 'Spettrogramma in pausa';
+      updateGlobalStatus();
+    }
+
+    rxToggleBtn.addEventListener('click', () => rxAudioCtx ? stopRx() : startRx());
+
+    rxFreezeBtn.addEventListener('click', () => {
+      rxFrozen = !rxFrozen;
+      rxFreezeBtn.classList.toggle('active-state', rxFrozen);
+      rxFreezeBtn.textContent = rxFrozen ? 'Riprendi' : 'Congela';
+      rxReadout.textContent = rxFrozen ? 'Fotogramma congelato' : 'In ascolto attivo';
+      updateGlobalStatus();
+    });
+
+    rxSnapshotBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = `decoder-cattura-${Date.now()}.png`;
+      link.href = specCanvas.toDataURL('image/png');
+      link.click();
+    });
+
+    rxClearBtn.addEventListener('click', clearRxWaterfall);
+
+    rxWrapper.addEventListener('mousemove', (e) => {
+      const rect = rxWrapper.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const x = Math.floor((e.clientX - rect.left) * dpr);
+      const y = Math.floor((e.clientY - rect.top) * dpr);
+      const freq = yToFreq(y, overlayCanvas.height);
+      const db = lastColumnDb ? lastColumnDb[y] : -120;
+      const fLabel = freq >= 1000 ? `${(freq / 1000).toFixed(2)} kHz` : `${Math.round(freq)} Hz`;
+      rxReadout.textContent = `${fLabel} | ${db.toFixed(1)} dB`;
+      drawRxGrid(x, y);
+    });
+
+    rxWrapper.addEventListener('mouseleave', () => {
+      drawRxGrid(null, null);
+    });
+
+    /* ==================== MODULO 2: CODIFICA IMMAGINE / TESTO (TX) ==================== */
+    const matrixCanvas = document.getElementById('matrixCanvas');
+    const txScanCanvas = document.getElementById('txScanCanvas');
+    const matCtx = matrixCanvas.getContext('2d');
+    const scanCtx = txScanCanvas.getContext('2d');
+
+    const textInput = document.getElementById('textInput');
+    const textAlignSelect = document.getElementById('textAlignSelect');
+    const renderTextBtn = document.getElementById('renderTextBtn');
+    const imageFileInput = document.getElementById('imageFileInput');
+    const fileNameLabel = document.getElementById('fileNameLabel');
+    const imgModeSelect = document.getElementById('imgModeSelect');
+    const imgContrastInput = document.getElementById('imgContrastInput');
+    const invertCheck = document.getElementById('invertCheck');
+    const preEmphasisCheck = document.getElementById('preEmphasisCheck');
+
+    const txPlayBtn = document.getElementById('txPlayBtn');
+    const txExportBtn = document.getElementById('txExportBtn');
+    const durationSelect = document.getElementById('durationSelect');
+    const bandsSelect = document.getElementById('bandsSelect');
+    const txStatusText = document.getElementById('txStatusText');
+
+    // Buffer offscreen per conservare l'immagine o il testo originale prima dei filtri ottici
+    const sourceBuffer = document.createElement('canvas');
+    sourceBuffer.width = matrixCanvas.width;
+    sourceBuffer.height = matrixCanvas.height;
+    const srcCtx = sourceBuffer.getContext('2d');
+
+    let txAudioCtx = null;
+    let txSourceNode = null;
+    let txAnimId = null;
+
+    function drawTxGrid() {
+      const w = txScanCanvas.width;
+      const h = txScanCanvas.height;
+      scanCtx.clearRect(0, 0, w, h);
+
+      scanCtx.strokeStyle = 'rgba(226, 232, 240, 0.16)';
+      scanCtx.font = '10.5px Montserrat, sans-serif';
+      scanCtx.fillStyle = 'rgba(148, 163, 184, 0.85)';
+
+      [0.12, 0.5, 0.88].forEach(ratio => {
+        const y = Math.round(ratio * h) + 0.5;
+        const f = yToFreq(y, h);
+        const label = f >= 1000 ? `${(f / 1000).toFixed(1)} kHz` : `${Math.round(f)} Hz`;
+        scanCtx.beginPath();
+        scanCtx.moveTo(0, y);
+        scanCtx.lineTo(w, y);
+        scanCtx.stroke();
+        scanCtx.fillText(label, 8, y - 5);
+      });
+    }
+
+    // Applica contrasto, soglia e inversione dal buffer sorgente alla matrice visibile
+    function processMatrix() {
+      const W = matrixCanvas.width;
+      const H = matrixCanvas.height;
+      const srcData = srcCtx.getImageData(0, 0, W, H);
+      const outData = matCtx.createImageData(W, H);
+
+      const s = srcData.data;
+      const d = outData.data;
+      const mode = imgModeSelect.value;
+      const thresholdVal = parseInt(imgContrastInput.value, 10);
+      const contrastFactor = (thresholdVal / 128);
+      const invert = invertCheck.checked;
+
+      for (let i = 0; i < s.length; i += 4) {
+        // Luminanza percettiva Rec.709
+        let lum = 0.2126 * s[i] + 0.7152 * s[i + 1] + 0.0722 * s[i + 2];
+        if (invert) lum = 255 - lum;
+
+        let val;
+        if (mode === 'threshold') {
+          val = lum >= (255 - thresholdVal) ? 255 : 0;
+        } else {
+          // Contrasto centrato sul grigio medio
+          val = Math.max(0, Math.min(255, (lum - 128) * contrastFactor + 128));
+        }
+
+        d[i]     = val;
+        d[i + 1] = val;
+        d[i + 2] = val;
+        d[i + 3] = 255;
+      }
+
+      matCtx.putImageData(outData, 0, 0);
+      drawTxGrid();
+    }
+
+    // Rendering testo ad alta leggibilità su più righe
+    function renderTextToSource(rawText) {
+      const W = sourceBuffer.width;
+      const H = sourceBuffer.height;
+      srcCtx.fillStyle = '#000000';
+      srcCtx.fillRect(0, 0, W, H);
+
+      const lines = rawText
+        .split('/')
+        .map(l => l.trim().toUpperCase())
+        .filter(Boolean);
+
+      if (lines.length === 0) {
+        processMatrix();
+        return;
+      }
+
+      const align = textAlignSelect.value;
+      const marginX = 32;
+      const maxW = W - marginX * 2;
+      const maxH = H * 0.82;
+
+      let fontSize = Math.floor(maxH / lines.length);
+      srcCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
+
+      // Adatta la dimensione affinché la riga più lunga entri con margine
+      let widest = Math.max(...lines.map(l => srcCtx.measureText(l).width));
+      while ((widest > maxW || fontSize * lines.length * 1.18 > maxH) && fontSize > 18) {
+        fontSize -= 2;
+        srcCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
+        widest = Math.max(...lines.map(l => srcCtx.measureText(l).width));
+      }
+
+      const lineHeight = fontSize * 1.22;
+      const totalBlockH = lineHeight * lines.length;
+      const startY = (H - totalBlockH) / 2 + lineHeight / 2;
+
+      srcCtx.fillStyle = '#ffffff';
+      srcCtx.textBaseline = 'middle';
+      srcCtx.textAlign = align;
+
+      const drawX = align === 'left' ? marginX : W / 2;
+      lines.forEach((line, idx) => {
+        srcCtx.fillText(line, drawX, startY + idx * lineHeight);
+      });
+
+      processMatrix();
+      txStatusText.textContent = 'Testo codificato nella matrice';
+    }
+
+    renderTextBtn.addEventListener('click', () => {
+      renderTextToSource(textInput.value || 'DECODER');
+    });
+
+    textInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') renderTextToSource(textInput.value || 'DECODER');
+    });
+
+    textAlignSelect.addEventListener('change', () => {
+      if (textInput.value.trim()) renderTextToSource(textInput.value);
+    });
+
+    // Caricamento e adattamento proporzionale dell'immagine
+    imageFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      fileNameLabel.textContent = file.name;
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const W = sourceBuffer.width;
+          const H = sourceBuffer.height;
+          srcCtx.fillStyle = '#000000';
+          srcCtx.fillRect(0, 0, W, H);
+
+          // Fit proporzionale centrato con margine verticale di sicurezza
+          const pad = 12;
+          const scale = Math.min((W - pad * 2) / img.width, (H - pad * 2) / img.height);
+          const drawW = img.width * scale;
+          const drawH = img.height * scale;
+          const offsetX = (W - drawW) / 2;
+          const offsetY = (H - drawH) / 2;
+
+          srcCtx.drawImage(img, offsetX, offsetY, drawW, drawH);
+          processMatrix();
+          txStatusText.textContent = `Immagine «${file.name}» pronta`;
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    [imgModeSelect, imgContrastInput, invertCheck].forEach(el => {
+      el.addEventListener('input', processMatrix);
+      el.addEventListener('change', processMatrix);
+    });
+
+    /* ==================== MOTORE DI SINTESI SPETTRALE AD ALTA DEFINIZIONE ==================== */
+    function synthesizeMatrixToAudio(sampleRate, durationSec) {
+      const W = matrixCanvas.width;
+      const H = matrixCanvas.height;
+      const imgData = matCtx.getImageData(0, 0, W, H).data;
+
+      const numBands = parseInt(bandsSelect.value, 10);
+      // Risoluzione temporale elevata: 1 colonna ogni ~16 ms (es. 500 colonne su 8s)
+      const numCols = Math.min(W, Math.max(240, Math.round(durationSec * 60)));
+      const usePreEmphasis = preEmphasisCheck.checked;
+
+      const oscillators = [];
+
+      for (let b = 0; b < numBands; b++) {
+        const normTopDown = b / Math.max(1, numBands - 1); // 0 = freq max, 1 = freq min
+        const y = Math.min(H - 1, Math.floor(normTopDown * (H - 1)));
+        const rowAmps = new Float32Array(numCols);
+        let hasEnergy = false;
+
+        // Compensazione acustica per tromba/megafono: rinforza gradualmente le frequenze acute
+        const normFreq = 1 - normTopDown; // 0 = basso, 1 = acuto
+        const hornGain = usePreEmphasis ? (0.82 + 0.55 * Math.pow(normFreq, 1.35)) : 1.0;
+
+        for (let c = 0; c < numCols; c++) {
+          const x = Math.min(W - 1, Math.floor((c / Math.max(1, numCols - 1)) * (W - 1)));
+          const idx = (y * W + x) * 4;
+          const lum = imgData[idx] / 255;
+
+          if (lum > 0.05) {
+            rowAmps[c] = Math.pow(lum, 1.25) * hornGain;
+            hasEnergy = true;
+          }
+        }
+
+        if (hasEnergy) {
+          const freq = yToFreq(y, H);
+          const omega = (2 * Math.PI * freq) / sampleRate;
+          const phase0 = Math.random() * 2 * Math.PI;
+          oscillators.push({
+            amps: rowAmps,
+            cosW: Math.cos(omega),
+            sinW: Math.sin(omega),
+            re: Math.cos(phase0),
+            im: Math.sin(phase0)
+          });
+        }
+      }
+
+      // Aggiunge 0.25s di silenzio prima e dopo per isolare il blocco visivo nello spettrogramma
+      const padSamples = Math.floor(sampleRate * 0.25);
+      const activeSamples = Math.floor(sampleRate * durationSec);
+      const totalSamples = activeSamples + padSamples * 2;
+      const out = new Float32Array(totalSamples);
+
+      if (oscillators.length === 0) return out;
+
+      const fadeSamples = Math.floor(sampleRate * 0.02);
+
+      for (let i = 0; i < activeSamples; i++) {
+        const pos = (i / activeSamples) * (numCols - 1);
+        const c0 = Math.floor(pos);
+        const c1 = Math.min(numCols - 1, c0 + 1);
+        const frac = pos - c0;
+
+        let sample = 0;
+        for (let k = 0; k < oscillators.length; k++) {
+          const osc = oscillators[k];
+          const amp = osc.amps[c0] * (1 - frac) + osc.amps[c1] * frac;
+          if (amp > 0.002) {
+            sample += amp * osc.im;
+            const nextRe = osc.re * osc.cosW - osc.im * osc.sinW;
+            const nextIm = osc.re * osc.sinW + osc.im * osc.cosW;
+            osc.re = nextRe;
+            osc.im = nextIm;
+          }
+        }
+
+        if ((i & 1023) === 1023) {
+          for (let k = 0; k < oscillators.length; k++) {
+            const osc = oscillators[k];
+            const inv = 1 / Math.hypot(osc.re, osc.im);
+            osc.re *= inv;
+            osc.im *= inv;
+          }
+        }
+
+        let env = 1;
+        if (i < fadeSamples) env = i / fadeSamples;
+        else if (i > activeSamples - fadeSamples) env = (activeSamples - i) / fadeSamples;
+
+        out[padSamples + i] = sample * env;
+      }
+
+      // Normalizzazione picco al 92% per massimizzare la resa del megafono senza clipping
+      let maxVal = 0;
+      for (let i = padSamples; i < padSamples + activeSamples; i++) {
+        const abs = Math.abs(out[i]);
+        if (abs > maxVal) maxVal = abs;
+      }
+      if (maxVal > 0) {
+        const gain = 0.92 / maxVal;
+        for (let i = padSamples; i < padSamples + activeSamples; i++) out[i] *= gain;
+      }
+
+      return out;
+    }
+
+    function stopTxPlayback() {
+      if (txAnimId) cancelAnimationFrame(txAnimId);
+      if (txSourceNode) {
+        try { txSourceNode.stop(); } catch (_) {}
+        txSourceNode = null;
+      }
+      txPlayBtn.textContent = 'Anteprima audio';
+      txPlayBtn.classList.remove('is-stop');
+      updateGlobalStatus();
+      drawTxGrid();
+    }
+
+    txPlayBtn.addEventListener('click', async () => {
+      if (txSourceNode) {
+        stopTxPlayback();
+        txStatusText.textContent = 'Anteprima interrotta';
+        return;
+      }
+
+      txStatusText.textContent = 'Sintesi in corso...';
+
+      if (!txAudioCtx) {
+        txAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (txAudioCtx.state === 'suspended') await txAudioCtx.resume();
+
+      const duration = parseFloat(durationSelect.value);
+      const samples = synthesizeMatrixToAudio(txAudioCtx.sampleRate, duration);
+      const audioBuffer = txAudioCtx.createBuffer(1, samples.length, txAudioCtx.sampleRate);
+      audioBuffer.copyToChannel(samples, 0);
+
+      txSourceNode = txAudioCtx.createBufferSource();
+      txSourceNode.buffer = audioBuffer;
+      txSourceNode.connect(txAudioCtx.destination);
+
+      const startTime = txAudioCtx.currentTime;
+      txSourceNode.start(startTime);
+
+      txPlayBtn.textContent = 'Ferma anteprima';
+      txPlayBtn.classList.add('is-stop');
+      txStatusText.textContent = 'Riproduzione in corso';
+      updateGlobalStatus();
+
+      txSourceNode.onended = () => {
+        stopTxPlayback();
+        txStatusText.textContent = 'Anteprima completata';
+      };
+
+      function animateScanner() {
+        if (!txSourceNode) return;
+        const elapsed = txAudioCtx.currentTime - startTime - 0.25;
+        if (elapsed >= duration) return;
+
+        drawTxGrid();
+        if (elapsed >= 0) {
+          const progress = elapsed / duration;
+          const scanX = Math.round(progress * txScanCanvas.width) + 0.5;
+          scanCtx.strokeStyle = '#f59e0b';
+          scanCtx.lineWidth = 1.5;
+          scanCtx.beginPath();
+          scanCtx.moveTo(scanX, 0);
+          scanCtx.lineTo(scanX, txScanCanvas.height);
+          scanCtx.stroke();
+        }
+        txAnimId = requestAnimationFrame(animateScanner);
+      }
+      animateScanner();
+    });
+
+    txExportBtn.addEventListener('click', () => {
+      txStatusText.textContent = 'Generazione .WAV 48 kHz...';
+      const sampleRate = 48000;
+      const duration = parseFloat(durationSelect.value);
+      const samples = synthesizeMatrixToAudio(sampleRate, duration);
+
+      const buffer = new ArrayBuffer(44 + samples.length * 2);
+      const view = new DataView(buffer);
+      const writeStr = (offset, str) => {
+        for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+      };
+
+      writeStr(0, 'RIFF');
+      view.setUint32(4, 36 + samples.length * 2, true);
+      writeStr(8, 'WAVE');
+      writeStr(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeStr(36, 'data');
+      view.setUint32(40, samples.length * 2, true);
+
+      let offset = 44;
+      for (let i = 0; i < samples.length; i++, offset += 2) {
+        const s = Math.max(-1, Math.min(1, samples[i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      }
+
+      const blob = new Blob([buffer], { type: 'audio/wav' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `decoder-${bandProfileSelect.value}-${Date.now()}.wav`;
+      a.click();
+      URL.revokeObjectURL(url);
+      txStatusText.textContent = 'File .WAV esportato';
+    });
+
+    // Inizializzazione
+    window.addEventListener('resize', resizeRxCanvases);
+    resizeRxCanvases();
+    renderTextToSource('DECODER / SPAZIO PUBBLICO');
+  })();
+  </script>
+</body>
+</html>
