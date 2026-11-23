@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DECODER</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-void: #06080d;
+      --bg-surface: #0d121c;
+      --border-line: #283344;
+      --border-strong: #64748b;
+      --cyan: #00f0ff;
+      --amber: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--bg-void);
+      color: var(--text-main);
+      margin: 0;
+      padding: 20px;
+      overflow-x: hidden;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* INTESTAZIONE E STATO IN ALTO A DESTRA */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    header {
+      border-bottom: 2px solid var(--text-main);
+      padding-bottom: 10px;
+      display: inline-block;
+      font-size: 15px;
+    }
+
+    .site-title {
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .status-avviso {
+      font-size: 11px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--text-muted);
+      padding-bottom: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .status-avviso.rx-active {
+      color: var(--success);
+      border-bottom-color: var(--success);
+    }
+
+    .status-avviso.tx-active {
+      color: var(--amber);
+      border-bottom-color: var(--amber);
+    }
+
+    /* MENU DI NAVIGAZIONE TRA LE SCHEDE */
+    nav {
+      margin-bottom: 44px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    nav a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 13px;
+      padding-bottom: 3px;
+      border-bottom: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    nav a:hover,
+    nav a.attivo {
+      border-bottom: 1px solid var(--text-main);
+      font-weight: 700;
+    }
+
+    /* CONTENITORE PRINCIPALE */
+    .contenitore {
+      max-width: 1120px;
+      margin: 0 auto 60px auto;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    /* BARRA CANALI FDMA */
+    .channel-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-line);
+    }
+
+    .channel-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .channel-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .ch-pill {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-line);
+      border-radius: 0;
+      padding: 5px 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11.5px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .ch-pill:hover {
+      border-color: var(--text-main);
+      color: var(--text-main);
+    }
+
+    .ch-pill.rx-selected {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      font-weight: 700;
+      background-color: rgba(0, 240, 255, 0.06);
+    }
+
+    .ch-pill.selected {
+      border-color: var(--amber);
+      color: var(--amber);
+      font-weight: 700;
+      background-color: rgba(245, 158, 11, 0.06);
+    }
+
+    .freq-meta {
+      font-size: 12px;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border-strong);
+      padding-bottom: 3px;
+    }
+
+    /* BARRA STRUMENTI MINIMALE */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 18px 22px;
+      margin-bottom: 18px;
+    }
+
+    .btn-action {
+      background: transparent;
+      color: var(--cyan);
+      border: 1px solid var(--cyan);
+      border-radius: 0;
+      padding: 7px 14px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .btn-action:hover {
+      background: var(--cyan);
+      color: var(--bg-void);
+    }
+
+    .btn-action.tx-mode {
+      color: var(--amber);
+      border-color: var(--amber);
+    }
+
+    .btn-action.tx-mode:hover {
+      background: var(--amber);
+      color: var(--bg-void);
+    }
+
+    .btn-action.is-stop {
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+
+    .btn-action.is-stop:hover {
+      background: var(--danger);
+      color: var(--bg-void);
+    }
+
+    .btn-link {
+      background: none;
+      border: none;
+      border-bottom: 1px solid var(--text-muted);
+      border-radius: 0;
+      padding: 3px 0;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: opacity 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .btn-link:hover {
+      opacity: 0.7;
+    }
+
+    .btn-link.active-state {
+      color: var(--amber);
+      border-bottom-color: var(--amber);
+      font-weight: 700;
+    }
+
+    .btn-link.danger-link {
+      color: var(--text-muted);
+      border-bottom-color: var(--border-strong);
+    }
+
+    .btn-link.danger-link:hover {
+      color: var(--danger);
+      border-bottom-color: var(--danger);
+      opacity: 1;
+    }
+
+    .control-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    select,
+    input[type="text"] {
+      background: transparent;
+      color: var(--text-main);
+      border: none;
+      border-bottom: 1px solid var(--border-strong);
+      border-radius: 0;
+      padding: 4px 2px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      outline: none;
+    }
+
+    select option {
+      background: var(--bg-surface);
+      color: var(--text-main);
+    }
+
+    select:focus,
+    input[type="text"]:focus {
+      border-bottom-color: var(--text-main);
+    }
+
+    input[type="range"] {
+      accent-color: var(--text-main);
+      cursor: pointer;
+      width: 85px;
+    }
+
+    .readout-text {
+      font-size: 12px;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border-line);
+      padding-bottom: 3px;
+      margin-left: auto;
+    }
+
+    .text-injector {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .text-injector input[type="text"] {
+      flex: 1;
+      min-width: 200px;
+      max-width: 380px;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    .viewport {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      background: #020305;
+      border: 1px solid var(--border-line);
+      border-radius: 0;
+      overflow: hidden;
+    }
+
+    .viewport canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #overlayCanvas,
+    #txScanCanvas {
+      pointer-events: none;
+    }
+
+    .draw-viewport {
+      height: auto;
+      aspect-ratio: 16 / 6;
+      min-height: 220px;
+      max-height: 360px;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    .nota-footer {
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 11.5px;
+      line-height: 1.55;
+      color: var(--text-muted);
+    }
+
+    .nota-sottolineata {
+      border-bottom: 1px solid var(--border-line);
+      padding-bottom: 3px;
+      color: var(--text-main);
+    }
+
+    footer {
+      max-width: 1120px;
+      margin: 90px auto 0 auto;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px;
+      }
+
+      .top-bar {
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      header {
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .status-avviso {
+        font-size: 10px;
+        padding-bottom: 3px;
+      }
+
+      nav {
+        margin-bottom: 32px;
+        gap: 14px 20px;
+      }
+
+      nav a {
+        font-size: 14px;
+        padding: 4px 0;
+      }
+
+      .viewport {
+        height: 400px;
+      }
+
+      .readout-text {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      footer {
+        margin-top: 64px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- INTESTAZIONE E STATO IN ALTO A DESTRA -->
+  <div class="top-bar">
+    <header>
+      <span class="site-title">DECODER</span> — Terminale Acustico (9 Canali)
+    </header>
+    <div class="status-avviso" id="globalStatusText">Stato: Inattivo</div>
+  </div>
+
+  <!-- MENU SEZIONI -->
+  <nav>
+    <a class="attivo" data-tab="rxPanel">Ricevitore (Live)</a>
+    <a data-tab="txPanel">Trasmettitore (Codifica)</a>
+  </nav>
+
+  <main class="contenitore">
+
+    <!-- ==================== 1. RICEVITORE (LIVE) ==================== -->
+    <section class="panel active" id="rxPanel">
+      <div class="channel-bar">
+        <div class="channel-group">
+          <span class="section-label">Sintonia RX</span>
+          <div class="channel-grid" id="rxChannelGrid">
+            <button class="ch-pill rx-selected" data-rx="all">Radar (1–9)</button>
+            <button class="ch-pill" data-rx="1">CH 1</button>
+            <button class="ch-pill" data-rx="2">CH 2</button>
+            <button class="ch-pill" data-rx="3">CH 3</button>
+            <button class="ch-pill" data-rx="4">CH 4</button>
+            <button class="ch-pill" data-rx="5">CH 5</button>
+            <button class="ch-pill" data-rx="6">CH 6</button>
+            <button class="ch-pill" data-rx="7">CH 7</button>
+            <button class="ch-pill" data-rx="8">CH 8</button>
+            <button class="ch-pill" data-rx="9">CH 9</button>
+          </div>
+        </div>
+        <span class="freq-meta" id="rxBandBadge">Banda globale: 350 Hz – 12.1 kHz</span>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn-action" id="rxToggleBtn">Avvia ascolto</button>
+        <button class="btn-link" id="rxFreezeBtn">Congela</button>
+        <button class="btn-link" id="rxClearBtn">Pulisci</button>
+
+        <label class="control-inline">Soglia:
+          <input type="range" id="minDbInput" min="-115" max="-45" value="-86">
+          <span id="minDbVal">-86 dB</span>
+        </label>
+
+        <label class="control-inline">Velocità:
+          <select id="speedSelect">
+            <option value="1">1x</option>
+            <option value="2" selected>2x</option>
+            <option value="3">3x</option>
+          </select>
+        </label>
+
+        <label class="control-inline">Palette:
+          <select id="paletteSelect">
+            <option value="inferno" selected>Inferno</option>
+            <option value="cyber">Ciano</option>
+            <option value="matrix">Verde</option>
+          </select>
+        </label>
+
+        <span class="readout-text" id="rxReadout">In attesa del segnale</span>
+      </div>
+
+      <div class="viewport" id="rxWrapper">
+        <canvas id="specCanvas"></canvas>
+        <canvas id="overlayCanvas"></canvas>
+      </div>
+
+      <div class="nota-footer">
+        <span><strong>Radar (1–9):</strong> visualizza le 9 corsie impilate. <strong>CH 1–9:</strong> isola e ingrandisce un singolo canale.</span>
+        <span class="nota-sottolineata">Usa «Congela» per fermare lo scorrimento e leggere il messaggio</span>
+      </div>
+    </section>
+
+    <!-- ==================== 2. TRASMETTITORE (CODIFICA) ==================== -->
+    <section class="panel" id="txPanel">
+      <div class="channel-bar">
+        <div class="channel-group">
+          <span class="section-label">Canale TX</span>
+          <div class="channel-grid" id="txChannelGrid">
+            <button class="ch-pill selected" data-tx="1">CH 1</button>
+            <button class="ch-pill" data-tx="2">CH 2</button>
+            <button class="ch-pill" data-tx="3">CH 3</button>
+            <button class="ch-pill" data-tx="4">CH 4</button>
+            <button class="ch-pill" data-tx="5">CH 5</button>
+            <button class="ch-pill" data-tx="6">CH 6</button>
+            <button class="ch-pill" data-tx="7">CH 7</button>
+            <button class="ch-pill" data-tx="8">CH 8</button>
+            <button class="ch-pill" data-tx="9">CH 9</button>
+          </div>
+        </div>
+        <span class="freq-meta" id="txBandBadge">CH 1: 500 Hz – 1.500 Hz</span>
+      </div>
+
+      <div class="text-injector">
+        <span class="section-label">Testo rapido</span>
+        <input type="text" id="secretTextInput" maxlength="20" placeholder="Es. PUNTO ALFA 42">
+        <button class="btn-link" id="stampTextBtn">Stampa su lavagna</button>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn-action tx-mode" id="txPlayBtn">Trasmetti suono</button>
+        <button class="btn-link" id="txLoopBtn">Loop: Off</button>
+        <button class="btn-link" id="txDownloadBtn">Scarica .wav</button>
+
+        <label class="control-inline">Durata:
+          <select id="durationSelect">
+            <option value="3">3 sec</option>
+            <option value="5" selected>5 sec</option>
+            <option value="8">8 sec</option>
+          </select>
+        </label>
+
+        <label class="control-inline">Tratto:
+          <select id="brushSelect">
+            <option value="5">Sottile</option>
+            <option value="11" selected>Medio</option>
+            <option value="18">Spesso</option>
+            <option value="eraser">Gomma</option>
+          </select>
+        </label>
+
+        <button class="btn-link danger-link" id="txClearBtn" style="margin-left:auto;">Svuota lavagna</button>
+      </div>
+
+      <div class="viewport draw-viewport" id="txWrapper">
+        <canvas id="drawCanvas" width="640" height="240"></canvas>
+        <canvas id="txScanCanvas" width="640" height="240"></canvas>
+      </div>
+
+      <div class="nota-footer">
+        <span>Mantieni il volume al 75–80% per evitare armoniche sui canali adiacenti.</span>
+        <span class="nota-sottolineata" id="txStatusText">Pronto su CH 1</span>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Elaborazione locale nel browser — Nessun dato audio registrato o inviato a server esterni.
+  </footer>
+
+  <script>
+  (() => {
+    /* ==================== DEFINIZIONE 9 CANALI FDMA ==================== */
+    const CHANNELS = Array.from({ length: 9 }, (_, idx) => {
+      const id = idx + 1;
+      const min = 500 + idx * 1300;
+      const max = min + 1000;
+      return { id, min, max };
+    });
+
+    const GLOBAL_RX_MIN = 350;
+    const GLOBAL_RX_MAX = 12050;
+    const MAX_DB = -18;
+
+    const urlCh = parseInt(new URLSearchParams(window.location.search).get('ch'), 10);
+    let activeTxCh = (urlCh >= 1 && urlCh <= 9) ? urlCh : 1;
+    let rxMode = 'all';
+
+    function getRxBounds() {
+      if (rxMode === 'all') {
+        return { min: GLOBAL_RX_MIN, max: GLOBAL_RX_MAX };
+      }
+      const ch = CHANNELS[parseInt(rxMode, 10) - 1];
+      return { min: ch.min - 60, max: ch.max + 60 };
+    }
+
+    function rxYToFreq(y, height) {
+      const { min, max } = getRxBounds();
+      const normY = 1 - (y / Math.max(1, height - 1));
+      return min + normY * (max - min);
+    }
+
+    function rxFreqToY(freq, height) {
+      const { min, max } = getRxBounds();
+      const normY = (freq - min) / (max - min);
+      return (1 - normY) * (height - 1);
+    }
+
+    function txYToFreq(y, height) {
+      const ch = CHANNELS[activeTxCh - 1];
+      const normY = 1 - (y / Math.max(1, height - 1));
+      return ch.min + normY * (ch.max - ch.min);
+    }
+
+    function findChannelAtFreq(freq) {
+      for (const ch of CHANNELS) {
+        if (freq >= ch.min && freq <= ch.max) return ch;
+      }
+      return null;
+    }
+
+    /* ==================== GESTIONE SCHEDE (TABS) ==================== */
+    const tabLinks = document.querySelectorAll('nav a[data-tab]');
+    const panels = document.querySelectorAll('.panel');
+
+    tabLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        tabLinks.forEach(l => l.classList.remove('attivo'));
+        panels.forEach(p => p.classList.remove('active'));
+        link.classList.add('attivo');
+        document.getElementById(link.dataset.tab).classList.add('active');
+        if (link.dataset.tab === 'rxPanel') resizeRxCanvases();
+        else drawTxGuideGrid();
+      });
+    });
+
+    /* ==================== PALETTE COLORI ==================== */
+    const PALETTES = {
+      inferno: [
+        [0.0, [2, 3, 6]],
+        [0.2, [42, 11, 84]],
+        [0.45, [120, 28, 109]],
+        [0.7, [205, 64, 71]],
+        [0.88, [248, 137, 18]],
+        [1.0, [252, 255, 175]]
+      ],
+      cyber: [
+        [0.0, [2, 5, 10]],
+        [0.3, [6, 40, 72]],
+        [0.6, [0, 130, 175]],
+        [0.85, [0, 240, 255]],
+        [1.0, [235, 255, 255]]
+      ],
+      matrix: [
+        [0.0, [1, 6, 3]],
+        [0.35, [6, 55, 24]],
+        [0.7, [16, 185, 95]],
+        [0.9, [110, 255, 150]],
+        [1.0, [235, 255, 240]]
+      ]
+    };
+
+    const colorLUT = new Uint8Array(256 * 3);
+    function buildColorLUT(name) {
+      const stops = PALETTES[name] || PALETTES.inferno;
+      for (let i = 0; i < 256; i++) {
+        const t = i / 255;
+        let s0 = stops[0], s1 = stops[stops.length - 1];
+        for (let j = 0; j < stops.length - 1; j++) {
+          if (t >= stops[j][0] && t <= stops[j + 1][0]) {
+            s0 = stops[j];
+            s1 = stops[j + 1];
+            break;
+          }
+        }
+        const f = (t - s0[0]) / (s1[0] - s0[0] || 1);
+        colorLUT[i * 3]     = Math.round(s0[1][0] + f * (s1[1][0] - s0[1][0]));
+        colorLUT[i * 3 + 1] = Math.round(s0[1][1] + f * (s1[1][1] - s0[1][1]));
+        colorLUT[i * 3 + 2] = Math.round(s0[1][2] + f * (s1[1][2] - s0[1][2]));
+      }
+    }
+    buildColorLUT('inferno');
+
+    /* ==================== MODULO 1: RICEVITORE (RX) ==================== */
+    const globalStatusText = document.getElementById('globalStatusText');
+    const rxChannelGrid = document.getElementById('rxChannelGrid');
+    const rxBandBadge = document.getElementById('rxBandBadge');
+    const rxToggleBtn = document.getElementById('rxToggleBtn');
+    const rxFreezeBtn = document.getElementById('rxFreezeBtn');
+    const rxClearBtn = document.getElementById('rxClearBtn');
+    const minDbInput = document.getElementById('minDbInput');
+    const minDbVal = document.getElementById('minDbVal');
+    const speedSelect = document.getElementById('speedSelect');
+    const paletteSelect = document.getElementById('paletteSelect');
+    const rxReadout = document.getElementById('rxReadout');
+    const rxWrapper = document.getElementById('rxWrapper');
+    const specCanvas = document.getElementById('specCanvas');
+    const overlayCanvas = document.getElementById('overlayCanvas');
+    const specCtx = specCanvas.getContext('2d');
+    const overCtx = overlayCanvas.getContext('2d');
+
+    let rxAudioCtx = null;
+    let rxAnalyser = null;
+    let rxStream = null;
+    let rxAnimId = null;
+    let rxFreqData = null;
+    let rxFrozen = false;
+    let lastColumnDb = null;
+
+    function updateGlobalStatus() {
+      if (txSourceNode) {
+        globalStatusText.textContent = `Stato: Trasmissione CH ${activeTxCh}`;
+        globalStatusText.className = 'status-avviso tx-active';
+      } else if (rxAudioCtx) {
+        globalStatusText.textContent = rxFrozen ? 'Stato: Schermo congelato' : 'Stato: Ricezione attiva';
+        globalStatusText.className = 'status-avviso rx-active';
+      } else {
+        globalStatusText.textContent = 'Stato: Inattivo';
+        globalStatusText.className = 'status-avviso';
+      }
+    }
+
+    function clearRxWaterfall() {
+      specCtx.fillStyle = '#020305';
+      specCtx.fillRect(0, 0, specCanvas.width, specCanvas.height);
+    }
+
+    rxChannelGrid.addEventListener('click', (e) => {
+      const btn = e.target.closest('.ch-pill');
+      if (!btn) return;
+      rxMode = btn.dataset.rx;
+
+      rxChannelGrid.querySelectorAll('.ch-pill').forEach(b => b.classList.remove('rx-selected'));
+      btn.classList.add('rx-selected');
+
+      if (rxMode === 'all') {
+        rxBandBadge.textContent = 'Banda globale: 350 Hz – 12.1 kHz';
+      } else {
+        const ch = CHANNELS[parseInt(rxMode, 10) - 1];
+        rxBandBadge.textContent = `Zoom CH ${ch.id}: ${ch.min} Hz – ${ch.max} Hz`;
+      }
+
+      clearRxWaterfall();
+      drawRxGrid(null, null);
+    });
+
+    minDbInput.addEventListener('input', () => {
+      minDbVal.textContent = `${minDbInput.value} dB`;
+    });
+
+    paletteSelect.addEventListener('change', () => {
+      buildColorLUT(paletteSelect.value);
+    });
+
+    function resizeRxCanvases() {
+      const rect = rxWrapper.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+      specCanvas.width = Math.floor(rect.width);
+      specCanvas.height = Math.floor(rect.height);
+      overlayCanvas.width = specCanvas.width;
+      overlayCanvas.height = specCanvas.height;
+      lastColumnDb = new Float32Array(specCanvas.height).fill(-120);
+      drawRxGrid(null, null);
+    }
+
+    function drawRxGrid(mouseX, mouseY) {
+      const w = overlayCanvas.width;
+      const h = overlayCanvas.height;
+      overCtx.clearRect(0, 0, w, h);
+      overCtx.font = '700 10.5px Montserrat, sans-serif';
+      overCtx.textBaseline = 'middle';
+
+      if (rxMode === 'all') {
+        CHANNELS.forEach((ch, idx) => {
+          const yTop = Math.round(rxFreqToY(ch.max, h)) + 0.5;
+          const yBot = Math.round(rxFreqToY(ch.min, h)) + 0.5;
+          const yMid = (yTop + yBot) / 2;
+
+          if (idx < CHANNELS.length - 1) {
+            const nextCh = CHANNELS[idx + 1];
+            const yGuardTop = rxFreqToY(nextCh.min, h);
+            overCtx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+            overCtx.fillRect(0, yGuardTop, w, yTop - yGuardTop);
+          }
+
+          overCtx.strokeStyle = 'rgba(226, 232, 240, 0.16)';
+          overCtx.beginPath();
+          overCtx.moveTo(0, yTop);
+          overCtx.lineTo(w, yTop);
+          overCtx.moveTo(0, yBot);
+          overCtx.lineTo(w, yBot);
+          overCtx.stroke();
+
+          const tag = `CH ${ch.id}`;
+          overCtx.fillStyle = 'rgba(6, 8, 13, 0.85)';
+          overCtx.fillRect(8, yMid - 9, 42, 18);
+          overCtx.fillStyle = '#00f0ff';
+          overCtx.fillText(tag, 13, yMid);
+        });
+      } else {
+        const ch = CHANNELS[parseInt(rxMode, 10) - 1];
+        const yTop = Math.round(rxFreqToY(ch.max, h)) + 0.5;
+        const yBot = Math.round(rxFreqToY(ch.min, h)) + 0.5;
+        const yMid = Math.round(rxFreqToY((ch.min + ch.max) / 2, h)) + 0.5;
+
+        overCtx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+        overCtx.fillRect(0, 0, w, yTop);
+        overCtx.fillRect(0, yBot, w, h - yBot);
+
+        overCtx.strokeStyle = 'rgba(245, 158, 11, 0.5)';
+        overCtx.beginPath();
+        overCtx.moveTo(0, yTop); overCtx.lineTo(w, yTop);
+        overCtx.moveTo(0, yBot); overCtx.lineTo(w, yBot);
+        overCtx.stroke();
+
+        overCtx.strokeStyle = 'rgba(226, 232, 240, 0.14)';
+        overCtx.setLineDash([4, 4]);
+        overCtx.beginPath();
+        overCtx.moveTo(0, yMid); overCtx.lineTo(w, yMid);
+        overCtx.stroke();
+        overCtx.setLineDash([]);
+
+        overCtx.fillStyle = 'rgba(6, 8, 13, 0.85)';
+        overCtx.fillRect(8, yTop + 6, 95, 18);
+        overCtx.fillStyle = '#e2e8f0';
+        overCtx.fillText(`MAX ${ch.max} Hz`, 13, yTop + 15);
+
+        overCtx.fillStyle = 'rgba(6, 8, 13, 0.85)';
+        overCtx.fillRect(8, yBot - 24, 95, 18);
+        overCtx.fillStyle = '#e2e8f0';
+        overCtx.fillText(`MIN ${ch.min} Hz`, 13, yBot - 15);
+      }
+
+      if (mouseX !== null && mouseY !== null) {
+        overCtx.strokeStyle = 'rgba(226, 232, 240, 0.65)';
+        overCtx.beginPath();
+        overCtx.moveTo(0, mouseY + 0.5);
+        overCtx.lineTo(w, mouseY + 0.5);
+        overCtx.moveTo(mouseX + 0.5, 0);
+        overCtx.lineTo(mouseX + 0.5, h);
+        overCtx.stroke();
+      }
+    }
+
+    function rxRenderLoop() {
+      if (!rxAnalyser) return;
+      rxAnimId = requestAnimationFrame(rxRenderLoop);
+      if (rxFrozen) return;
+
+      const w = specCanvas.width;
+      const h = specCanvas.height;
+      const minDb = parseFloat(minDbInput.value);
+      const nyquist = rxAudioCtx.sampleRate / 2;
+      const binCount = rxAnalyser.frequencyBinCount;
+      const stepX = parseInt(speedSelect.value, 10);
+
+      rxAnalyser.getFloatFrequencyData(rxFreqData);
+
+      specCtx.drawImage(specCanvas, -stepX, 0);
+      const colImage = specCtx.createImageData(stepX, h);
+      const pixels = colImage.data;
+
+      for (let y = 0; y < h; y++) {
+        const freq = rxYToFreq(y, h);
+        const exactBin = (freq / nyquist) * (binCount - 1);
+        const b0 = Math.max(0, Math.min(binCount - 1, Math.floor(exactBin)));
+        const b1 = Math.min(binCount - 1, b0 + 1);
+        const frac = exactBin - b0;
+
+        const db = rxFreqData[b0] * (1 - frac) + rxFreqData[b1] * frac;
+        lastColumnDb[y] = db;
+
+        const norm = Math.max(0, Math.min(1, (db - minDb) / (MAX_DB - minDb)));
+        const cIdx = Math.floor(norm * 255) * 3;
+
+        for (let dx = 0; dx < stepX; dx++) {
+          const pIdx = (y * stepX + dx) * 4;
+          pixels[pIdx]     = colorLUT[cIdx];
+          pixels[pIdx + 1] = colorLUT[cIdx + 1];
+          pixels[pIdx + 2] = colorLUT[cIdx + 2];
+          pixels[pIdx + 3] = 255;
+        }
+      }
+
+      specCtx.putImageData(colImage, w - stepX, 0);
+    }
+
+    async function startRx() {
+      try {
+        rxStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false,
+            channelCount: 1
+          }
+        });
+
+        rxAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const source = rxAudioCtx.createMediaStreamSource(rxStream);
+
+        rxAnalyser = rxAudioCtx.createAnalyser();
+        rxAnalyser.fftSize = 16384;
+        rxAnalyser.smoothingTimeConstant = 0;
+
+        rxFreqData = new Float32Array(rxAnalyser.frequencyBinCount);
+        source.connect(rxAnalyser);
+
+        rxFrozen = false;
+        rxFreezeBtn.classList.remove('active-state');
+        rxFreezeBtn.textContent = 'Congela';
+        rxToggleBtn.textContent = 'Ferma ascolto';
+        rxToggleBtn.classList.add('is-stop');
+        rxReadout.textContent = 'In ascolto attivo';
+        updateGlobalStatus();
+
+        rxRenderLoop();
+      } catch (err) {
+        alert('Accesso al microfono negato o non disponibile (richiede HTTPS).\n' + err.message);
+      }
+    }
+
+    function stopRx() {
+      if (rxAnimId) cancelAnimationFrame(rxAnimId);
+      if (rxStream) rxStream.getTracks().forEach(t => t.stop());
+      if (rxAudioCtx) rxAudioCtx.close();
+      rxAnalyser = null;
+      rxAudioCtx = null;
+      rxToggleBtn.textContent = 'Avvia ascolto';
+      rxToggleBtn.classList.remove('is-stop');
+      rxReadout.textContent = 'Ricevitore in pausa';
+      updateGlobalStatus();
+    }
+
+    rxToggleBtn.addEventListener('click', () => rxAudioCtx ? stopRx() : startRx());
+
+    rxFreezeBtn.addEventListener('click', () => {
+      rxFrozen = !rxFrozen;
+      rxFreezeBtn.classList.toggle('active-state', rxFrozen);
+      rxFreezeBtn.textContent = rxFrozen ? 'Riprendi' : 'Congela';
+      rxReadout.textContent = rxFrozen ? 'Schermo congelato' : 'In ascolto attivo';
+      updateGlobalStatus();
+    });
+
+    rxClearBtn.addEventListener('click', clearRxWaterfall);
+
+    rxWrapper.addEventListener('mousemove', (e) => {
+      const rect = rxWrapper.getBoundingClientRect();
+      const x = Math.floor(e.clientX - rect.left);
+      const y = Math.floor(e.clientY - rect.top);
+      const freq = rxYToFreq(y, overlayCanvas.height);
+      const db = lastColumnDb ? lastColumnDb[y] : -120;
+      const ch = findChannelAtFreq(freq);
+      const chLabel = ch ? `CH ${ch.id}` : 'Guardia';
+      rxReadout.textContent = `${chLabel} — ${Math.round(freq)} Hz | ${db.toFixed(1)} dB`;
+      drawRxGrid(x, y);
+    });
+
+    rxWrapper.addEventListener('mouseleave', () => {
+      drawRxGrid(null, null);
+    });
+
+    /* ==================== MODULO 2: TRASMETTITORE (TX) ==================== */
+    const txChannelGrid = document.getElementById('txChannelGrid');
+    const txBandBadge = document.getElementById('txBandBadge');
+    const drawCanvas = document.getElementById('drawCanvas');
+    const txScanCanvas = document.getElementById('txScanCanvas');
+    const drawCtx = drawCanvas.getContext('2d');
+    const scanCtx = txScanCanvas.getContext('2d');
+
+    const secretTextInput = document.getElementById('secretTextInput');
+    const stampTextBtn = document.getElementById('stampTextBtn');
+    const txPlayBtn = document.getElementById('txPlayBtn');
+    const txLoopBtn = document.getElementById('txLoopBtn');
+    const txDownloadBtn = document.getElementById('txDownloadBtn');
+    const durationSelect = document.getElementById('durationSelect');
+    const brushSelect = document.getElementById('brushSelect');
+    const txClearBtn = document.getElementById('txClearBtn');
+    const txStatusText = document.getElementById('txStatusText');
+
+    let isDrawing = false;
+    let lastPt = null;
+    let txAudioCtx = null;
+    let txSourceNode = null;
+    let txLooping = false;
+    let txAnimId = null;
+
+    function setTxChannel(chNum) {
+      activeTxCh = chNum;
+      const ch = CHANNELS[chNum - 1];
+      txChannelGrid.querySelectorAll('.ch-pill').forEach(b => {
+        b.classList.toggle('selected', parseInt(b.dataset.tx, 10) === chNum);
+      });
+      txBandBadge.textContent = `CH ${ch.id}: ${ch.min} Hz – ${ch.max} Hz`;
+      txStatusText.textContent = `Pronto su CH ${ch.id}`;
+      drawTxGuideGrid();
+    }
+
+    txChannelGrid.addEventListener('click', (e) => {
+      const btn = e.target.closest('.ch-pill');
+      if (!btn) return;
+      stopTxPlayback();
+      setTxChannel(parseInt(btn.dataset.tx, 10));
+    });
+
+    function clearDrawBoard() {
+      drawCtx.fillStyle = '#020305';
+      drawCtx.fillRect(0, 0, drawCanvas.width, drawCanvas.height);
+    }
+    clearDrawBoard();
+
+    function drawTxGuideGrid() {
+      const w = txScanCanvas.width;
+      const h = txScanCanvas.height;
+      scanCtx.clearRect(0, 0, w, h);
+
+      scanCtx.strokeStyle = 'rgba(226, 232, 240, 0.14)';
+      scanCtx.font = '10.5px Montserrat, sans-serif';
+      scanCtx.fillStyle = 'rgba(148, 163, 184, 0.8)';
+
+      [0.15, 0.5, 0.85].forEach(ratio => {
+        const y = Math.round(ratio * h) + 0.5;
+        const f = txYToFreq(y, h);
+        scanCtx.beginPath();
+        scanCtx.moveTo(0, y);
+        scanCtx.lineTo(w, y);
+        scanCtx.stroke();
+        scanCtx.fillText(`${Math.round(f)} Hz`, 8, y - 5);
+      });
+    }
+
+    setTxChannel(activeTxCh);
+
+    function getCanvasCoords(e) {
+      const rect = drawCanvas.getBoundingClientRect();
+      return {
+        x: ((e.clientX - rect.left) / rect.width) * drawCanvas.width,
+        y: ((e.clientY - rect.top) / rect.height) * drawCanvas.height
+      };
+    }
+
+    drawCanvas.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      drawCanvas.setPointerCapture(e.pointerId);
+      isDrawing = true;
+      lastPt = getCanvasCoords(e);
+      drawStroke(lastPt, lastPt);
+    });
+
+    drawCanvas.addEventListener('pointermove', (e) => {
+      if (!isDrawing) return;
+      e.preventDefault();
+      const pt = getCanvasCoords(e);
+      drawStroke(lastPt, pt);
+      lastPt = pt;
+    });
+
+    drawCanvas.addEventListener('pointerup', () => { isDrawing = false; lastPt = null; });
+    drawCanvas.addEventListener('pointercancel', () => { isDrawing = false; lastPt = null; });
+
+    function drawStroke(p0, p1) {
+      const mode = brushSelect.value;
+      drawCtx.lineCap = 'round';
+      drawCtx.lineJoin = 'round';
+
+      if (mode === 'eraser') {
+        drawCtx.strokeStyle = '#020305';
+        drawCtx.lineWidth = 22;
+      } else {
+        drawCtx.strokeStyle = '#ffffff';
+        drawCtx.lineWidth = parseInt(mode, 10);
+      }
+
+      drawCtx.beginPath();
+      drawCtx.moveTo(p0.x, p0.y);
+      drawCtx.lineTo(p1.x, p1.y);
+      drawCtx.stroke();
+    }
+
+    stampTextBtn.addEventListener('click', () => {
+      const text = secretTextInput.value.trim().toUpperCase();
+      if (!text) return;
+
+      clearDrawBoard();
+      const w = drawCanvas.width;
+      const h = drawCanvas.height;
+
+      let fontSize = 105;
+      drawCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
+      while (drawCtx.measureText(text).width > w * 0.86 && fontSize > 22) {
+        fontSize -= 4;
+        drawCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
+      }
+
+      drawCtx.fillStyle = '#ffffff';
+      drawCtx.textAlign = 'center';
+      drawCtx.textBaseline = 'middle';
+      drawCtx.fillText(text, w / 2, h / 2);
+      txStatusText.textContent = `Testo «${text}» su CH ${activeTxCh}`;
+    });
+
+    txClearBtn.addEventListener('click', () => {
+      stopTxPlayback();
+      clearDrawBoard();
+      txStatusText.textContent = `Lavagna pulita (CH ${activeTxCh})`;
+    });
+
+    /* ==================== SINTESI AUDIO NELLO SLOT SELEZIONATO ==================== */
+    function synthesizeCanvasToSamples(sampleRate, durationSec) {
+      const W = drawCanvas.width;
+      const H = drawCanvas.height;
+      const imgData = drawCtx.getImageData(0, 0, W, H).data;
+
+      const numRows = Math.floor(H / 3);
+      const numCols = Math.floor(W / 4);
+      const activeOscillators = [];
+
+      for (let r = 0; r < numRows; r++) {
+        const y = r * 3 + 1;
+        const rowAmps = new Float32Array(numCols);
+        let hasEnergy = false;
+
+        for (let c = 0; c < numCols; c++) {
+          const x = c * 4 + 2;
+          const idx = (y * W + x) * 4;
+          const brightness = (imgData[idx] + imgData[idx + 1] + imgData[idx + 2]) / (3 * 255);
+          if (brightness > 0.08) {
+            rowAmps[c] = Math.pow(brightness, 1.3);
+            hasEnergy = true;
+          }
+        }
+
+        if (hasEnergy) {
+          const freq = txYToFreq(y, H);
+          const omega = (2 * Math.PI * freq) / sampleRate;
+          const phase0 = Math.random() * 2 * Math.PI;
+          activeOscillators.push({
+            amps: rowAmps,
+            cosW: Math.cos(omega),
+            sinW: Math.sin(omega),
+            re: Math.cos(phase0),
+            im: Math.sin(phase0)
+          });
+        }
+      }
+
+      const totalSamples = Math.floor(sampleRate * durationSec);
+      const out = new Float32Array(totalSamples);
+      if (activeOscillators.length === 0) return out;
+
+      const fadeSamples = Math.floor(sampleRate * 0.025);
+
+      for (let i = 0; i < totalSamples; i++) {
+        const pos = (i / totalSamples) * (numCols - 1);
+        const c0 = Math.floor(pos);
+        const c1 = Math.min(numCols - 1, c0 + 1);
+        const frac = pos - c0;
+
+        let sample = 0;
+        for (let k = 0; k < activeOscillators.length; k++) {
+          const osc = activeOscillators[k];
+          const amp = osc.amps[c0] * (1 - frac) + osc.amps[c1] * frac;
+          if (amp > 0.002) {
+            sample += amp * osc.im;
+          }
+          const nextRe = osc.re * osc.cosW - osc.im * osc.sinW;
+          const nextIm = osc.re * osc.sinW + osc.im * osc.cosW;
+          osc.re = nextRe;
+          osc.im = nextIm;
+        }
+
+        if ((i & 1023) === 1023) {
+          for (let k = 0; k < activeOscillators.length; k++) {
+            const osc = activeOscillators[k];
+            const inv = 1 / Math.hypot(osc.re, osc.im);
+            osc.re *= inv;
+            osc.im *= inv;
+          }
+        }
+
+        let env = 1;
+        if (i < fadeSamples) env = i / fadeSamples;
+        else if (i > totalSamples - fadeSamples) env = (totalSamples - i) / fadeSamples;
+
+        out[i] = sample * env;
+      }
+
+      let maxVal = 0;
+      for (let i = 0; i < totalSamples; i++) {
+        const abs = Math.abs(out[i]);
+        if (abs > maxVal) maxVal = abs;
+      }
+      if (maxVal > 0) {
+        const gain = 0.85 / maxVal;
+        for (let i = 0; i < totalSamples; i++) out[i] *= gain;
+      }
+
+      return out;
+    }
+
+    function stopTxPlayback() {
+      if (txAnimId) cancelAnimationFrame(txAnimId);
+      if (txSourceNode) {
+        try { txSourceNode.stop(); } catch (_) {}
+        txSourceNode = null;
+      }
+      txPlayBtn.textContent = 'Trasmetti suono';
+      txPlayBtn.classList.remove('is-stop');
+      updateGlobalStatus();
+      drawTxGuideGrid();
+    }
+
+    txPlayBtn.addEventListener('click', async () => {
+      if (txSourceNode) {
+        stopTxPlayback();
+        txStatusText.textContent = `Trasmissione interrotta (CH ${activeTxCh})`;
+        return;
+      }
+
+      if (!txAudioCtx) {
+        txAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (txAudioCtx.state === 'suspended') await txAudioCtx.resume();
+
+      const duration = parseFloat(durationSelect.value);
+      const samples = synthesizeCanvasToSamples(txAudioCtx.sampleRate, duration);
+      const audioBuffer = txAudioCtx.createBuffer(1, samples.length, txAudioCtx.sampleRate);
+      audioBuffer.copyToChannel(samples, 0);
+
+      txSourceNode = txAudioCtx.createBufferSource();
+      txSourceNode.buffer = audioBuffer;
+      txSourceNode.loop = txLooping;
+      txSourceNode.connect(txAudioCtx.destination);
+
+      const startTime = txAudioCtx.currentTime;
+      txSourceNode.start(startTime);
+
+      txPlayBtn.textContent = 'Ferma suono';
+      txPlayBtn.classList.add('is-stop');
+      txStatusText.textContent = `In onda su CH ${activeTxCh}`;
+      updateGlobalStatus();
+
+      txSourceNode.onended = () => {
+        if (!txLooping) {
+          stopTxPlayback();
+          txStatusText.textContent = `Trasmissione completata (CH ${activeTxCh})`;
+        }
+      };
+
+      function animateScanner() {
+        if (!txSourceNode) return;
+        const elapsed = txAudioCtx.currentTime - startTime;
+        if (!txLooping && elapsed >= duration) return;
+
+        const progress = (elapsed % duration) / duration;
+        drawTxGuideGrid();
+
+        const scanX = Math.round(progress * txScanCanvas.width) + 0.5;
+        scanCtx.strokeStyle = '#f59e0b';
+        scanCtx.lineWidth = 1.5;
+        scanCtx.beginPath();
+        scanCtx.moveTo(scanX, 0);
+        scanCtx.lineTo(scanX, txScanCanvas.height);
+        scanCtx.stroke();
+
+        txAnimId = requestAnimationFrame(animateScanner);
+      }
+      animateScanner();
+    });
+
+    txLoopBtn.addEventListener('click', () => {
+      txLooping = !txLooping;
+      txLoopBtn.classList.toggle('active-state', txLooping);
+      txLoopBtn.textContent = txLooping ? 'Loop: On' : 'Loop: Off';
+      if (txSourceNode) txSourceNode.loop = txLooping;
+    });
+
+    txDownloadBtn.addEventListener('click', () => {
+      const sampleRate = 44100;
+      const duration = parseFloat(durationSelect.value);
+      const samples = synthesizeCanvasToSamples(sampleRate, duration);
+
+      const buffer = new ArrayBuffer(44 + samples.length * 2);
+      const view = new DataView(buffer);
+      const writeStr = (offset, str) => {
+        for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+      };
+
+      writeStr(0, 'RIFF');
+      view.setUint32(4, 36 + samples.length * 2, true);
+      writeStr(8, 'WAVE');
+      writeStr(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeStr(36, 'data');
+      view.setUint32(40, samples.length * 2, true);
+
+      let offset = 44;
+      for (let i = 0; i < samples.length; i++, offset += 2) {
+        const s = Math.max(-1, Math.min(1, samples[i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      }
+
+      const blob = new Blob([buffer], { type: 'audio/wav' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `decoder-CH${activeTxCh}-${Date.now()}.wav`;
+      a.click();
+      URL.revokeObjectURL(url);
+      txStatusText.textContent = `File .wav CH ${activeTxCh} esportato`;
+    });
+
+    window.addEventListener('resize', resizeRxCanvases);
+    resizeRxCanvases();
+  })();
+  </script>
+</body>
+</html>
