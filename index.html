@@ -13,6 +13,7 @@
     :root {
       --bg-void: #06080d;
       --bg-surface: #0d121c;
+      --bg-card: #090d14;
       --border-line: #283344;
       --border-strong: #64748b;
       --cyan: #00f0ff;
@@ -84,7 +85,7 @@
 
     /* NAVIGAZIONE */
     nav {
-      margin-bottom: 40px;
+      margin-bottom: 36px;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
@@ -132,7 +133,7 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 16px 22px;
+      gap: 14px 20px;
       padding-bottom: 16px;
       margin-bottom: 18px;
       border-bottom: 1px solid var(--border-line);
@@ -142,7 +143,7 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 16px 22px;
+      gap: 14px 20px;
       margin-bottom: 18px;
     }
 
@@ -160,7 +161,7 @@
       color: var(--cyan);
       border: 1px solid var(--cyan);
       border-radius: 0;
-      padding: 7px 15px;
+      padding: 7px 14px;
       font-family: 'Montserrat', sans-serif;
       font-size: 12px;
       font-weight: 700;
@@ -193,6 +194,11 @@
       color: var(--bg-void);
     }
 
+    .btn-action.btn-sm {
+      padding: 5px 10px;
+      font-size: 11px;
+    }
+
     /* PULSANTI TESTUALI SOTTOLINEATI */
     .btn-link {
       background: none;
@@ -217,6 +223,12 @@
       font-weight: 700;
     }
 
+    .btn-link.danger-link:hover {
+      color: var(--danger);
+      border-bottom-color: var(--danger);
+      opacity: 1;
+    }
+
     /* INPUT E SELETTORI */
     .control-inline {
       display: inline-flex;
@@ -227,7 +239,8 @@
     }
 
     select,
-    input[type="text"] {
+    input[type="text"],
+    textarea {
       background: transparent;
       color: var(--text-main);
       border: none;
@@ -237,6 +250,21 @@
       font-family: 'Montserrat', sans-serif;
       font-size: 12px;
       outline: none;
+    }
+
+    textarea {
+      width: 100%;
+      background: #04060a;
+      border: 1px solid var(--border-line);
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      resize: vertical;
+      min-height: 68px;
+    }
+
+    textarea:focus {
+      border-color: var(--amber);
     }
 
     select option {
@@ -272,7 +300,179 @@
       border-bottom-color: var(--danger);
     }
 
-    /* GRIGLIA SORGENTI CODIFICA (TESTO + IMMAGINE) */
+    /* VIEWPORT SPETTROGRAMMA LIVE */
+    .viewport {
+      position: relative;
+      width: 100%;
+      height: 540px;
+      background: #020305;
+      border: 1px solid var(--border-line);
+      border-radius: 0;
+      overflow: hidden;
+    }
+
+    .viewport canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #overlayCanvas,
+    #txScanCanvas {
+      pointer-events: none;
+    }
+
+    /* ==================== PRESENTAZIONE (NASTRO CONTINUO + BLOCCHI) ==================== */
+    .ribbon-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .ribbon-scroller {
+      position: relative;
+      width: 100%;
+      height: 270px;
+      background: #020305;
+      border: 1px solid var(--border-line);
+      overflow-x: auto;
+      overflow-y: hidden;
+      margin-bottom: 24px;
+    }
+
+    .ribbon-stage {
+      position: relative;
+      height: 100%;
+      min-width: 100%;
+    }
+
+    .ribbon-stage canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      display: block;
+    }
+
+    #presOverlayCanvas {
+      pointer-events: none;
+    }
+
+    .blocks-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .blocks-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .blocks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .block-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-line);
+      padding: 16px 18px;
+      transition: border-color 0.15s ease;
+    }
+
+    .block-card.is-playing {
+      border-color: var(--amber);
+    }
+
+    .block-card-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border-line);
+    }
+
+    .block-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .block-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--amber);
+      border: 1px solid var(--amber);
+      padding: 2px 7px;
+      letter-spacing: 0.4px;
+    }
+
+    .block-badge.is-img {
+      color: var(--cyan);
+      border-color: var(--cyan);
+    }
+
+    .block-info {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .block-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .block-options {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px 20px;
+      margin-top: 12px;
+    }
+
+    .img-block-grid {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .img-thumb-box {
+      width: 160px;
+      height: 80px;
+      background: #020305;
+      border: 1px solid var(--border-line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .img-thumb-box canvas {
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+    }
+
+    /* GRIGLIA CODIFICA RAPIDA */
     .encoder-inputs {
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
@@ -300,30 +500,6 @@
       flex: 1;
       min-width: 190px;
       font-size: 13px;
-    }
-
-    /* VIEWPORT SPETTROGRAMMA E ANTEPRIMA */
-    .viewport {
-      position: relative;
-      width: 100%;
-      height: 540px;
-      background: #020305;
-      border: 1px solid var(--border-line);
-      border-radius: 0;
-      overflow: hidden;
-    }
-
-    .viewport canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    #overlayCanvas,
-    #txScanCanvas {
-      pointer-events: none;
     }
 
     .preview-viewport {
@@ -386,9 +562,10 @@
         padding: 4px 0;
       }
 
-      .encoder-inputs {
+      .encoder-inputs,
+      .img-block-grid {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 16px;
       }
 
       .viewport {
@@ -420,7 +597,8 @@
   <nav>
     <div class="nav-links">
       <a class="attivo" data-tab="rxPanel">Spettrogramma (Live)</a>
-      <a data-tab="txPanel">Codifica (Immagine / Testo)</a>
+      <a data-tab="presPanel">Presentazione (Sequenza)</a>
+      <a data-tab="txPanel">Codifica Rapida</a>
     </div>
 
     <label class="control-inline">Banda spettrale:
@@ -486,12 +664,75 @@
       </div>
 
       <div class="nota-footer">
-        <span><strong>FFT 4096</strong> evita la sfocatura orizzontale e mantiene i caratteri ben separati anche dal microfono dello smartphone.</span>
+        <span><strong>FFT 4096</strong> mantiene nitidi sia i testi scorrevoli sia le immagini ricevute dal microfono dello smartphone.</span>
         <span class="nota-sottolineata">Usa «Congela» per fermare il flusso e «Salva immagine» per scaricare il fotogramma</span>
       </div>
     </section>
 
-    <!-- ==================== 2. CODIFICA IMMAGINE / TESTO (REGIA) ==================== -->
+    <!-- ==================== 2. PRESENTAZIONE GRAFICA (SEQUENZA CONTINUA) ==================== -->
+    <section class="panel" id="presPanel">
+      <div class="toolbar">
+        <button class="btn-action tx-mode" id="presPlayAllBtn">Riproduci intera sequenza</button>
+        <button class="btn-link" id="presDownloadAllBtn">Scarica tutte le parti (.WAV separati)</button>
+        <button class="btn-link" id="presExportSingleBtn">Esporta sequenza unica (.WAV)</button>
+
+        <label class="control-inline">Ritmo scorrimento:
+          <select id="presSpeedSelect">
+            <option value="85">Lento (85 px/s — Massima leggibilità)</option>
+            <option value="105" selected>Standard (105 px/s — Scala 1:1)</option>
+            <option value="130">Rapido (130 px/s — Compatto)</option>
+          </select>
+        </label>
+
+        <label class="control-inline">Pausa tra blocchi:
+          <select id="presGapSelect">
+            <option value="0.5">0.5 sec</option>
+            <option value="1.0" selected>1.0 sec</option>
+            <option value="2.0">2.0 sec</option>
+          </select>
+        </label>
+
+        <label class="control-inline">Bande:
+          <select id="presBandsSelect">
+            <option value="150" selected>150 bande (Testi nitidi)</option>
+            <option value="200">200 bande (Immagini ricche)</option>
+          </select>
+        </label>
+
+        <span class="readout-text" id="presStatusText">Pronto</span>
+      </div>
+
+      <!-- NASTRO SPETTRALE CONTINUO -->
+      <div class="ribbon-header">
+        <span class="section-label">Nastro spettrale continuo (Anteprima di ciò che scorrerà sullo spettrogramma)</span>
+        <span class="nota-sottolineata" id="presTotalMeta">3 parti — Durata totale: 0.0 sec</span>
+      </div>
+
+      <div class="ribbon-scroller" id="presScroller">
+        <div class="ribbon-stage" id="presStage">
+          <canvas id="presRibbonCanvas" height="400"></canvas>
+          <canvas id="presOverlayCanvas" height="400"></canvas>
+        </div>
+      </div>
+
+      <!-- GESTIONE BLOCCHI DELLA PRESENTAZIONE -->
+      <div class="blocks-toolbar">
+        <span class="section-label">Parti della presentazione (Modifica e scarica ogni singola parte in .WAV)</span>
+        <div class="blocks-actions">
+          <button class="btn-action tx-mode btn-sm" id="addTextBlockBtn">+ Aggiungi Testo Lungo</button>
+          <button class="btn-action btn-sm" id="addImageBlockBtn">+ Aggiungi Immagine</button>
+        </div>
+      </div>
+
+      <div class="blocks-list" id="presBlocksList"></div>
+
+      <div class="nota-footer">
+        <span>Ogni parte esportata include 0,25s di silenzio iniziale/finale ed equalizzazione anti-fatica per altoparlanti e smartphone.</span>
+        <span class="nota-sottolineata">Scorri orizzontalmente il nastro sopra per ispezionare l'intera narrazione</span>
+      </div>
+    </section>
+
+    <!-- ==================== 3. CODIFICA RAPIDA (SINGOLA) ==================== -->
     <section class="panel" id="txPanel">
       <div class="encoder-inputs">
         <div class="input-block">
@@ -566,7 +807,7 @@
       </div>
 
       <div class="nota-footer">
-        <span>Per frasi lunghe usa « / » per dividerle su 2 righe e scegli <strong>9–12 sec</strong>: più tempo per lettera significa maggiore nitidezza nello spettrogramma.</span>
+        <span>Per testi lunghi alternati a immagini usa la scheda <strong>Presentazione (Sequenza)</strong>.</span>
         <span class="nota-sottolineata">Scala lineare 1:1 — Nessuna deformazione geometrica</span>
       </div>
     </section>
@@ -605,6 +846,7 @@
         link.classList.add('attivo');
         document.getElementById(link.dataset.tab).classList.add('active');
         if (link.dataset.tab === 'rxPanel') resizeRxCanvases();
+        else if (link.dataset.tab === 'presPanel') rebuildPresentationRibbon();
         else drawTxGrid();
       });
     });
@@ -614,6 +856,7 @@
       clearRxWaterfall();
       drawRxGrid(null, null);
       drawTxGrid();
+      drawPresentationOverlay(null);
     });
 
     /* ==================== PALETTE COLORI (LUT 256) ==================== */
@@ -663,8 +906,209 @@
     }
     buildColorLUT('inferno');
 
-    /* ==================== MODULO 1: SPETTROGRAMMA LIVE (RX) ==================== */
+    /* ==================== FUNZIONI CONDIVISE SINTESI & WAV ==================== */
+    function getAcousticCompensation(freq) {
+      let gain = 1.0;
+      if (freq < 380) {
+        gain += ((380 - freq) / 230) * 0.35;
+      }
+      const earResonance = Math.exp(-Math.pow((freq - 3000) / 750, 2));
+      gain -= 0.25 * earResonance;
+
+      if (freq > 4000) {
+        gain += Math.min(0.25, ((freq - 4000) / 2000) * 0.25);
+      }
+      return Math.max(0.7, gain);
+    }
+
+    function synthesizeImageDataToAudio(imgDataObj, sampleRate, durationSec, numBands, useDeviceEq = true) {
+      const W = imgDataObj.width;
+      const H = imgDataObj.height;
+      const imgData = imgDataObj.data;
+
+      const numCols = Math.max(240, Math.round(durationSec * 80));
+      const oscillators = [];
+
+      for (let b = 0; b < numBands; b++) {
+        const normTopDown = b / Math.max(1, numBands - 1);
+        const y = Math.min(H - 1, Math.floor(normTopDown * (H - 1)));
+        const freq = yToFreq(y, H);
+        const eqGain = useDeviceEq ? getAcousticCompensation(freq) : 1.0;
+
+        const rowAmps = new Float32Array(numCols);
+        let hasEnergy = false;
+
+        for (let c = 0; c < numCols; c++) {
+          const x = Math.min(W - 1, Math.floor((c / Math.max(1, numCols - 1)) * (W - 1)));
+          const idx = (y * W + x) * 4;
+          const lum = imgData[idx] / 255;
+
+          if (lum > 0.05) {
+            rowAmps[c] = Math.pow(lum, 1.15) * eqGain;
+            hasEnergy = true;
+          }
+        }
+
+        if (hasEnergy) {
+          const omega = (2 * Math.PI * freq) / sampleRate;
+          const phase0 = (Math.PI * b * b) / numBands;
+          oscillators.push({
+            amps: rowAmps,
+            cosW: Math.cos(omega),
+            sinW: Math.sin(omega),
+            re: Math.cos(phase0),
+            im: Math.sin(phase0)
+          });
+        }
+      }
+
+      const padSamples = Math.floor(sampleRate * 0.25);
+      const activeSamples = Math.floor(sampleRate * durationSec);
+      const totalSamples = activeSamples + padSamples * 2;
+      const out = new Float32Array(totalSamples);
+
+      if (oscillators.length === 0) return out;
+
+      const fadeSamples = Math.floor(sampleRate * 0.02);
+
+      for (let i = 0; i < activeSamples; i++) {
+        const pos = (i / activeSamples) * (numCols - 1);
+        const c0 = Math.floor(pos);
+        const c1 = Math.min(numCols - 1, c0 + 1);
+        const frac = pos - c0;
+
+        let sample = 0;
+        for (let k = 0; k < oscillators.length; k++) {
+          const osc = oscillators[k];
+          const amp = osc.amps[c0] * (1 - frac) + osc.amps[c1] * frac;
+          if (amp > 0.002) {
+            sample += amp * osc.im;
+            const nextRe = osc.re * osc.cosW - osc.im * osc.sinW;
+            const nextIm = osc.re * osc.sinW + osc.im * osc.cosW;
+            osc.re = nextRe;
+            osc.im = nextIm;
+          }
+        }
+
+        if ((i & 1023) === 1023) {
+          for (let k = 0; k < oscillators.length; k++) {
+            const osc = oscillators[k];
+            const inv = 1 / Math.hypot(osc.re, osc.im);
+            osc.re *= inv;
+            osc.im *= inv;
+          }
+        }
+
+        let env = 1;
+        if (i < fadeSamples) env = i / fadeSamples;
+        else if (i > activeSamples - fadeSamples) env = (activeSamples - i) / fadeSamples;
+
+        out[padSamples + i] = sample * env;
+      }
+
+      let maxVal = 0;
+      for (let i = padSamples; i < padSamples + activeSamples; i++) {
+        const abs = Math.abs(out[i]);
+        if (abs > maxVal) maxVal = abs;
+      }
+      if (maxVal > 0) {
+        const gain = 0.92 / maxVal;
+        for (let i = padSamples; i < padSamples + activeSamples; i++) out[i] *= gain;
+      }
+
+      return out;
+    }
+
+    function downloadFloat32AsWav(samples, sampleRate, filename) {
+      const buffer = new ArrayBuffer(44 + samples.length * 2);
+      const view = new DataView(buffer);
+      const writeStr = (offset, str) => {
+        for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+      };
+
+      writeStr(0, 'RIFF');
+      view.setUint32(4, 36 + samples.length * 2, true);
+      writeStr(8, 'WAVE');
+      writeStr(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeStr(36, 'data');
+      view.setUint32(40, samples.length * 2, true);
+
+      let offset = 44;
+      for (let i = 0; i < samples.length; i++, offset += 2) {
+        const s = Math.max(-1, Math.min(1, samples[i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      }
+
+      const blob = new Blob([buffer], { type: 'audio/wav' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    /* ==================== STATO AUDIO CONDIVISO ==================== */
     const globalStatusText = document.getElementById('globalStatusText');
+    let rxAudioCtx = null;
+    let rxAnalyser = null;
+    let rxStream = null;
+    let rxAnimId = null;
+    let rxFreqData = null;
+    let rxFrozen = false;
+
+    let sharedTxAudioCtx = null;
+    let activePlayback = null; // { sourceNode, animId, mode: 'tx' | 'pres', blockId? }
+
+    function updateGlobalStatus() {
+      if (activePlayback) {
+        globalStatusText.textContent = activePlayback.mode === 'pres'
+          ? 'Stato: Riproduzione presentazione'
+          : 'Stato: Riproduzione anteprima';
+        globalStatusText.className = 'status-avviso tx-active';
+      } else if (rxAnalyser) {
+        globalStatusText.textContent = rxFrozen ? 'Stato: Fotogramma congelato' : 'Stato: Ascolto in diretta';
+        globalStatusText.className = 'status-avviso rx-active';
+      } else {
+        globalStatusText.textContent = 'Stato: Inattivo';
+        globalStatusText.className = 'status-avviso';
+      }
+    }
+
+    function stopAllTxPlayback() {
+      if (!activePlayback) return;
+      if (activePlayback.animId) cancelAnimationFrame(activePlayback.animId);
+      if (activePlayback.sourceNode) {
+        try { activePlayback.sourceNode.stop(); } catch (_) {}
+      }
+      activePlayback = null;
+
+      txPlayBtn.textContent = 'Anteprima audio';
+      txPlayBtn.classList.remove('is-stop');
+      presPlayAllBtn.textContent = 'Riproduci intera sequenza';
+      presPlayAllBtn.classList.remove('is-stop');
+
+      document.querySelectorAll('.block-card').forEach(c => c.classList.remove('is-playing'));
+      document.querySelectorAll('.play-part-btn').forEach(b => {
+        b.textContent = 'Ascolta parte';
+        b.classList.remove('is-stop');
+      });
+
+      drawTxGrid();
+      drawPresentationOverlay(null);
+      updateGlobalStatus();
+    }
+
+    /* ==================== MODULO 1: SPETTROGRAMMA LIVE (RX) ==================== */
     const rxToggleBtn = document.getElementById('rxToggleBtn');
     const rxFreezeBtn = document.getElementById('rxFreezeBtn');
     const rxSnapshotBtn = document.getElementById('rxSnapshotBtn');
@@ -683,32 +1127,9 @@
     const specCtx = specCanvas.getContext('2d', { alpha: false });
     const overCtx = overlayCanvas.getContext('2d');
 
-    let rxAudioCtx = null;
-    let rxAnalyser = null;
-    let rxStream = null;
-    let rxAnimId = null;
-    let rxFreqData = null;
-    let rxFrozen = false;
     let isHoveringRx = false;
     let lastColumnDb = null;
     let frameCounter = 0;
-
-    let txAudioCtx = null;
-    let txSourceNode = null;
-    let txAnimId = null;
-
-    function updateGlobalStatus() {
-      if (txSourceNode) {
-        globalStatusText.textContent = 'Stato: Riproduzione anteprima';
-        globalStatusText.className = 'status-avviso tx-active';
-      } else if (rxAnalyser) {
-        globalStatusText.textContent = rxFrozen ? 'Stato: Fotogramma congelato' : 'Stato: Ascolto in diretta';
-        globalStatusText.className = 'status-avviso rx-active';
-      } else {
-        globalStatusText.textContent = 'Stato: Inattivo';
-        globalStatusText.className = 'status-avviso';
-      }
-    }
 
     function showRxError(msg) {
       globalStatusText.textContent = 'Stato: Errore microfono';
@@ -722,17 +1143,9 @@
       specCtx.fillRect(0, 0, specCanvas.width, specCanvas.height);
     }
 
-    minDbInput.addEventListener('input', () => {
-      minDbVal.textContent = `${minDbInput.value} dB`;
-    });
-
-    contrastInput.addEventListener('input', () => {
-      contrastVal.textContent = `${contrastInput.value} dB`;
-    });
-
-    paletteSelect.addEventListener('change', () => {
-      buildColorLUT(paletteSelect.value);
-    });
+    minDbInput.addEventListener('input', () => { minDbVal.textContent = `${minDbInput.value} dB`; });
+    contrastInput.addEventListener('input', () => { contrastVal.textContent = `${contrastInput.value} dB`; });
+    paletteSelect.addEventListener('change', () => { buildColorLUT(paletteSelect.value); });
 
     fftSelect.addEventListener('change', () => {
       if (rxAnalyser) {
@@ -802,10 +1215,7 @@
       if (!rxAnalyser || !rxAudioCtx) return;
       rxAnimId = requestAnimationFrame(rxRenderLoop);
 
-      if (rxAudioCtx.state === 'suspended') {
-        rxAudioCtx.resume().catch(() => {});
-      }
-
+      if (rxAudioCtx.state === 'suspended') rxAudioCtx.resume().catch(() => {});
       if (rxFrozen) return;
 
       const w = specCanvas.width;
@@ -839,7 +1249,6 @@
         lastColumnDb[y] = db;
         if (db > peakDb) peakDb = db;
 
-        // Curva che elimina la coda di riverbero debole e mantiene nitidi i tratti dei caratteri
         let norm = Math.max(0, Math.min(1, (db - minDb) / (maxDb - minDb)));
         norm = Math.pow(norm, 1.25);
         const cIdx = Math.floor(norm * 255) * 3;
@@ -874,9 +1283,7 @@
 
       try {
         rxAudioCtx = new AudioCtx();
-        if (rxAudioCtx.state === 'suspended') {
-          await rxAudioCtx.resume();
-        }
+        if (rxAudioCtx.state === 'suspended') await rxAudioCtx.resume();
       } catch (e) {
         showRxError('Impossibile avviare il motore audio: ' + e.message);
         return;
@@ -899,13 +1306,8 @@
           }
         });
 
-        if (rxAudioCtx.state === 'suspended') {
-          await rxAudioCtx.resume();
-        }
-
-        if (specCanvas.width === 0 || specCanvas.height === 0) {
-          resizeRxCanvases();
-        }
+        if (rxAudioCtx.state === 'suspended') await rxAudioCtx.resume();
+        if (specCanvas.width === 0 || specCanvas.height === 0) resizeRxCanvases();
 
         const source = rxAudioCtx.createMediaStreamSource(rxStream);
         rxAnalyser = rxAudioCtx.createAnalyser();
@@ -994,7 +1396,865 @@
       drawRxGrid(null, null);
     });
 
-    /* ==================== MODULO 2: CODIFICA IMMAGINE / TESTO (TX) ==================== */
+    /* ==================== MODULO 2: PRESENTAZIONE GRAFICA (SEQUENZA CONTINUA) ==================== */
+    const presPlayAllBtn = document.getElementById('presPlayAllBtn');
+    const presDownloadAllBtn = document.getElementById('presDownloadAllBtn');
+    const presExportSingleBtn = document.getElementById('presExportSingleBtn');
+    const presSpeedSelect = document.getElementById('presSpeedSelect');
+    const presGapSelect = document.getElementById('presGapSelect');
+    const presBandsSelect = document.getElementById('presBandsSelect');
+    const presStatusText = document.getElementById('presStatusText');
+    const presTotalMeta = document.getElementById('presTotalMeta');
+
+    const presScroller = document.getElementById('presScroller');
+    const presStage = document.getElementById('presStage');
+    const presRibbonCanvas = document.getElementById('presRibbonCanvas');
+    const presOverlayCanvas = document.getElementById('presOverlayCanvas');
+    const ribbonCtx = presRibbonCanvas.getContext('2d');
+    const presOverCtx = presOverlayCanvas.getContext('2d');
+
+    const addTextBlockBtn = document.getElementById('addTextBlockBtn');
+    const addImageBlockBtn = document.getElementById('addImageBlockBtn');
+    const presBlocksList = document.getElementById('presBlocksList');
+
+    const RIBBON_H = 400; // Altezza verticale di riferimento (scala 1:1)
+    let blockIdCounter = 1;
+
+    // Crea un'immagine grafica di esempio (onda armonica + simbolo) per la parte iniziale
+    function createDemoGraphicImage() {
+      const c = document.createElement('canvas');
+      c.width = 560;
+      c.height = 400;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, c.width, c.height);
+
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      for (let x = 40; x <= 520; x += 2) {
+        const t = (x - 40) / 480;
+        const env = Math.sin(t * Math.PI);
+        const y = 200 + Math.sin(t * Math.PI * 10) * 125 * env;
+        if (x === 40) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(280, 200, 145, 0, Math.PI * 2);
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      const img = new Image();
+      img.src = c.toDataURL('image/png');
+      return img;
+    }
+
+    let presentationBlocks = [
+      {
+        id: blockIdCounter++,
+        type: 'text',
+        text: 'BENVENUTI NELLO SPAZIO SONORO — ASCOLTA IL PAESAGGIO CHE PRENDE FORMA',
+        layout: 'single',      // 'single' (1 riga continua) | 'double' (2 righe sovrapposte)
+        weight: '700',         // '700' | '400'
+        spacing: 'wide',       // 'normal' | 'wide'
+        renderedCanvas: null,
+        durationSec: 0,
+        startX: 0,
+        widthPx: 0
+      },
+      {
+        id: blockIdCounter++,
+        type: 'image',
+        fileName: 'onda-armonica.png',
+        imageObj: null,
+        mode: 'grayscale',     // 'grayscale' | 'threshold'
+        contrast: 145,
+        invert: false,
+        durationMode: 'auto',  // 'auto' (1:1) oppure secondi numerici ('6', '8', '12', '16')
+        renderedCanvas: null,
+        durationSec: 0,
+        startX: 0,
+        widthPx: 0
+      },
+      {
+        id: blockIdCounter++,
+        type: 'text',
+        text: 'OGNI VOCE E OGNI CANTO DI UCCELLO DISEGNA UNA TRACCIA NELL ARIA',
+        layout: 'double',
+        weight: '700',
+        spacing: 'wide',
+        renderedCanvas: null,
+        durationSec: 0,
+        startX: 0,
+        widthPx: 0
+      }
+    ];
+
+    // Carica la grafica demo nel secondo blocco e aggiorna il nastro
+    const demoImg = createDemoGraphicImage();
+    demoImg.onload = () => {
+      const imgBlock = presentationBlocks.find(b => b.type === 'image');
+      if (imgBlock && !imgBlock.imageObj) {
+        imgBlock.imageObj = demoImg;
+        renderBlocksUI();
+        rebuildPresentationRibbon();
+      }
+    };
+
+    function splitTextIntoTwoBalancedLines(raw) {
+      const cleaned = raw.replace(/\s+/g, ' ').trim().toUpperCase();
+      if (!cleaned) return [''];
+      if (cleaned.includes('/')) {
+        const parts = cleaned.split('/').map(s => s.trim()).filter(Boolean);
+        return parts.slice(0, 2);
+      }
+      const words = cleaned.split(' ');
+      if (words.length <= 1) return [cleaned];
+
+      const totalLen = cleaned.length;
+      let bestIdx = 1;
+      let bestDiff = Infinity;
+      let acc = 0;
+
+      for (let i = 0; i < words.length - 1; i++) {
+        acc += words[i].length + (i > 0 ? 1 : 0);
+        const diff = Math.abs(totalLen / 2 - acc);
+        if (diff < bestDiff) {
+          bestDiff = diff;
+          bestIdx = i + 1;
+        }
+      }
+      return [
+        words.slice(0, bestIdx).join(' '),
+        words.slice(bestIdx).join(' ')
+      ];
+    }
+
+    function measureTextWithTracking(ctx, str, trackingPx) {
+      if (!str) return 0;
+      let w = 0;
+      for (let i = 0; i < str.length; i++) {
+        w += ctx.measureText(str[i]).width;
+        if (i < str.length - 1) w += trackingPx;
+      }
+      return w;
+    }
+
+    function drawTextWithTracking(ctx, str, startX, y, trackingPx) {
+      let curX = startX;
+      for (let i = 0; i < str.length; i++) {
+        const ch = str[i];
+        ctx.fillText(ch, curX, y);
+        curX += ctx.measureText(ch).width + trackingPx;
+      }
+    }
+
+    // Genera il canvas 1:1 per un singolo blocco (Testo o Immagine)
+    function renderBlockToCanvas(block) {
+      const pxPerSec = parseFloat(presSpeedSelect.value);
+      const canvas = document.createElement('canvas');
+      canvas.height = RIBBON_H;
+      const ctx = canvas.getContext('2d');
+
+      if (block.type === 'text') {
+        const raw = (block.text || '').trim().toUpperCase();
+        const isDouble = block.layout === 'double';
+        const fontSize = isDouble ? 112 : 176;
+        const tracking = block.spacing === 'wide' ? Math.round(fontSize * 0.11) : Math.round(fontSize * 0.04);
+        const padX = 70;
+
+        ctx.font = `${block.weight} ${fontSize}px Montserrat, sans-serif`;
+
+        if (!raw) {
+          canvas.width = 300;
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(0, 0, canvas.width, RIBBON_H);
+          block.widthPx = canvas.width;
+          block.durationSec = canvas.width / pxPerSec;
+          block.renderedCanvas = canvas;
+          return;
+        }
+
+        const lines = isDouble ? splitTextIntoTwoBalancedLines(raw) : [raw.replace(/\s*\/\s*/g, ' ')];
+        const lineWidths = lines.map(l => measureTextWithTracking(ctx, l, tracking));
+        const maxTextW = Math.max(...lineWidths, 180);
+
+        canvas.width = Math.ceil(maxTextW + padX * 2);
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, canvas.width, RIBBON_H);
+
+        // Reimposta il font dopo il resize del canvas
+        ctx.font = `${block.weight} ${fontSize}px Montserrat, sans-serif`;
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+
+        if (lines.length === 1) {
+          drawTextWithTracking(ctx, lines[0], padX, RIBBON_H / 2, tracking);
+        } else {
+          drawTextWithTracking(ctx, lines[0], padX, RIBBON_H * 0.30, tracking);
+          drawTextWithTracking(ctx, lines[1], padX, RIBBON_H * 0.70, tracking);
+        }
+
+        block.widthPx = canvas.width;
+        block.durationSec = canvas.width / pxPerSec;
+        block.renderedCanvas = canvas;
+      } else {
+        // Blocco Immagine
+        const img = block.imageObj;
+        const padY = 18;
+        const padX = 36;
+        const availH = RIBBON_H - padY * 2;
+
+        let targetW;
+        if (!img || !img.width || !img.height) {
+          targetW = 480;
+        } else if (block.durationMode === 'auto') {
+          const naturalAspect = img.width / img.height;
+          targetW = Math.max(240, Math.round(availH * naturalAspect + padX * 2));
+        } else {
+          targetW = Math.max(240, Math.round(parseFloat(block.durationMode) * pxPerSec));
+        }
+
+        canvas.width = targetW;
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, canvas.width, RIBBON_H);
+
+        if (img && img.width && img.height) {
+          const innerW = canvas.width - padX * 2;
+          const scale = Math.min(innerW / img.width, availH / img.height);
+          const drawW = img.width * scale;
+          const drawH = img.height * scale;
+          const ox = (canvas.width - drawW) / 2;
+          const oy = (RIBBON_H - drawH) / 2;
+
+          ctx.drawImage(img, ox, oy, drawW, drawH);
+
+          // Applica contrasto / soglia / inversione
+          const imgData = ctx.getImageData(0, 0, canvas.width, RIBBON_H);
+          const d = imgData.data;
+          const contrastFactor = block.contrast / 128;
+
+          for (let i = 0; i < d.length; i += 4) {
+            let lum = 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+            if (block.invert) lum = 255 - lum;
+
+            let val;
+            if (block.mode === 'threshold') {
+              val = lum >= (255 - block.contrast) ? 255 : 0;
+            } else {
+              val = Math.max(0, Math.min(255, (lum - 128) * contrastFactor + 128));
+            }
+            d[i] = d[i + 1] = d[i + 2] = val;
+            d[i + 3] = 255;
+          }
+          ctx.putImageData(imgData, 0, 0);
+        } else {
+          ctx.strokeStyle = '#283344';
+          ctx.strokeRect(20, 20, canvas.width - 40, RIBBON_H - 40);
+          ctx.fillStyle = '#64748b';
+          ctx.font = '700 16px Montserrat, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('CARICA UN IMMAGINE', canvas.width / 2, RIBBON_H / 2);
+        }
+
+        block.widthPx = canvas.width;
+        block.durationSec = canvas.width / pxPerSec;
+        block.renderedCanvas = canvas;
+      }
+    }
+
+    // Ricompone l'intero nastro continuo della presentazione
+    function rebuildPresentationRibbon() {
+      const pxPerSec = parseFloat(presSpeedSelect.value);
+      const gapSec = parseFloat(presGapSelect.value);
+      const gapPx = Math.round(gapSec * pxPerSec);
+
+      let totalW = 0;
+      presentationBlocks.forEach((block, idx) => {
+        renderBlockToCanvas(block);
+        block.startX = totalW;
+        totalW += block.widthPx;
+        if (idx < presentationBlocks.length - 1) {
+          totalW += gapPx;
+        }
+      });
+
+      const minDisplayW = Math.max(800, presScroller.clientWidth || 800);
+      const finalCanvasW = Math.max(minDisplayW, totalW);
+
+      presRibbonCanvas.width = finalCanvasW;
+      presRibbonCanvas.height = RIBBON_H;
+      presOverlayCanvas.width = finalCanvasW;
+      presOverlayCanvas.height = RIBBON_H;
+
+      // Calcola la larghezza CSS proporzionale all'altezza visiva (270px)
+      const displayScale = 270 / RIBBON_H;
+      const cssWidth = Math.round(finalCanvasW * displayScale);
+      presStage.style.width = `${cssWidth}px`;
+      presRibbonCanvas.style.width = `${cssWidth}px`;
+      presOverlayCanvas.style.width = `${cssWidth}px`;
+
+      ribbonCtx.fillStyle = '#020305';
+      ribbonCtx.fillRect(0, 0, finalCanvasW, RIBBON_H);
+
+      presentationBlocks.forEach(block => {
+        if (block.renderedCanvas) {
+          ribbonCtx.drawImage(block.renderedCanvas, block.startX, 0);
+        }
+        // Aggiorna la miniatura nella scheda del blocco se presente
+        const thumb = document.getElementById(`thumb-${block.id}`);
+        if (thumb && block.renderedCanvas) {
+          const tCtx = thumb.getContext('2d');
+          thumb.width = 160;
+          thumb.height = 80;
+          tCtx.fillStyle = '#020305';
+          tCtx.fillRect(0, 0, 160, 80);
+          tCtx.drawImage(block.renderedCanvas, 0, 0, 160, 80);
+        }
+        const metaEl = document.getElementById(`meta-${block.id}`);
+        if (metaEl) {
+          metaEl.textContent = `${block.durationSec.toFixed(1)} sec • ${block.widthPx}×${RIBBON_H} px`;
+        }
+      });
+
+      const totalSec = totalW / pxPerSec;
+      presTotalMeta.textContent = `${presentationBlocks.length} ${presentationBlocks.length === 1 ? 'parte' : 'parti'} — Durata sequenza: ${totalSec.toFixed(1)} sec`;
+
+      drawPresentationOverlay(null);
+    }
+
+    function drawPresentationOverlay(playheadX) {
+      const w = presOverlayCanvas.width;
+      const h = presOverlayCanvas.height;
+      const pxPerSec = parseFloat(presSpeedSelect.value);
+      presOverCtx.clearRect(0, 0, w, h);
+
+      // Linee guida orizzontali delle frequenze
+      presOverCtx.strokeStyle = 'rgba(226, 232, 240, 0.12)';
+      presOverCtx.lineWidth = 1;
+      presOverCtx.font = '700 13px Montserrat, sans-serif';
+      presOverCtx.fillStyle = 'rgba(148, 163, 184, 0.75)';
+
+      [0.12, 0.5, 0.88].forEach(ratio => {
+        const y = Math.round(ratio * h) + 0.5;
+        const f = yToFreq(y, h);
+        const label = f >= 1000 ? `${(f / 1000).toFixed(2)} kHz` : `${Math.round(f)} Hz`;
+        presOverCtx.beginPath();
+        presOverCtx.moveTo(0, y);
+        presOverCtx.lineTo(w, y);
+        presOverCtx.stroke();
+        presOverCtx.fillText(label, 12, y - 7);
+      });
+
+      // Tacche temporali ogni 5 secondi
+      presOverCtx.fillStyle = 'rgba(148, 163, 184, 0.65)';
+      presOverCtx.font = '12px Montserrat, sans-serif';
+      for (let sec = 5; sec * pxPerSec < w; sec += 5) {
+        const tx = Math.round(sec * pxPerSec) + 0.5;
+        presOverCtx.strokeStyle = 'rgba(226, 232, 240, 0.15)';
+        presOverCtx.beginPath();
+        presOverCtx.moveTo(tx, h - 18);
+        presOverCtx.lineTo(tx, h);
+        presOverCtx.stroke();
+        presOverCtx.fillText(`${sec}s`, tx + 5, h - 6);
+      }
+
+      // Delimitatori e intestazioni di ogni singola parte
+      presentationBlocks.forEach((block, idx) => {
+        const x0 = Math.round(block.startX) + 0.5;
+        const x1 = Math.round(block.startX + block.widthPx) + 0.5;
+
+        presOverCtx.strokeStyle = 'rgba(0, 240, 255, 0.38)';
+        presOverCtx.setLineDash([6, 4]);
+        presOverCtx.beginPath();
+        presOverCtx.moveTo(x0, 0);
+        presOverCtx.lineTo(x0, h);
+        presOverCtx.moveTo(x1, 0);
+        presOverCtx.lineTo(x1, h);
+        presOverCtx.stroke();
+        presOverCtx.setLineDash([]);
+
+        const tag = `PARTE ${String(idx + 1).padStart(2, '0')} • ${block.type === 'text' ? 'TESTO' : 'IMMAGINE'} (${block.durationSec.toFixed(1)}s)`;
+        presOverCtx.font = '700 13px Montserrat, sans-serif';
+        const tagW = presOverCtx.measureText(tag).width + 16;
+        presOverCtx.fillStyle = 'rgba(6, 8, 13, 0.85)';
+        presOverCtx.fillRect(x0 + 6, 8, tagW, 24);
+        presOverCtx.fillStyle = block.type === 'text' ? '#f59e0b' : '#00f0ff';
+        presOverCtx.fillText(tag, x0 + 14, 24);
+      });
+
+      // Testina di riproduzione ambrata
+      if (playheadX !== null) {
+        const px = Math.round(playheadX) + 0.5;
+        presOverCtx.strokeStyle = '#f59e0b';
+        presOverCtx.lineWidth = 3;
+        presOverCtx.beginPath();
+        presOverCtx.moveTo(px, 0);
+        presOverCtx.lineTo(px, h);
+        presOverCtx.stroke();
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Genera l'elenco interattivo dei blocchi della presentazione
+    function renderBlocksUI() {
+      presBlocksList.innerHTML = '';
+
+      presentationBlocks.forEach((block, idx) => {
+        const partNum = String(idx + 1).padStart(2, '0');
+        const card = document.createElement('div');
+        card.className = 'block-card';
+        card.id = `card-${block.id}`;
+
+        const headHtml = `
+          <div class="block-card-head">
+            <div class="block-meta">
+              <span class="block-badge ${block.type === 'image' ? 'is-img' : ''}">PARTE ${partNum} • ${block.type === 'text' ? 'TESTO CONTINUO' : 'IMMAGINE'}</span>
+              <span class="block-info" id="meta-${block.id}">${block.durationSec.toFixed(1)} sec</span>
+            </div>
+            <div class="block-controls">
+              <button class="btn-link" data-act="up" ${idx === 0 ? 'disabled style="opacity:0.35;cursor:default;"' : ''}>Su ↑</button>
+              <button class="btn-link" data-act="down" ${idx === presentationBlocks.length - 1 ? 'disabled style="opacity:0.35;cursor:default;"' : ''}>Giù ↓</button>
+              <button class="btn-link" data-act="dup">Duplica</button>
+              <button class="btn-link danger-link" data-act="del">Elimina</button>
+              <button class="btn-action btn-sm play-part-btn" id="playBtn-${block.id}" data-act="play">Ascolta parte</button>
+              <button class="btn-action tx-mode btn-sm" data-act="wav">Scarica Parte ${partNum} (.WAV)</button>
+            </div>
+          </div>
+        `;
+
+        let bodyHtml = '';
+        if (block.type === 'text') {
+          bodyHtml = `
+            <textarea rows="2" placeholder="Scrivi qui il testo lungo che scorrerà nello spettrogramma...">${escapeHtml(block.text)}</textarea>
+            <div class="block-options">
+              <label class="control-inline">Disposizione:
+                <select data-field="layout">
+                  <option value="single" ${block.layout === 'single' ? 'selected' : ''}>1 Riga Continua (Massima grandezza)</option>
+                  <option value="double" ${block.layout === 'double' ? 'selected' : ''}>2 Righe Sovrapposte (Testo denso)</option>
+                </select>
+              </label>
+              <label class="control-inline">Spaziatura lettere:
+                <select data-field="spacing">
+                  <option value="wide" ${block.spacing === 'wide' ? 'selected' : ''}>Ampia (Anti-riverbero piazza)</option>
+                  <option value="normal" ${block.spacing === 'normal' ? 'selected' : ''}>Standard</option>
+                </select>
+              </label>
+              <label class="control-inline">Peso:
+                <select data-field="weight">
+                  <option value="700" ${block.weight === '700' ? 'selected' : ''}>Grassetto (Nitido)</option>
+                  <option value="400" ${block.weight === '400' ? 'selected' : ''}>Regolare (Sottile)</option>
+                </select>
+              </label>
+            </div>
+          `;
+        } else {
+          bodyHtml = `
+            <div class="img-block-grid">
+              <div class="img-thumb-box">
+                <canvas id="thumb-${block.id}" width="160" height="80"></canvas>
+              </div>
+              <div>
+                <div class="input-row" style="margin-bottom:10px;">
+                  <label for="file-${block.id}" class="btn-link" style="cursor:pointer;">Scegli / Sostituisci immagine</label>
+                  <input type="file" id="file-${block.id}" accept="image/*">
+                  <span style="font-size:11.5px; color:var(--text-muted);">${escapeHtml(block.fileName || 'Nessun file')}</span>
+                </div>
+                <div class="block-options" style="margin-top:0;">
+                  <label class="control-inline">Resa:
+                    <select data-field="mode">
+                      <option value="grayscale" ${block.mode === 'grayscale' ? 'selected' : ''}>Scala di grigi (Sfumature)</option>
+                      <option value="threshold" ${block.mode === 'threshold' ? 'selected' : ''}>Alto contrasto (Netto B/N)</option>
+                    </select>
+                  </label>
+                  <label class="control-inline">Contrasto:
+                    <input type="range" data-field="contrast" min="50" max="240" value="${block.contrast}">
+                  </label>
+                  <label class="control-inline">Durata:
+                    <select data-field="durationMode">
+                      <option value="auto" ${block.durationMode === 'auto' ? 'selected' : ''}>Proporzionale 1:1 (Auto)</option>
+                      <option value="6" ${block.durationMode === '6' ? 'selected' : ''}>6 sec</option>
+                      <option value="9" ${block.durationMode === '9' ? 'selected' : ''}>9 sec</option>
+                      <option value="12" ${block.durationMode === '12' ? 'selected' : ''}>12 sec</option>
+                      <option value="16" ${block.durationMode === '16' ? 'selected' : ''}>16 sec</option>
+                    </select>
+                  </label>
+                  <label class="control-inline">
+                    <input type="checkbox" data-field="invert" ${block.invert ? 'checked' : ''}> Inverti
+                  </label>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        card.innerHTML = headHtml + bodyHtml;
+        presBlocksList.appendChild(card);
+
+        // Collega eventi della scheda
+        card.querySelectorAll('[data-act]').forEach(btn => {
+          btn.addEventListener('click', () => handleBlockAction(block.id, btn.dataset.act));
+        });
+
+        if (block.type === 'text') {
+          const ta = card.querySelector('textarea');
+          ta.addEventListener('input', () => {
+            block.text = ta.value;
+            rebuildPresentationRibbon();
+          });
+        } else {
+          const fileInp = card.querySelector(`#file-${block.id}`);
+          fileInp.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            block.fileName = file.name;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              const img = new Image();
+              img.onload = () => {
+                block.imageObj = img;
+                renderBlocksUI();
+                rebuildPresentationRibbon();
+              };
+              img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+
+        card.querySelectorAll('[data-field]').forEach(ctrl => {
+          const eventName = ctrl.type === 'range' ? 'input' : 'change';
+          ctrl.addEventListener(eventName, () => {
+            const field = ctrl.dataset.field;
+            if (ctrl.type === 'checkbox') block[field] = ctrl.checked;
+            else if (ctrl.type === 'range') block[field] = parseInt(ctrl.value, 10);
+            else block[field] = ctrl.value;
+            rebuildPresentationRibbon();
+          });
+        });
+      });
+    }
+
+    function handleBlockAction(blockId, action) {
+      const idx = presentationBlocks.findIndex(b => b.id === blockId);
+      if (idx === -1) return;
+      const block = presentationBlocks[idx];
+
+      if (action === 'up' && idx > 0) {
+        stopAllTxPlayback();
+        [presentationBlocks[idx - 1], presentationBlocks[idx]] = [presentationBlocks[idx], presentationBlocks[idx - 1]];
+        renderBlocksUI();
+        rebuildPresentationRibbon();
+      } else if (action === 'down' && idx < presentationBlocks.length - 1) {
+        stopAllTxPlayback();
+        [presentationBlocks[idx], presentationBlocks[idx + 1]] = [presentationBlocks[idx + 1], presentationBlocks[idx]];
+        renderBlocksUI();
+        rebuildPresentationRibbon();
+      } else if (action === 'dup') {
+        stopAllTxPlayback();
+        const copy = { ...block, id: blockIdCounter++, renderedCanvas: null };
+        presentationBlocks.splice(idx + 1, 0, copy);
+        renderBlocksUI();
+        rebuildPresentationRibbon();
+      } else if (action === 'del') {
+        if (presentationBlocks.length <= 1) {
+          presStatusText.textContent = 'Deve rimanere almeno una parte nella sequenza';
+          return;
+        }
+        stopAllTxPlayback();
+        presentationBlocks.splice(idx, 1);
+        renderBlocksUI();
+        rebuildPresentationRibbon();
+      } else if (action === 'play') {
+        playSinglePresentationBlock(block, idx);
+      } else if (action === 'wav') {
+        exportSinglePresentationBlockWav(block, idx);
+      }
+    }
+
+    addTextBlockBtn.addEventListener('click', () => {
+      stopAllTxPlayback();
+      presentationBlocks.push({
+        id: blockIdCounter++,
+        type: 'text',
+        text: 'NUOVO FRAMMENTO NARRATIVO DELLA PRESENTAZIONE',
+        layout: 'single',
+        weight: '700',
+        spacing: 'wide',
+        renderedCanvas: null,
+        durationSec: 0,
+        startX: 0,
+        widthPx: 0
+      });
+      renderBlocksUI();
+      rebuildPresentationRibbon();
+      presScroller.scrollLeft = presScroller.scrollWidth;
+    });
+
+    addImageBlockBtn.addEventListener('click', () => {
+      stopAllTxPlayback();
+      presentationBlocks.push({
+        id: blockIdCounter++,
+        type: 'image',
+        fileName: 'Nessun file selezionato',
+        imageObj: null,
+        mode: 'grayscale',
+        contrast: 140,
+        invert: false,
+        durationMode: 'auto',
+        renderedCanvas: null,
+        durationSec: 0,
+        startX: 0,
+        widthPx: 0
+      });
+      renderBlocksUI();
+      rebuildPresentationRibbon();
+      presScroller.scrollLeft = presScroller.scrollWidth;
+    });
+
+    [presSpeedSelect, presGapSelect].forEach(el => {
+      el.addEventListener('change', () => {
+        stopAllTxPlayback();
+        rebuildPresentationRibbon();
+      });
+    });
+
+    function getBlockSamples(block, sampleRate) {
+      renderBlockToCanvas(block);
+      const ctx = block.renderedCanvas.getContext('2d');
+      const imgData = ctx.getImageData(0, 0, block.renderedCanvas.width, RIBBON_H);
+      const numBands = parseInt(presBandsSelect.value, 10);
+      return synthesizeImageDataToAudio(imgData, sampleRate, block.durationSec, numBands, true);
+    }
+
+    function exportSinglePresentationBlockWav(block, idx) {
+      const partNum = String(idx + 1).padStart(2, '0');
+      presStatusText.textContent = `Esportazione Parte ${partNum}...`;
+      const sampleRate = 48000;
+      const samples = getBlockSamples(block, sampleRate);
+      const slug = block.type === 'text' ? 'testo' : 'immagine';
+      downloadFloat32AsWav(samples, sampleRate, `decoder-parte-${partNum}-${slug}.wav`);
+      presStatusText.textContent = `Parte ${partNum} (.WAV) scaricata`;
+    }
+
+    presDownloadAllBtn.addEventListener('click', () => {
+      const sampleRate = 48000;
+      presStatusText.textContent = 'Esportazione di tutte le parti in corso...';
+      presentationBlocks.forEach((block, idx) => {
+        setTimeout(() => {
+          const partNum = String(idx + 1).padStart(2, '0');
+          const samples = getBlockSamples(block, sampleRate);
+          const slug = block.type === 'text' ? 'testo' : 'immagine';
+          downloadFloat32AsWav(samples, sampleRate, `decoder-parte-${partNum}-${slug}.wav`);
+          if (idx === presentationBlocks.length - 1) {
+            presStatusText.textContent = `Esportate ${presentationBlocks.length} parti (.WAV)`;
+          }
+        }, idx * 350);
+      });
+    });
+
+    function buildFullSequenceSamples(sampleRate) {
+      const gapSec = parseFloat(presGapSelect.value);
+      const gapSamples = Math.floor(sampleRate * gapSec);
+      const chunks = [];
+      let totalLen = 0;
+
+      presentationBlocks.forEach((block, idx) => {
+        const s = getBlockSamples(block, sampleRate);
+        chunks.push(s);
+        totalLen += s.length;
+        if (idx < presentationBlocks.length - 1) {
+          chunks.push(new Float32Array(gapSamples));
+          totalLen += gapSamples;
+        }
+      });
+
+      const merged = new Float32Array(totalLen);
+      let offset = 0;
+      chunks.forEach(chunk => {
+        merged.set(chunk, offset);
+        offset += chunk.length;
+      });
+      return merged;
+    }
+
+    presExportSingleBtn.addEventListener('click', () => {
+      presStatusText.textContent = 'Generazione sequenza unica .WAV...';
+      const sampleRate = 48000;
+      const merged = buildFullSequenceSamples(sampleRate);
+      downloadFloat32AsWav(merged, sampleRate, `decoder-presentazione-completa-${Date.now()}.wav`);
+      presStatusText.textContent = 'Sequenza unica (.WAV) esportata';
+    });
+
+    async function playSinglePresentationBlock(block, idx) {
+      const wasSame = activePlayback && activePlayback.mode === 'pres' && activePlayback.blockId === block.id;
+      stopAllTxPlayback();
+      if (wasSame) {
+        presStatusText.textContent = 'Riproduzione interrotta';
+        return;
+      }
+
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!sharedTxAudioCtx) sharedTxAudioCtx = new AudioCtx();
+      if (sharedTxAudioCtx.state === 'suspended') await sharedTxAudioCtx.resume();
+
+      const partNum = String(idx + 1).padStart(2, '0');
+      presStatusText.textContent = `Sintesi Parte ${partNum}...`;
+
+      const samples = getBlockSamples(block, sharedTxAudioCtx.sampleRate);
+      const audioBuffer = sharedTxAudioCtx.createBuffer(1, samples.length, sharedTxAudioCtx.sampleRate);
+      audioBuffer.copyToChannel(samples, 0);
+
+      const sourceNode = sharedTxAudioCtx.createBufferSource();
+      sourceNode.buffer = audioBuffer;
+      sourceNode.connect(sharedTxAudioCtx.destination);
+
+      const startTime = sharedTxAudioCtx.currentTime;
+      sourceNode.start(startTime);
+
+      const card = document.getElementById(`card-${block.id}`);
+      const btn = document.getElementById(`playBtn-${block.id}`);
+      if (card) card.classList.add('is-playing');
+      if (btn) {
+        btn.textContent = 'Ferma';
+        btn.classList.add('is-stop');
+      }
+      presStatusText.textContent = `In ascolto: Parte ${partNum}`;
+
+      activePlayback = { sourceNode, animId: null, mode: 'pres', blockId: block.id };
+      updateGlobalStatus();
+
+      sourceNode.onended = () => {
+        stopAllTxPlayback();
+        presStatusText.textContent = `Parte ${partNum} completata`;
+      };
+
+      const displayScale = 270 / RIBBON_H;
+
+      function animatePartHead() {
+        if (!activePlayback || activePlayback.blockId !== block.id) return;
+        const elapsed = sharedTxAudioCtx.currentTime - startTime - 0.25;
+        if (elapsed >= block.durationSec) return;
+
+        if (elapsed >= 0) {
+          const progress = elapsed / block.durationSec;
+          const headX = block.startX + progress * block.widthPx;
+          drawPresentationOverlay(headX);
+
+          // Scorri automaticamente il nastro per seguire la testina
+          const cssX = headX * displayScale;
+          const viewW = presScroller.clientWidth;
+          if (cssX < presScroller.scrollLeft + 40 || cssX > presScroller.scrollLeft + viewW - 80) {
+            presScroller.scrollLeft = Math.max(0, cssX - viewW * 0.3);
+          }
+        }
+        activePlayback.animId = requestAnimationFrame(animatePartHead);
+      }
+      animatePartHead();
+    }
+
+    presPlayAllBtn.addEventListener('click', async () => {
+      const wasFull = activePlayback && activePlayback.mode === 'pres' && activePlayback.blockId === 'ALL';
+      stopAllTxPlayback();
+      if (wasFull) {
+        presStatusText.textContent = 'Riproduzione interrotta';
+        return;
+      }
+
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!sharedTxAudioCtx) sharedTxAudioCtx = new AudioCtx();
+      if (sharedTxAudioCtx.state === 'suspended') await sharedTxAudioCtx.resume();
+
+      presStatusText.textContent = 'Sintesi intera sequenza...';
+
+      const sampleRate = sharedTxAudioCtx.sampleRate;
+      const merged = buildFullSequenceSamples(sampleRate);
+      const totalDuration = merged.length / sampleRate;
+
+      const audioBuffer = sharedTxAudioCtx.createBuffer(1, merged.length, sampleRate);
+      audioBuffer.copyToChannel(merged, 0);
+
+      const sourceNode = sharedTxAudioCtx.createBufferSource();
+      sourceNode.buffer = audioBuffer;
+      sourceNode.connect(sharedTxAudioCtx.destination);
+
+      const startTime = sharedTxAudioCtx.currentTime;
+      sourceNode.start(startTime);
+
+      presPlayAllBtn.textContent = 'Ferma sequenza';
+      presPlayAllBtn.classList.add('is-stop');
+      presStatusText.textContent = 'Riproduzione sequenza continua';
+
+      activePlayback = { sourceNode, animId: null, mode: 'pres', blockId: 'ALL' };
+      updateGlobalStatus();
+
+      sourceNode.onended = () => {
+        stopAllTxPlayback();
+        presStatusText.textContent = 'Sequenza completata';
+      };
+
+      const pxPerSec = parseFloat(presSpeedSelect.value);
+      const gapSec = parseFloat(presGapSelect.value);
+      const displayScale = 270 / RIBBON_H;
+
+      // Mappa temporale dei singoli blocchi inclusi i padding 0.25s
+      const timeline = [];
+      let cursorSec = 0;
+      presentationBlocks.forEach((b, i) => {
+        const blockTotalAudioSec = b.durationSec + 0.5; // +0.25s inizio e +0.25s fine
+        timeline.push({
+          block: b,
+          audioStart: cursorSec,
+          activeStart: cursorSec + 0.25,
+          activeEnd: cursorSec + 0.25 + b.durationSec,
+          audioEnd: cursorSec + blockTotalAudioSec
+        });
+        cursorSec += blockTotalAudioSec + (i < presentationBlocks.length - 1 ? gapSec : 0);
+      });
+
+      function animateFullSequence() {
+        if (!activePlayback || activePlayback.blockId !== 'ALL') return;
+        const elapsed = sharedTxAudioCtx.currentTime - startTime;
+        if (elapsed >= totalDuration) return;
+
+        let headX = null;
+        for (const item of timeline) {
+          const card = document.getElementById(`card-${item.block.id}`);
+          if (elapsed >= item.audioStart && elapsed <= item.audioEnd) {
+            if (card) card.classList.add('is-playing');
+            const localActive = Math.max(0, Math.min(item.block.durationSec, elapsed - item.activeStart));
+            headX = item.block.startX + (localActive / item.block.durationSec) * item.block.widthPx;
+          } else {
+            if (card) card.classList.remove('is-playing');
+          }
+        }
+
+        if (headX !== null) {
+          drawPresentationOverlay(headX);
+          const cssX = headX * displayScale;
+          const viewW = presScroller.clientWidth;
+          if (cssX > presScroller.scrollLeft + viewW * 0.65 || cssX < presScroller.scrollLeft) {
+            presScroller.scrollLeft = Math.max(0, cssX - viewW * 0.25);
+          }
+        }
+
+        activePlayback.animId = requestAnimationFrame(animateFullSequence);
+      }
+      animateFullSequence();
+    });
+
+    /* ==================== MODULO 3: CODIFICA RAPIDA (SINGOLA) ==================== */
     const matrixCanvas = document.getElementById('matrixCanvas');
     const txScanCanvas = document.getElementById('txScanCanvas');
     const matCtx = matrixCanvas.getContext('2d');
@@ -1066,35 +2326,12 @@
           val = Math.max(0, Math.min(255, (lum - 128) * contrastFactor + 128));
         }
 
-        d[i]     = val;
-        d[i + 1] = val;
-        d[i + 2] = val;
+        d[i] = d[i + 1] = d[i + 2] = val;
         d[i + 3] = 255;
       }
 
       matCtx.putImageData(outData, 0, 0);
       drawTxGrid();
-    }
-
-    function measureSpacedText(ctx, text, spacing) {
-      if (!text) return 0;
-      let total = 0;
-      for (let i = 0; i < text.length; i++) {
-        total += ctx.measureText(text[i]).width;
-        if (i < text.length - 1) total += spacing;
-      }
-      return total;
-    }
-
-    function fillSpacedText(ctx, text, x, y, align, spacing) {
-      const totalW = measureSpacedText(ctx, text, spacing);
-      let curX = align === 'center' ? x - totalW / 2 : x;
-      ctx.textAlign = 'left';
-      for (let i = 0; i < text.length; i++) {
-        const ch = text[i];
-        ctx.fillText(ch, curX, y);
-        curX += ctx.measureText(ch).width + spacing;
-      }
     }
 
     function renderTextToSource(rawText) {
@@ -1122,12 +2359,12 @@
       let spacing = Math.max(4, Math.round(fontSize * 0.08));
       srcCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
 
-      let widest = Math.max(...lines.map(l => measureSpacedText(srcCtx, l, spacing)));
+      let widest = Math.max(...lines.map(l => measureTextWithTracking(srcCtx, l, spacing)));
       while ((widest > maxW || fontSize * lines.length * 1.25 > maxH) && fontSize > 22) {
         fontSize -= 2;
         spacing = Math.max(4, Math.round(fontSize * 0.08));
         srcCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
-        widest = Math.max(...lines.map(l => measureSpacedText(srcCtx, l, spacing)));
+        widest = Math.max(...lines.map(l => measureTextWithTracking(srcCtx, l, spacing)));
       }
 
       const lineHeight = fontSize * 1.28;
@@ -1136,26 +2373,23 @@
 
       srcCtx.fillStyle = '#ffffff';
       srcCtx.textBaseline = 'middle';
+      srcCtx.textAlign = 'left';
 
-      const drawX = align === 'left' ? marginX : W / 2;
       lines.forEach((line, idx) => {
-        fillSpacedText(srcCtx, line, drawX, startY + idx * lineHeight, align, spacing);
+        const lineW = measureTextWithTracking(srcCtx, line, spacing);
+        const startX = align === 'left' ? marginX : (W - lineW) / 2;
+        drawTextWithTracking(srcCtx, line, startX, startY + idx * lineHeight, spacing);
       });
 
-      // Imposta automaticamente Alto Contrasto per garantire bordi netti alle lettere
       imgModeSelect.value = 'threshold';
       processMatrix();
       txStatusText.textContent = 'Testo codificato nella matrice';
     }
 
-    renderTextBtn.addEventListener('click', () => {
-      renderTextToSource(textInput.value || 'DECODER');
-    });
-
+    renderTextBtn.addEventListener('click', () => renderTextToSource(textInput.value || 'DECODER'));
     textInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') renderTextToSource(textInput.value || 'DECODER');
     });
-
     textAlignSelect.addEventListener('change', () => {
       if (textInput.value.trim()) renderTextToSource(textInput.value);
     });
@@ -1196,172 +2430,55 @@
       el.addEventListener('change', processMatrix);
     });
 
-    function getAcousticCompensation(freq) {
-      let gain = 1.0;
-      if (freq < 380) {
-        gain += ((380 - freq) / 230) * 0.35;
-      }
-      const earResonance = Math.exp(-Math.pow((freq - 3000) / 750, 2));
-      gain -= 0.25 * earResonance;
-
-      if (freq > 4000) {
-        gain += Math.min(0.25, ((freq - 4000) / 2000) * 0.25);
-      }
-      return Math.max(0.7, gain);
-    }
-
-    function synthesizeMatrixToAudio(sampleRate, durationSec) {
-      const W = matrixCanvas.width;
-      const H = matrixCanvas.height;
-      const imgData = matCtx.getImageData(0, 0, W, H).data;
-
-      const numBands = parseInt(bandsSelect.value, 10);
-      const numCols = Math.min(W, Math.max(360, Math.round(durationSec * 80)));
-      const useDeviceEq = deviceEqCheck.checked;
-
-      const oscillators = [];
-
-      for (let b = 0; b < numBands; b++) {
-        const normTopDown = b / Math.max(1, numBands - 1);
-        const y = Math.min(H - 1, Math.floor(normTopDown * (H - 1)));
-        const freq = yToFreq(y, H);
-        const eqGain = useDeviceEq ? getAcousticCompensation(freq) : 1.0;
-
-        const rowAmps = new Float32Array(numCols);
-        let hasEnergy = false;
-
-        for (let c = 0; c < numCols; c++) {
-          const x = Math.min(W - 1, Math.floor((c / Math.max(1, numCols - 1)) * (W - 1)));
-          const idx = (y * W + x) * 4;
-          const lum = imgData[idx] / 255;
-
-          if (lum > 0.05) {
-            rowAmps[c] = Math.pow(lum, 1.15) * eqGain;
-            hasEnergy = true;
-          }
-        }
-
-        if (hasEnergy) {
-          const omega = (2 * Math.PI * freq) / sampleRate;
-          // Fase di Schroeder: evita cancellazioni casuali sui tratti orizzontali delle lettere
-          const phase0 = (Math.PI * b * b) / numBands;
-          oscillators.push({
-            amps: rowAmps,
-            cosW: Math.cos(omega),
-            sinW: Math.sin(omega),
-            re: Math.cos(phase0),
-            im: Math.sin(phase0)
-          });
-        }
-      }
-
-      const padSamples = Math.floor(sampleRate * 0.25);
-      const activeSamples = Math.floor(sampleRate * durationSec);
-      const totalSamples = activeSamples + padSamples * 2;
-      const out = new Float32Array(totalSamples);
-
-      if (oscillators.length === 0) return out;
-
-      const fadeSamples = Math.floor(sampleRate * 0.02);
-
-      for (let i = 0; i < activeSamples; i++) {
-        const pos = (i / activeSamples) * (numCols - 1);
-        const c0 = Math.floor(pos);
-        const c1 = Math.min(numCols - 1, c0 + 1);
-        const frac = pos - c0;
-
-        let sample = 0;
-        for (let k = 0; k < oscillators.length; k++) {
-          const osc = oscillators[k];
-          const amp = osc.amps[c0] * (1 - frac) + osc.amps[c1] * frac;
-          if (amp > 0.002) {
-            sample += amp * osc.im;
-            const nextRe = osc.re * osc.cosW - osc.im * osc.sinW;
-            const nextIm = osc.re * osc.sinW + osc.im * osc.cosW;
-            osc.re = nextRe;
-            osc.im = nextIm;
-          }
-        }
-
-        if ((i & 1023) === 1023) {
-          for (let k = 0; k < oscillators.length; k++) {
-            const osc = oscillators[k];
-            const inv = 1 / Math.hypot(osc.re, osc.im);
-            osc.re *= inv;
-            osc.im *= inv;
-          }
-        }
-
-        let env = 1;
-        if (i < fadeSamples) env = i / fadeSamples;
-        else if (i > activeSamples - fadeSamples) env = (activeSamples - i) / fadeSamples;
-
-        out[padSamples + i] = sample * env;
-      }
-
-      let maxVal = 0;
-      for (let i = padSamples; i < padSamples + activeSamples; i++) {
-        const abs = Math.abs(out[i]);
-        if (abs > maxVal) maxVal = abs;
-      }
-      if (maxVal > 0) {
-        const gain = 0.92 / maxVal;
-        for (let i = padSamples; i < padSamples + activeSamples; i++) out[i] *= gain;
-      }
-
-      return out;
-    }
-
-    function stopTxPlayback() {
-      if (txAnimId) cancelAnimationFrame(txAnimId);
-      if (txSourceNode) {
-        try { txSourceNode.stop(); } catch (_) {}
-        txSourceNode = null;
-      }
-      txPlayBtn.textContent = 'Anteprima audio';
-      txPlayBtn.classList.remove('is-stop');
-      updateGlobalStatus();
-      drawTxGrid();
-    }
-
     txPlayBtn.addEventListener('click', async () => {
-      if (txSourceNode) {
-        stopTxPlayback();
+      const wasTx = activePlayback && activePlayback.mode === 'tx';
+      stopAllTxPlayback();
+      if (wasTx) {
         txStatusText.textContent = 'Anteprima interrotta';
         return;
       }
 
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!txAudioCtx) txAudioCtx = new AudioCtx();
-      if (txAudioCtx.state === 'suspended') await txAudioCtx.resume();
+      if (!sharedTxAudioCtx) sharedTxAudioCtx = new AudioCtx();
+      if (sharedTxAudioCtx.state === 'suspended') await sharedTxAudioCtx.resume();
 
       txStatusText.textContent = 'Sintesi in corso...';
 
       const duration = parseFloat(durationSelect.value);
-      const samples = synthesizeMatrixToAudio(txAudioCtx.sampleRate, duration);
-      const audioBuffer = txAudioCtx.createBuffer(1, samples.length, txAudioCtx.sampleRate);
+      const imgData = matCtx.getImageData(0, 0, matrixCanvas.width, matrixCanvas.height);
+      const samples = synthesizeImageDataToAudio(
+        imgData,
+        sharedTxAudioCtx.sampleRate,
+        duration,
+        parseInt(bandsSelect.value, 10),
+        deviceEqCheck.checked
+      );
+
+      const audioBuffer = sharedTxAudioCtx.createBuffer(1, samples.length, sharedTxAudioCtx.sampleRate);
       audioBuffer.copyToChannel(samples, 0);
 
-      txSourceNode = txAudioCtx.createBufferSource();
-      txSourceNode.buffer = audioBuffer;
-      txSourceNode.connect(txAudioCtx.destination);
+      const sourceNode = sharedTxAudioCtx.createBufferSource();
+      sourceNode.buffer = audioBuffer;
+      sourceNode.connect(sharedTxAudioCtx.destination);
 
-      const startTime = txAudioCtx.currentTime;
-      txSourceNode.start(startTime);
+      const startTime = sharedTxAudioCtx.currentTime;
+      sourceNode.start(startTime);
 
       txPlayBtn.textContent = 'Ferma anteprima';
       txPlayBtn.classList.add('is-stop');
       txStatusText.textContent = 'Riproduzione in corso';
+
+      activePlayback = { sourceNode, animId: null, mode: 'tx' };
       updateGlobalStatus();
 
-      txSourceNode.onended = () => {
-        stopTxPlayback();
+      sourceNode.onended = () => {
+        stopAllTxPlayback();
         txStatusText.textContent = 'Anteprima completata';
       };
 
       function animateScanner() {
-        if (!txSourceNode) return;
-        const elapsed = txAudioCtx.currentTime - startTime - 0.25;
+        if (!activePlayback || activePlayback.mode !== 'tx') return;
+        const elapsed = sharedTxAudioCtx.currentTime - startTime - 0.25;
         if (elapsed >= duration) return;
 
         drawTxGrid();
@@ -1375,7 +2492,7 @@
           scanCtx.lineTo(scanX, txScanCanvas.height);
           scanCtx.stroke();
         }
-        txAnimId = requestAnimationFrame(animateScanner);
+        activePlayback.animId = requestAnimationFrame(animateScanner);
       }
       animateScanner();
     });
@@ -1384,47 +2501,28 @@
       txStatusText.textContent = 'Generazione .WAV 48 kHz...';
       const sampleRate = 48000;
       const duration = parseFloat(durationSelect.value);
-      const samples = synthesizeMatrixToAudio(sampleRate, duration);
-
-      const buffer = new ArrayBuffer(44 + samples.length * 2);
-      const view = new DataView(buffer);
-      const writeStr = (offset, str) => {
-        for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
-      };
-
-      writeStr(0, 'RIFF');
-      view.setUint32(4, 36 + samples.length * 2, true);
-      writeStr(8, 'WAVE');
-      writeStr(12, 'fmt ');
-      view.setUint32(16, 16, true);
-      view.setUint16(20, 1, true);
-      view.setUint16(22, 1, true);
-      view.setUint32(24, sampleRate, true);
-      view.setUint32(28, sampleRate * 2, true);
-      view.setUint16(32, 2, true);
-      view.setUint16(34, 16, true);
-      writeStr(36, 'data');
-      view.setUint32(40, samples.length * 2, true);
-
-      let offset = 44;
-      for (let i = 0; i < samples.length; i++, offset += 2) {
-        const s = Math.max(-1, Math.min(1, samples[i]));
-        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-      }
-
-      const blob = new Blob([buffer], { type: 'audio/wav' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `decoder-${bandProfileSelect.value}-${Date.now()}.wav`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const imgData = matCtx.getImageData(0, 0, matrixCanvas.width, matrixCanvas.height);
+      const samples = synthesizeImageDataToAudio(
+        imgData,
+        sampleRate,
+        duration,
+        parseInt(bandsSelect.value, 10),
+        deviceEqCheck.checked
+      );
+      downloadFloat32AsWav(samples, sampleRate, `decoder-${bandProfileSelect.value}-${Date.now()}.wav`);
       txStatusText.textContent = 'File .WAV esportato';
     });
 
-    window.addEventListener('resize', resizeRxCanvases);
+    /* ==================== INIZIALIZZAZIONE ==================== */
+    window.addEventListener('resize', () => {
+      resizeRxCanvases();
+      rebuildPresentationRibbon();
+    });
+
     resizeRxCanvases();
     renderTextToSource('DECODER / SPAZIO PUBBLICO');
+    renderBlocksUI();
+    rebuildPresentationRibbon();
   })();
   </script>
 </body>
