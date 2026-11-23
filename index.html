@@ -423,10 +423,11 @@
       <a data-tab="txPanel">Codifica (Immagine / Testo)</a>
     </div>
 
-    <label class="control-inline">Banda acustica:
+    <label class="control-inline">Banda spettrale:
       <select id="bandProfileSelect">
-        <option value="lowWarm" selected>Basso Morbido (180 Hz – 1.8 kHz)</option>
-        <option value="hornLow">Medio-Basso Tromba (320 Hz – 2.4 kHz)</option>
+        <option value="balanced" selected>Bilanciata Multi-Dispositivo (150 Hz – 3.8 kHz)</option>
+        <option value="hornWide">Estesa Tromba &amp; Smartphone (220 Hz – 4.8 kHz)</option>
+        <option value="fullHd">Spettro Completo (120 Hz – 6.5 kHz)</option>
       </select>
     </label>
   </nav>
@@ -453,8 +454,8 @@
 
         <label class="control-inline">FFT:
           <select id="fftSelect">
-            <option value="8192">8192 (Transitori rapidi)</option>
-            <option value="16384" selected>16384 (Bilanciata HD)</option>
+            <option value="8192">8192 (Nitidezza verticale)</option>
+            <option value="16384" selected>16384 (Alta definizione)</option>
             <option value="32768">32768 (Massimo dettaglio)</option>
           </select>
         </label>
@@ -484,7 +485,7 @@
       </div>
 
       <div class="nota-footer">
-        <span>In piazza, se il brusio ambientale sporca la parte bassa del grafico, alza leggermente la <strong>Soglia</strong> (es. -78 dB).</span>
+        <span>Usa <strong>FFT 8192</strong> per leggere testi veloci con tratti verticali netti; <strong>16384</strong> per immagini ricche di dettagli e canti di uccelli.</span>
         <span class="nota-sottolineata">Usa «Congela» per fermare il flusso e «Salva immagine» per scaricare il fotogramma</span>
       </div>
     </section>
@@ -495,7 +496,7 @@
         <div class="input-block">
           <span class="section-label">1. Componi testo (usa « / » per andare a capo)</span>
           <div class="input-row">
-            <input type="text" id="textInput" maxlength="60" placeholder="Es. ASCOLTA LO SPAZIO / SEGNALE 01">
+            <input type="text" id="textInput" maxlength="70" placeholder="Es. ASCOLTA LO SPAZIO / SEGNALE 01">
             <select id="textAlignSelect">
               <option value="center" selected>Centrato</option>
               <option value="left">Allineato a sinistra</option>
@@ -531,7 +532,7 @@
         </label>
 
         <label class="control-inline">
-          <input type="checkbox" id="lowBoostCheck" checked> Compensazione bassi (+180–450 Hz)
+          <input type="checkbox" id="deviceEqCheck" checked> Equalizzazione comfort &amp; dispositivi
         </label>
       </div>
 
@@ -550,21 +551,21 @@
 
         <label class="control-inline">Densità bande:
           <select id="bandsSelect">
-            <option value="120" selected>120 bande (Pulito / Morbido)</option>
-            <option value="180">180 bande (Dettaglio fine)</option>
+            <option value="180">180 bande (Standard HD)</option>
+            <option value="260" selected>260 bande (Massima definizione)</option>
           </select>
         </label>
 
-        <span class="readout-text" id="txStatusText">Matrice pronta</span>
+        <span class="readout-text" id="txStatusText">Matrice pronta (800×400)</span>
       </div>
 
       <div class="viewport preview-viewport" id="txWrapper">
-        <canvas id="matrixCanvas" width="640" height="320"></canvas>
-        <canvas id="txScanCanvas" width="640" height="320"></canvas>
+        <canvas id="matrixCanvas" width="800" height="400"></canvas>
+        <canvas id="txScanCanvas" width="800" height="400"></canvas>
       </div>
 
       <div class="nota-footer">
-        <span>La compensazione bassi rinforza le note gravi per garantire che i microfoni degli smartphone leggano nitidamente anche il bordo inferiore.</span>
+        <span>L'equalizzazione rinforza gli estremi (150–350 Hz e >4 kHz) e ammorbidisce la risonanza dell'orecchio (2.5–3.6 kHz) per un ascolto piacevole ma nitido su smartphone.</span>
         <span class="nota-sottolineata">Scala lineare 1:1 — Nessuna deformazione geometrica</span>
       </div>
     </section>
@@ -577,13 +578,14 @@
 
   <script>
   (() => {
-    /* ==================== PROFILI BANDA A BASSA FREQUENZA ==================== */
+    /* ==================== PROFILI BANDA ESTESA E BILANCIATA ==================== */
     const PROFILES = {
-      lowWarm: { min: 180, max: 1800, label: 'Basso Morbido' },
-      hornLow: { min: 320, max: 2400, label: 'Medio-Basso Tromba' }
+      balanced: { min: 150, max: 3800, label: 'Bilanciata Multi-Dispositivo' },
+      hornWide: { min: 220, max: 4800, label: 'Estesa Tromba & Smartphone' },
+      fullHd:   { min: 120, max: 6500, label: 'Spettro Completo' }
     };
 
-    let currentProfile = PROFILES.lowWarm;
+    let currentProfile = PROFILES.balanced;
 
     function yToFreq(y, height) {
       const normY = 1 - (y / Math.max(1, height - 1));
@@ -837,7 +839,7 @@
         if (db > peakDb) peakDb = db;
 
         let norm = Math.max(0, Math.min(1, (db - minDb) / (maxDb - minDb)));
-        norm = Math.pow(norm, 1.15);
+        norm = Math.pow(norm, 1.12);
         const cIdx = Math.floor(norm * 255) * 3;
 
         for (let dx = 0; dx < stepX; dx++) {
@@ -1004,7 +1006,7 @@
     const imgModeSelect = document.getElementById('imgModeSelect');
     const imgContrastInput = document.getElementById('imgContrastInput');
     const invertCheck = document.getElementById('invertCheck');
-    const lowBoostCheck = document.getElementById('lowBoostCheck');
+    const deviceEqCheck = document.getElementById('deviceEqCheck');
 
     const txPlayBtn = document.getElementById('txPlayBtn');
     const txExportBtn = document.getElementById('txExportBtn');
@@ -1023,7 +1025,7 @@
       scanCtx.clearRect(0, 0, w, h);
 
       scanCtx.strokeStyle = 'rgba(226, 232, 240, 0.16)';
-      scanCtx.font = '10.5px Montserrat, sans-serif';
+      scanCtx.font = '11px Montserrat, sans-serif';
       scanCtx.fillStyle = 'rgba(148, 163, 184, 0.85)';
 
       [0.12, 0.5, 0.88].forEach(ratio => {
@@ -1034,7 +1036,7 @@
         scanCtx.moveTo(0, y);
         scanCtx.lineTo(w, y);
         scanCtx.stroke();
-        scanCtx.fillText(label, 8, y - 5);
+        scanCtx.fillText(label, 10, y - 6);
       });
     }
 
@@ -1089,7 +1091,7 @@
       }
 
       const align = textAlignSelect.value;
-      const marginX = 32;
+      const marginX = 40;
       const maxW = W - marginX * 2;
       const maxH = H * 0.82;
 
@@ -1097,7 +1099,7 @@
       srcCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
 
       let widest = Math.max(...lines.map(l => srcCtx.measureText(l).width));
-      while ((widest > maxW || fontSize * lines.length * 1.18 > maxH) && fontSize > 18) {
+      while ((widest > maxW || fontSize * lines.length * 1.18 > maxH) && fontSize > 20) {
         fontSize -= 2;
         srcCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
         widest = Math.max(...lines.map(l => srcCtx.measureText(l).width));
@@ -1146,7 +1148,7 @@
           srcCtx.fillStyle = '#000000';
           srcCtx.fillRect(0, 0, W, H);
 
-          const pad = 12;
+          const pad = 16;
           const scale = Math.min((W - pad * 2) / img.width, (H - pad * 2) / img.height);
           const drawW = img.width * scale;
           const drawH = img.height * scale;
@@ -1167,25 +1169,41 @@
       el.addEventListener('change', processMatrix);
     });
 
+    // Curva di equalizzazione: compensa il roll-off sui bassi/alti dei dispositivi e ammorbidisce i 3 kHz per l'orecchio
+    function getAcousticCompensation(freq) {
+      let gain = 1.0;
+      if (freq < 360) {
+        gain += ((360 - freq) / 240) * 0.35; // Rinforzo dolci note gravi (120-360 Hz)
+      }
+      // Attenuazione della zona di risonanza del condotto uditivo (2.2 - 3.8 kHz)
+      const earResonance = Math.exp(-Math.pow((freq - 3000) / 750, 2));
+      gain -= 0.28 * earResonance;
+
+      if (freq > 4200) {
+        gain += Math.min(0.28, ((freq - 4200) / 2300) * 0.28); // Compensazione perdita acuti all'aperto
+      }
+      return Math.max(0.65, gain);
+    }
+
     function synthesizeMatrixToAudio(sampleRate, durationSec) {
       const W = matrixCanvas.width;
       const H = matrixCanvas.height;
       const imgData = matCtx.getImageData(0, 0, W, H).data;
 
       const numBands = parseInt(bandsSelect.value, 10);
-      const numCols = Math.min(W, Math.max(240, Math.round(durationSec * 55)));
-      const useLowBoost = lowBoostCheck.checked;
+      const numCols = Math.min(W, Math.max(300, Math.round(durationSec * 75)));
+      const useDeviceEq = deviceEqCheck.checked;
 
       const oscillators = [];
 
       for (let b = 0; b < numBands; b++) {
-        const normTopDown = b / Math.max(1, numBands - 1); // 0 = acuto, 1 = grave
+        const normTopDown = b / Math.max(1, numBands - 1);
         const y = Math.min(H - 1, Math.floor(normTopDown * (H - 1)));
+        const freq = yToFreq(y, H);
+        const eqGain = useDeviceEq ? getAcousticCompensation(freq) : 1.0;
+
         const rowAmps = new Float32Array(numCols);
         let hasEnergy = false;
-
-        // Rinforza le frequenze gravi (180-450 Hz) per compensare il roll-off dei microfoni smartphone
-        const lowGain = useLowBoost ? (0.85 + 0.50 * Math.pow(normTopDown, 1.5)) : 1.0;
 
         for (let c = 0; c < numCols; c++) {
           const x = Math.min(W - 1, Math.floor((c / Math.max(1, numCols - 1)) * (W - 1)));
@@ -1193,13 +1211,12 @@
           const lum = imgData[idx] / 255;
 
           if (lum > 0.05) {
-            rowAmps[c] = Math.pow(lum, 1.25) * lowGain;
+            rowAmps[c] = Math.pow(lum, 1.2) * eqGain;
             hasEnergy = true;
           }
         }
 
         if (hasEnergy) {
-          const freq = yToFreq(y, H);
           const omega = (2 * Math.PI * freq) / sampleRate;
           const phase0 = Math.random() * 2 * Math.PI;
           oscillators.push({
@@ -1219,7 +1236,7 @@
 
       if (oscillators.length === 0) return out;
 
-      const fadeSamples = Math.floor(sampleRate * 0.03);
+      const fadeSamples = Math.floor(sampleRate * 0.025);
 
       for (let i = 0; i < activeSamples; i++) {
         const pos = (i / activeSamples) * (numCols - 1);
