@@ -77,6 +77,11 @@
       border-bottom-color: var(--amber);
     }
 
+    .status-avviso.is-error {
+      color: var(--danger);
+      border-bottom-color: var(--danger);
+    }
+
     /* NAVIGAZIONE */
     nav {
       margin-bottom: 40px;
@@ -222,8 +227,7 @@
     }
 
     select,
-    input[type="text"],
-    textarea {
+    input[type="text"] {
       background: transparent;
       color: var(--text-main);
       border: none;
@@ -241,8 +245,7 @@
     }
 
     select:focus,
-    input[type="text"]:focus,
-    textarea:focus {
+    input[type="text"]:focus {
       border-bottom-color: var(--text-main);
     }
 
@@ -262,6 +265,11 @@
       border-bottom: 1px solid var(--border-line);
       padding-bottom: 3px;
       margin-left: auto;
+    }
+
+    .readout-text.error-msg {
+      color: var(--danger);
+      border-bottom-color: var(--danger);
     }
 
     /* GRIGLIA SORGENTI CODIFICA (TESTO + IMMAGINE) */
@@ -434,17 +442,18 @@
         <button class="btn-link" id="rxClearBtn">Pulisci</button>
 
         <label class="control-inline">Soglia:
-          <input type="range" id="minDbInput" min="-115" max="-45" value="-88">
-          <span id="minDbVal">-88 dB</span>
+          <input type="range" id="minDbInput" min="-115" max="-45" value="-92">
+          <span id="minDbVal">-92 dB</span>
         </label>
 
         <label class="control-inline">Contrasto:
-          <input type="range" id="contrastInput" min="35" max="85" value="62">
-          <span id="contrastVal">62 dB</span>
+          <input type="range" id="contrastInput" min="35" max="85" value="60">
+          <span id="contrastVal">60 dB</span>
         </label>
 
         <label class="control-inline">FFT:
           <select id="fftSelect">
+            <option value="8192">8192 (Veloce)</option>
             <option value="16384" selected>16384 (Bilanciata)</option>
             <option value="32768">32768 (Massimo dettaglio)</option>
           </select>
@@ -466,7 +475,7 @@
           </select>
         </label>
 
-        <span class="readout-text" id="rxReadout">In attesa del microfono</span>
+        <span class="readout-text" id="rxReadout">Premi «Attiva spettrogramma» per iniziare</span>
       </div>
 
       <div class="viewport" id="rxWrapper">
@@ -483,7 +492,6 @@
     <!-- ==================== 2. CODIFICA IMMAGINE / TESTO (REGIA) ==================== -->
     <section class="panel" id="txPanel">
       <div class="encoder-inputs">
-        <!-- Composizione Testo -->
         <div class="input-block">
           <span class="section-label">1. Componi testo (usa « / » per andare a capo)</span>
           <div class="input-row">
@@ -496,7 +504,6 @@
           </div>
         </div>
 
-        <!-- Caricamento Immagine -->
         <div class="input-block">
           <span class="section-label">2. Oppure carica un'immagine (PNG, JPG, SVG)</span>
           <div class="input-row">
@@ -507,7 +514,6 @@
         </div>
       </div>
 
-      <!-- Regolazioni ottiche della matrice prima della sintesi -->
       <div class="toolbar-sub">
         <label class="control-inline">Resa grafica:
           <select id="imgModeSelect">
@@ -583,11 +589,6 @@
     function yToFreq(y, height) {
       const normY = 1 - (y / Math.max(1, height - 1));
       return currentProfile.min + normY * (currentProfile.max - currentProfile.min);
-    }
-
-    function freqToY(freq, height) {
-      const normY = (freq - currentProfile.min) / (currentProfile.max - currentProfile.min);
-      return (1 - normY) * (height - 1);
     }
 
     /* ==================== NAVIGAZIONE SCHEDE ==================== */
@@ -686,19 +687,32 @@
     let rxAnimId = null;
     let rxFreqData = null;
     let rxFrozen = false;
+    let isHoveringRx = false;
     let lastColumnDb = null;
+    let frameCounter = 0;
+
+    let txAudioCtx = null;
+    let txSourceNode = null;
+    let txAnimId = null;
 
     function updateGlobalStatus() {
       if (txSourceNode) {
         globalStatusText.textContent = 'Stato: Riproduzione anteprima';
         globalStatusText.className = 'status-avviso tx-active';
-      } else if (rxAudioCtx) {
+      } else if (rxAnalyser) {
         globalStatusText.textContent = rxFrozen ? 'Stato: Fotogramma congelato' : 'Stato: Ascolto in diretta';
         globalStatusText.className = 'status-avviso rx-active';
       } else {
         globalStatusText.textContent = 'Stato: Inattivo';
         globalStatusText.className = 'status-avviso';
       }
+    }
+
+    function showRxError(msg) {
+      globalStatusText.textContent = 'Stato: Errore microfono';
+      globalStatusText.className = 'status-avviso is-error';
+      rxReadout.textContent = msg;
+      rxReadout.classList.add('error-msg');
     }
 
     function clearRxWaterfall() {
@@ -783,12 +797,19 @@
     }
 
     function rxRenderLoop() {
-      if (!rxAnalyser) return;
+      if (!rxAnalyser || !rxAudioCtx) return;
       rxAnimId = requestAnimationFrame(rxRenderLoop);
+
+      if (rxAudioCtx.state === 'suspended') {
+        rxAudioCtx.resume().catch(() => {});
+      }
+
       if (rxFrozen) return;
 
       const w = specCanvas.width;
       const h = specCanvas.height;
+      if (w === 0 || h === 0) return;
+
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const minDb = parseFloat(minDbInput.value);
       const spanDb = parseFloat(contrastInput.value);
@@ -803,6 +824,8 @@
       const colImage = specCtx.createImageData(stepX, h);
       const pixels = colImage.data;
 
+      let peakDb = -160;
+
       for (let y = 0; y < h; y++) {
         const freq = yToFreq(y, h);
         const exactBin = (freq / nyquist) * (binCount - 1);
@@ -812,8 +835,8 @@
 
         const db = rxFreqData[b0] * (1 - frac) + rxFreqData[b1] * frac;
         lastColumnDb[y] = db;
+        if (db > peakDb) peakDb = db;
 
-        // Curva di contrasto leggermente espansa per far risaltare i dettagli fini
         let norm = Math.max(0, Math.min(1, (db - minDb) / (maxDb - minDb)));
         norm = Math.pow(norm, 1.15);
         const cIdx = Math.floor(norm * 255) * 3;
@@ -828,9 +851,44 @@
       }
 
       specCtx.putImageData(colImage, w - stepX, 0);
+
+      // Aggiorna l'indicatore di picco in dB ogni 12 frame per confermare che il segnale entra
+      frameCounter++;
+      if (!isHoveringRx && frameCounter % 12 === 0) {
+        const peakLabel = Number.isFinite(peakDb) && peakDb > -150 ? `${peakDb.toFixed(1)} dB` : 'silenzio';
+        rxReadout.textContent = `Segnale attivo — Picco: ${peakLabel}`;
+      }
     }
 
     async function startRx() {
+      rxReadout.classList.remove('error-msg');
+      rxReadout.textContent = 'Richiesta accesso microfono...';
+
+      // 1. Crea e sblocca AudioContext SUBITO dentro il click (fondamentale per Safari/iOS)
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) {
+        showRxError('Web Audio API non supportata da questo browser.');
+        return;
+      }
+
+      try {
+        rxAudioCtx = new AudioCtx();
+        if (rxAudioCtx.state === 'suspended') {
+          await rxAudioCtx.resume();
+        }
+      } catch (e) {
+        showRxError('Impossibile avviare il motore audio: ' + e.message);
+        return;
+      }
+
+      // 2. Verifica supporto getUserMedia (richiede HTTPS o localhost)
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showRxError('Microfono bloccato: apri la pagina su HTTPS o localhost.');
+        rxAudioCtx.close().catch(() => {});
+        rxAudioCtx = null;
+        return;
+      }
+
       try {
         rxStream = await navigator.mediaDevices.getUserMedia({
           audio: {
@@ -841,16 +899,28 @@
           }
         });
 
-        rxAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const source = rxAudioCtx.createMediaStreamSource(rxStream);
+        if (rxAudioCtx.state === 'suspended') {
+          await rxAudioCtx.resume();
+        }
 
+        if (specCanvas.width === 0 || specCanvas.height === 0) {
+          resizeRxCanvases();
+        }
+
+        const source = rxAudioCtx.createMediaStreamSource(rxStream);
         rxAnalyser = rxAudioCtx.createAnalyser();
         rxAnalyser.fftSize = parseInt(fftSelect.value, 10);
         rxAnalyser.smoothingTimeConstant = 0;
 
-        rxFreqData = new Float32Array(rxAnalyser.frequencyBinCount);
-        source.connect(rxAnalyser);
+        // Collega a un nodo silenzioso verso destination per mantenere attivo il grafo su tutti i browser
+        const silentGain = rxAudioCtx.createGain();
+        silentGain.gain.value = 0;
 
+        source.connect(rxAnalyser);
+        rxAnalyser.connect(silentGain);
+        silentGain.connect(rxAudioCtx.destination);
+
+        rxFreqData = new Float32Array(rxAnalyser.frequencyBinCount);
         rxFrozen = false;
         rxFreezeBtn.classList.remove('active-state');
         rxFreezeBtn.textContent = 'Congela';
@@ -861,25 +931,36 @@
 
         rxRenderLoop();
       } catch (err) {
-        alert('Impossibile accedere al microfono. Verifica che il sito sia aperto in HTTPS e che i permessi siano attivi.\n' + err.message);
+        if (rxAudioCtx) {
+          rxAudioCtx.close().catch(() => {});
+          rxAudioCtx = null;
+        }
+        rxAnalyser = null;
+        showRxError(`Permesso negato o microfono assente (${err.name || err.message})`);
       }
     }
 
     function stopRx() {
       if (rxAnimId) cancelAnimationFrame(rxAnimId);
       if (rxStream) rxStream.getTracks().forEach(t => t.stop());
-      if (rxAudioCtx) rxAudioCtx.close();
+      if (rxAudioCtx) rxAudioCtx.close().catch(() => {});
+      rxStream = null;
       rxAnalyser = null;
       rxAudioCtx = null;
       rxToggleBtn.textContent = 'Attiva spettrogramma';
       rxToggleBtn.classList.remove('is-stop');
+      rxReadout.classList.remove('error-msg');
       rxReadout.textContent = 'Spettrogramma in pausa';
       updateGlobalStatus();
     }
 
-    rxToggleBtn.addEventListener('click', () => rxAudioCtx ? stopRx() : startRx());
+    rxToggleBtn.addEventListener('click', () => {
+      if (rxAnalyser || rxAudioCtx) stopRx();
+      else startRx();
+    });
 
     rxFreezeBtn.addEventListener('click', () => {
+      if (!rxAnalyser) return;
       rxFrozen = !rxFrozen;
       rxFreezeBtn.classList.toggle('active-state', rxFrozen);
       rxFreezeBtn.textContent = rxFrozen ? 'Riprendi' : 'Congela';
@@ -897,6 +978,7 @@
     rxClearBtn.addEventListener('click', clearRxWaterfall);
 
     rxWrapper.addEventListener('mousemove', (e) => {
+      isHoveringRx = true;
       const rect = rxWrapper.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const x = Math.floor((e.clientX - rect.left) * dpr);
@@ -909,6 +991,7 @@
     });
 
     rxWrapper.addEventListener('mouseleave', () => {
+      isHoveringRx = false;
       drawRxGrid(null, null);
     });
 
@@ -934,15 +1017,10 @@
     const bandsSelect = document.getElementById('bandsSelect');
     const txStatusText = document.getElementById('txStatusText');
 
-    // Buffer offscreen per conservare l'immagine o il testo originale prima dei filtri ottici
     const sourceBuffer = document.createElement('canvas');
     sourceBuffer.width = matrixCanvas.width;
     sourceBuffer.height = matrixCanvas.height;
     const srcCtx = sourceBuffer.getContext('2d');
-
-    let txAudioCtx = null;
-    let txSourceNode = null;
-    let txAnimId = null;
 
     function drawTxGrid() {
       const w = txScanCanvas.width;
@@ -965,7 +1043,6 @@
       });
     }
 
-    // Applica contrasto, soglia e inversione dal buffer sorgente alla matrice visibile
     function processMatrix() {
       const W = matrixCanvas.width;
       const H = matrixCanvas.height;
@@ -976,11 +1053,10 @@
       const d = outData.data;
       const mode = imgModeSelect.value;
       const thresholdVal = parseInt(imgContrastInput.value, 10);
-      const contrastFactor = (thresholdVal / 128);
+      const contrastFactor = thresholdVal / 128;
       const invert = invertCheck.checked;
 
       for (let i = 0; i < s.length; i += 4) {
-        // Luminanza percettiva Rec.709
         let lum = 0.2126 * s[i] + 0.7152 * s[i + 1] + 0.0722 * s[i + 2];
         if (invert) lum = 255 - lum;
 
@@ -988,7 +1064,6 @@
         if (mode === 'threshold') {
           val = lum >= (255 - thresholdVal) ? 255 : 0;
         } else {
-          // Contrasto centrato sul grigio medio
           val = Math.max(0, Math.min(255, (lum - 128) * contrastFactor + 128));
         }
 
@@ -1002,7 +1077,6 @@
       drawTxGrid();
     }
 
-    // Rendering testo ad alta leggibilità su più righe
     function renderTextToSource(rawText) {
       const W = sourceBuffer.width;
       const H = sourceBuffer.height;
@@ -1027,7 +1101,6 @@
       let fontSize = Math.floor(maxH / lines.length);
       srcCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
 
-      // Adatta la dimensione affinché la riga più lunga entri con margine
       let widest = Math.max(...lines.map(l => srcCtx.measureText(l).width));
       while ((widest > maxW || fontSize * lines.length * 1.18 > maxH) && fontSize > 18) {
         fontSize -= 2;
@@ -1064,7 +1137,6 @@
       if (textInput.value.trim()) renderTextToSource(textInput.value);
     });
 
-    // Caricamento e adattamento proporzionale dell'immagine
     imageFileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -1079,7 +1151,6 @@
           srcCtx.fillStyle = '#000000';
           srcCtx.fillRect(0, 0, W, H);
 
-          // Fit proporzionale centrato con margine verticale di sicurezza
           const pad = 12;
           const scale = Math.min((W - pad * 2) / img.width, (H - pad * 2) / img.height);
           const drawW = img.width * scale;
@@ -1101,27 +1172,24 @@
       el.addEventListener('change', processMatrix);
     });
 
-    /* ==================== MOTORE DI SINTESI SPETTRALE AD ALTA DEFINIZIONE ==================== */
     function synthesizeMatrixToAudio(sampleRate, durationSec) {
       const W = matrixCanvas.width;
       const H = matrixCanvas.height;
       const imgData = matCtx.getImageData(0, 0, W, H).data;
 
       const numBands = parseInt(bandsSelect.value, 10);
-      // Risoluzione temporale elevata: 1 colonna ogni ~16 ms (es. 500 colonne su 8s)
       const numCols = Math.min(W, Math.max(240, Math.round(durationSec * 60)));
       const usePreEmphasis = preEmphasisCheck.checked;
 
       const oscillators = [];
 
       for (let b = 0; b < numBands; b++) {
-        const normTopDown = b / Math.max(1, numBands - 1); // 0 = freq max, 1 = freq min
+        const normTopDown = b / Math.max(1, numBands - 1);
         const y = Math.min(H - 1, Math.floor(normTopDown * (H - 1)));
         const rowAmps = new Float32Array(numCols);
         let hasEnergy = false;
 
-        // Compensazione acustica per tromba/megafono: rinforza gradualmente le frequenze acute
-        const normFreq = 1 - normTopDown; // 0 = basso, 1 = acuto
+        const normFreq = 1 - normTopDown;
         const hornGain = usePreEmphasis ? (0.82 + 0.55 * Math.pow(normFreq, 1.35)) : 1.0;
 
         for (let c = 0; c < numCols; c++) {
@@ -1149,7 +1217,6 @@
         }
       }
 
-      // Aggiunge 0.25s di silenzio prima e dopo per isolare il blocco visivo nello spettrogramma
       const padSamples = Math.floor(sampleRate * 0.25);
       const activeSamples = Math.floor(sampleRate * durationSec);
       const totalSamples = activeSamples + padSamples * 2;
@@ -1194,7 +1261,6 @@
         out[padSamples + i] = sample * env;
       }
 
-      // Normalizzazione picco al 92% per massimizzare la resa del megafono senza clipping
       let maxVal = 0;
       for (let i = padSamples; i < padSamples + activeSamples; i++) {
         const abs = Math.abs(out[i]);
@@ -1227,12 +1293,11 @@
         return;
       }
 
-      txStatusText.textContent = 'Sintesi in corso...';
-
-      if (!txAudioCtx) {
-        txAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!txAudioCtx) txAudioCtx = new AudioCtx();
       if (txAudioCtx.state === 'suspended') await txAudioCtx.resume();
+
+      txStatusText.textContent = 'Sintesi in corso...';
 
       const duration = parseFloat(durationSelect.value);
       const samples = synthesizeMatrixToAudio(txAudioCtx.sampleRate, duration);
@@ -1319,7 +1384,6 @@
       txStatusText.textContent = 'File .WAV esportato';
     });
 
-    // Inizializzazione
     window.addEventListener('resize', resizeRxCanvases);
     resizeRxCanvases();
     renderTextToSource('DECODER / SPAZIO PUBBLICO');
