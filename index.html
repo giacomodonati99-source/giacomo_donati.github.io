@@ -425,9 +425,9 @@
 
     <label class="control-inline">Banda spettrale:
       <select id="bandProfileSelect">
-        <option value="balanced" selected>Bilanciata Multi-Dispositivo (150 Hz – 3.8 kHz)</option>
-        <option value="hornWide">Estesa Tromba &amp; Smartphone (220 Hz – 4.8 kHz)</option>
-        <option value="fullHd">Spettro Completo (120 Hz – 6.5 kHz)</option>
+        <option value="balanced" selected>Bilanciata Smartphone &amp; Tromba (180 Hz – 4.2 kHz)</option>
+        <option value="lowWarm">Basso Morbido (150 Hz – 3.2 kHz)</option>
+        <option value="fullHd">Estesa Alta Definizione (150 Hz – 5.8 kHz)</option>
       </select>
     </label>
   </nav>
@@ -443,20 +443,21 @@
         <button class="btn-link" id="rxClearBtn">Pulisci</button>
 
         <label class="control-inline">Soglia:
-          <input type="range" id="minDbInput" min="-115" max="-45" value="-90">
-          <span id="minDbVal">-90 dB</span>
+          <input type="range" id="minDbInput" min="-115" max="-45" value="-86">
+          <span id="minDbVal">-86 dB</span>
         </label>
 
         <label class="control-inline">Contrasto:
-          <input type="range" id="contrastInput" min="35" max="85" value="58">
-          <span id="contrastVal">58 dB</span>
+          <input type="range" id="contrastInput" min="30" max="80" value="52">
+          <span id="contrastVal">52 dB</span>
         </label>
 
         <label class="control-inline">FFT:
           <select id="fftSelect">
-            <option value="8192">8192 (Nitidezza verticale)</option>
-            <option value="16384" selected>16384 (Alta definizione)</option>
-            <option value="32768">32768 (Massimo dettaglio)</option>
+            <option value="2048">2048 (Testi rapidi)</option>
+            <option value="4096" selected>4096 (Testi &amp; Simboli — Consigliata)</option>
+            <option value="8192">8192 (Immagini &amp; Uccelli HD)</option>
+            <option value="16384">16384 (Massima risoluzione verticale)</option>
           </select>
         </label>
 
@@ -485,7 +486,7 @@
       </div>
 
       <div class="nota-footer">
-        <span>Usa <strong>FFT 8192</strong> per leggere testi veloci con tratti verticali netti; <strong>16384</strong> per immagini ricche di dettagli e canti di uccelli.</span>
+        <span><strong>FFT 4096</strong> evita la sfocatura orizzontale e mantiene i caratteri ben separati anche dal microfono dello smartphone.</span>
         <span class="nota-sottolineata">Usa «Congela» per fermare il flusso e «Salva immagine» per scaricare il fotogramma</span>
       </div>
     </section>
@@ -496,7 +497,7 @@
         <div class="input-block">
           <span class="section-label">1. Componi testo (usa « / » per andare a capo)</span>
           <div class="input-row">
-            <input type="text" id="textInput" maxlength="70" placeholder="Es. ASCOLTA LO SPAZIO / SEGNALE 01">
+            <input type="text" id="textInput" maxlength="60" placeholder="Es. ASCOLTA / SEGNALE 01">
             <select id="textAlignSelect">
               <option value="center" selected>Centrato</option>
               <option value="left">Allineato a sinistra</option>
@@ -518,13 +519,13 @@
       <div class="toolbar-sub">
         <label class="control-inline">Resa grafica:
           <select id="imgModeSelect">
-            <option value="grayscale" selected>Scala di grigi (Sfumature)</option>
-            <option value="threshold">Alto contrasto (Netto B/N)</option>
+            <option value="threshold" selected>Alto contrasto (Netto per testi/loghi)</option>
+            <option value="grayscale">Scala di grigi (Sfumature foto)</option>
           </select>
         </label>
 
         <label class="control-inline">Contrasto / Taglio:
-          <input type="range" id="imgContrastInput" min="50" max="240" value="135">
+          <input type="range" id="imgContrastInput" min="50" max="240" value="140">
         </label>
 
         <label class="control-inline">
@@ -542,17 +543,17 @@
 
         <label class="control-inline">Durata scansione:
           <select id="durationSelect">
-            <option value="5">5 sec</option>
-            <option value="8" selected>8 sec (Consigliata)</option>
-            <option value="12">12 sec (Dettaglio fine)</option>
+            <option value="6">6 sec (Parole brevi)</option>
+            <option value="9" selected>9 sec (Frasi / Consigliata)</option>
+            <option value="12">12 sec (Testo su più righe)</option>
             <option value="16">16 sec (Immagini complesse)</option>
           </select>
         </label>
 
         <label class="control-inline">Densità bande:
           <select id="bandsSelect">
-            <option value="180">180 bande (Standard HD)</option>
-            <option value="260" selected>260 bande (Massima definizione)</option>
+            <option value="150" selected>150 bande (Testi nitidi)</option>
+            <option value="220">220 bande (Immagini ricche)</option>
           </select>
         </label>
 
@@ -565,7 +566,7 @@
       </div>
 
       <div class="nota-footer">
-        <span>L'equalizzazione rinforza gli estremi (150–350 Hz e >4 kHz) e ammorbidisce la risonanza dell'orecchio (2.5–3.6 kHz) per un ascolto piacevole ma nitido su smartphone.</span>
+        <span>Per frasi lunghe usa « / » per dividerle su 2 righe e scegli <strong>9–12 sec</strong>: più tempo per lettera significa maggiore nitidezza nello spettrogramma.</span>
         <span class="nota-sottolineata">Scala lineare 1:1 — Nessuna deformazione geometrica</span>
       </div>
     </section>
@@ -578,11 +579,11 @@
 
   <script>
   (() => {
-    /* ==================== PROFILI BANDA ESTESA E BILANCIATA ==================== */
+    /* ==================== PROFILI BANDA ==================== */
     const PROFILES = {
-      balanced: { min: 150, max: 3800, label: 'Bilanciata Multi-Dispositivo' },
-      hornWide: { min: 220, max: 4800, label: 'Estesa Tromba & Smartphone' },
-      fullHd:   { min: 120, max: 6500, label: 'Spettro Completo' }
+      balanced: { min: 180, max: 4200, label: 'Bilanciata Smartphone & Tromba' },
+      lowWarm:  { min: 150, max: 3200, label: 'Basso Morbido' },
+      fullHd:   { min: 150, max: 5800, label: 'Estesa Alta Definizione' }
     };
 
     let currentProfile = PROFILES.balanced;
@@ -838,8 +839,9 @@
         lastColumnDb[y] = db;
         if (db > peakDb) peakDb = db;
 
+        // Curva che elimina la coda di riverbero debole e mantiene nitidi i tratti dei caratteri
         let norm = Math.max(0, Math.min(1, (db - minDb) / (maxDb - minDb)));
-        norm = Math.pow(norm, 1.12);
+        norm = Math.pow(norm, 1.25);
         const cIdx = Math.floor(norm * 255) * 3;
 
         for (let dx = 0; dx < stepX; dx++) {
@@ -1074,6 +1076,27 @@
       drawTxGrid();
     }
 
+    function measureSpacedText(ctx, text, spacing) {
+      if (!text) return 0;
+      let total = 0;
+      for (let i = 0; i < text.length; i++) {
+        total += ctx.measureText(text[i]).width;
+        if (i < text.length - 1) total += spacing;
+      }
+      return total;
+    }
+
+    function fillSpacedText(ctx, text, x, y, align, spacing) {
+      const totalW = measureSpacedText(ctx, text, spacing);
+      let curX = align === 'center' ? x - totalW / 2 : x;
+      ctx.textAlign = 'left';
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        ctx.fillText(ch, curX, y);
+        curX += ctx.measureText(ch).width + spacing;
+      }
+    }
+
     function renderTextToSource(rawText) {
       const W = sourceBuffer.width;
       const H = sourceBuffer.height;
@@ -1091,33 +1114,36 @@
       }
 
       const align = textAlignSelect.value;
-      const marginX = 40;
+      const marginX = 48;
       const maxW = W - marginX * 2;
-      const maxH = H * 0.82;
+      const maxH = H * 0.78;
 
       let fontSize = Math.floor(maxH / lines.length);
+      let spacing = Math.max(4, Math.round(fontSize * 0.08));
       srcCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
 
-      let widest = Math.max(...lines.map(l => srcCtx.measureText(l).width));
-      while ((widest > maxW || fontSize * lines.length * 1.18 > maxH) && fontSize > 20) {
+      let widest = Math.max(...lines.map(l => measureSpacedText(srcCtx, l, spacing)));
+      while ((widest > maxW || fontSize * lines.length * 1.25 > maxH) && fontSize > 22) {
         fontSize -= 2;
+        spacing = Math.max(4, Math.round(fontSize * 0.08));
         srcCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
-        widest = Math.max(...lines.map(l => srcCtx.measureText(l).width));
+        widest = Math.max(...lines.map(l => measureSpacedText(srcCtx, l, spacing)));
       }
 
-      const lineHeight = fontSize * 1.22;
+      const lineHeight = fontSize * 1.28;
       const totalBlockH = lineHeight * lines.length;
       const startY = (H - totalBlockH) / 2 + lineHeight / 2;
 
       srcCtx.fillStyle = '#ffffff';
       srcCtx.textBaseline = 'middle';
-      srcCtx.textAlign = align;
 
       const drawX = align === 'left' ? marginX : W / 2;
       lines.forEach((line, idx) => {
-        srcCtx.fillText(line, drawX, startY + idx * lineHeight);
+        fillSpacedText(srcCtx, line, drawX, startY + idx * lineHeight, align, spacing);
       });
 
+      // Imposta automaticamente Alto Contrasto per garantire bordi netti alle lettere
+      imgModeSelect.value = 'threshold';
       processMatrix();
       txStatusText.textContent = 'Testo codificato nella matrice';
     }
@@ -1156,6 +1182,7 @@
           const offsetY = (H - drawH) / 2;
 
           srcCtx.drawImage(img, offsetX, offsetY, drawW, drawH);
+          imgModeSelect.value = 'grayscale';
           processMatrix();
           txStatusText.textContent = `Immagine «${file.name}» pronta`;
         };
@@ -1169,20 +1196,18 @@
       el.addEventListener('change', processMatrix);
     });
 
-    // Curva di equalizzazione: compensa il roll-off sui bassi/alti dei dispositivi e ammorbidisce i 3 kHz per l'orecchio
     function getAcousticCompensation(freq) {
       let gain = 1.0;
-      if (freq < 360) {
-        gain += ((360 - freq) / 240) * 0.35; // Rinforzo dolci note gravi (120-360 Hz)
+      if (freq < 380) {
+        gain += ((380 - freq) / 230) * 0.35;
       }
-      // Attenuazione della zona di risonanza del condotto uditivo (2.2 - 3.8 kHz)
       const earResonance = Math.exp(-Math.pow((freq - 3000) / 750, 2));
-      gain -= 0.28 * earResonance;
+      gain -= 0.25 * earResonance;
 
-      if (freq > 4200) {
-        gain += Math.min(0.28, ((freq - 4200) / 2300) * 0.28); // Compensazione perdita acuti all'aperto
+      if (freq > 4000) {
+        gain += Math.min(0.25, ((freq - 4000) / 2000) * 0.25);
       }
-      return Math.max(0.65, gain);
+      return Math.max(0.7, gain);
     }
 
     function synthesizeMatrixToAudio(sampleRate, durationSec) {
@@ -1191,7 +1216,7 @@
       const imgData = matCtx.getImageData(0, 0, W, H).data;
 
       const numBands = parseInt(bandsSelect.value, 10);
-      const numCols = Math.min(W, Math.max(300, Math.round(durationSec * 75)));
+      const numCols = Math.min(W, Math.max(360, Math.round(durationSec * 80)));
       const useDeviceEq = deviceEqCheck.checked;
 
       const oscillators = [];
@@ -1211,14 +1236,15 @@
           const lum = imgData[idx] / 255;
 
           if (lum > 0.05) {
-            rowAmps[c] = Math.pow(lum, 1.2) * eqGain;
+            rowAmps[c] = Math.pow(lum, 1.15) * eqGain;
             hasEnergy = true;
           }
         }
 
         if (hasEnergy) {
           const omega = (2 * Math.PI * freq) / sampleRate;
-          const phase0 = Math.random() * 2 * Math.PI;
+          // Fase di Schroeder: evita cancellazioni casuali sui tratti orizzontali delle lettere
+          const phase0 = (Math.PI * b * b) / numBands;
           oscillators.push({
             amps: rowAmps,
             cosW: Math.cos(omega),
@@ -1236,7 +1262,7 @@
 
       if (oscillators.length === 0) return out;
 
-      const fadeSamples = Math.floor(sampleRate * 0.025);
+      const fadeSamples = Math.floor(sampleRate * 0.02);
 
       for (let i = 0; i < activeSamples; i++) {
         const pos = (i / activeSamples) * (numCols - 1);
