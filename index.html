@@ -317,7 +317,7 @@
     .viewport {
       position: relative;
       width: 100%;
-      height: 540px;
+      height: 580px;
       background: #020305;
       border: 1px solid var(--border-line);
       border-radius: 0;
@@ -350,7 +350,7 @@
     .ribbon-scroller {
       position: relative;
       width: 100%;
-      height: 270px;
+      height: 280px;
       background: #020305;
       border: 1px solid var(--border-line);
       overflow-x: auto;
@@ -582,7 +582,7 @@
       }
 
       .viewport {
-        height: 420px;
+        height: 440px;
       }
 
       .readout-text {
@@ -616,9 +616,9 @@
 
     <label class="control-inline">Banda spettrale:
       <select id="bandProfileSelect">
-        <option value="balanced" selected>Bilanciata Smartphone &amp; Tromba (180 Hz – 4.2 kHz)</option>
-        <option value="lowWarm">Basso Morbido (150 Hz – 3.2 kHz)</option>
-        <option value="fullHd">Estesa Alta Definizione (150 Hz – 5.8 kHz)</option>
+        <option value="ambientWide" selected>Estesa Ambiente &amp; Segnale (80 Hz – 8.0 kHz)</option>
+        <option value="ultraAmbient">Ultra Estesa Natura &amp; Cielo (60 Hz – 10.5 kHz)</option>
+        <option value="balanced">Compatta Smartphone &amp; Tromba (180 Hz – 4.2 kHz)</option>
       </select>
     </label>
   </nav>
@@ -634,29 +634,29 @@
         <button class="btn-link" id="rxClearBtn">Pulisci</button>
 
         <label class="control-inline">Soglia:
-          <input type="range" id="minDbInput" min="-115" max="-45" value="-86">
-          <span id="minDbVal">-86 dB</span>
+          <input type="range" id="minDbInput" min="-115" max="-45" value="-90">
+          <span id="minDbVal">-90 dB</span>
         </label>
 
         <label class="control-inline">Contrasto:
-          <input type="range" id="contrastInput" min="30" max="80" value="52">
-          <span id="contrastVal">52 dB</span>
+          <input type="range" id="contrastInput" min="30" max="85" value="56">
+          <span id="contrastVal">56 dB</span>
         </label>
 
         <label class="control-inline">FFT:
           <select id="fftSelect">
-            <option value="2048">2048 (Testi rapidi)</option>
-            <option value="4096" selected>4096 (Testi &amp; Simboli — Consigliata)</option>
-            <option value="8192">8192 (Immagini &amp; Uccelli HD)</option>
-            <option value="16384">16384 (Massima risoluzione verticale)</option>
+            <option value="2048">2048 (Testi rapidissimi)</option>
+            <option value="4096" selected>4096 (Ambiente + Testi &amp; Immagini — Consigliata)</option>
+            <option value="8192">8192 (Uccelli &amp; Immagini HD)</option>
+            <option value="16384">16384 (Massima risoluzione frequenze)</option>
           </select>
         </label>
 
         <label class="control-inline">Scorrimento:
           <select id="speedSelect">
-            <option value="1">1 px</option>
-            <option value="2" selected>2 px</option>
-            <option value="3">3 px</option>
+            <option value="2">2 px</option>
+            <option value="3" selected>3 px (Testi veloci)</option>
+            <option value="4">4 px</option>
           </select>
         </label>
 
@@ -677,7 +677,7 @@
       </div>
 
       <div class="nota-footer">
-        <span><strong>FFT 4096</strong> mantiene nitidi sia i testi scorrevoli sia le immagini ricevute dal microfono dello smartphone.</span>
+        <span>La banda <strong>80 Hz – 8.0 kHz</strong> mostra i rumori ambientali gravi e acuti insieme ai messaggi codificati, preservando i dettagli con <strong>FFT 4096</strong>.</span>
         <span class="nota-sottolineata">Usa «Congela» per fermare il flusso e «Salva immagine» per scaricare il fotogramma</span>
       </div>
     </section>
@@ -699,31 +699,31 @@
 
         <label class="control-inline">Bande:
           <select id="presBandsSelect">
-            <option value="150" selected>150 bande (Testi nitidi)</option>
-            <option value="200">200 bande (Immagini ricche)</option>
+            <option value="200" selected>200 bande (Ambiente + Testi nitidi)</option>
+            <option value="260">260 bande (Immagini ultra HD)</option>
           </select>
         </label>
 
         <span class="readout-text" id="presStatusText">Pronto</span>
       </div>
 
-      <!-- CONTROLLI DEDICATI AL TESTO (VELOCITÀ E PROPORZIONI NELLO SPETTRO) -->
+      <!-- CONTROLLI DEDICATI AL TESTO (COMPATTEZZA, VELOCITÀ E PROPORZIONI) -->
       <div class="toolbar-sub">
         <span class="section-label">Parametri Testo:</span>
 
-        <label class="control-inline">Velocità scorrimento:
-          <input type="range" id="presTextSpeedInput" min="200" max="640" step="10" value="420">
-          <strong id="presTextSpeedVal">420 px/s</strong>
+        <label class="control-inline">Altezza nello spettro:
+          <input type="range" id="presTextHeightInput" min="18" max="75" step="1" value="32">
+          <strong id="presTextHeightVal">32%</strong>
         </label>
 
-        <label class="control-inline">Altezza nello spettro:
-          <input type="range" id="presTextHeightInput" min="35" max="90" step="1" value="60">
-          <strong id="presTextHeightVal">60%</strong>
+        <label class="control-inline">Velocità scorrimento:
+          <input type="range" id="presTextSpeedInput" min="250" max="750" step="10" value="500">
+          <strong id="presTextSpeedVal">500 px/s</strong>
         </label>
 
         <label class="control-inline">Larghezza caratteri:
-          <input type="range" id="presTextAspectInput" min="1.0" max="2.4" step="0.05" value="1.55">
-          <strong id="presTextAspectVal">1.55×</strong>
+          <input type="range" id="presTextAspectInput" min="1.0" max="2.4" step="0.05" value="1.45">
+          <strong id="presTextAspectVal">1.45×</strong>
         </label>
 
         <button class="btn-link" id="resetTextGeomBtn">Ripristina valori consigliati</button>
@@ -737,8 +737,8 @@
 
       <div class="ribbon-scroller" id="presScroller">
         <div class="ribbon-stage" id="presStage">
-          <canvas id="presRibbonCanvas" height="400"></canvas>
-          <canvas id="presOverlayCanvas" height="400"></canvas>
+          <canvas id="presRibbonCanvas" height="440"></canvas>
+          <canvas id="presOverlayCanvas" height="440"></canvas>
         </div>
       </div>
 
@@ -754,7 +754,7 @@
       <div class="blocks-list" id="presBlocksList"></div>
 
       <div class="nota-footer">
-        <span><strong>420 px/s</strong> equivale alla velocità di +2 ottave mantenendo però intatte le frequenze originali. Le immagini restano bloccate alla loro scala 1:1.</span>
+        <span>Il testo compatto al <strong>32%</strong> scorre rapidamente nella fascia acustica centrale lasciando spazio visivo ai suoni ambientali sopra e sotto.</span>
         <span class="nota-sottolineata">Scorri orizzontalmente il nastro sopra per ispezionare l'intera narrazione</span>
       </div>
     </section>
@@ -820,8 +820,8 @@
 
         <label class="control-inline">Densità bande:
           <select id="bandsSelect">
-            <option value="150" selected>150 bande (Testi nitidi)</option>
-            <option value="220">220 bande (Immagini ricche)</option>
+            <option value="180" selected>180 bande (Testi nitidi)</option>
+            <option value="240">240 bande (Immagini ricche)</option>
           </select>
         </label>
 
@@ -849,16 +849,21 @@
   (() => {
     /* ==================== PROFILI BANDA ==================== */
     const PROFILES = {
-      balanced: { min: 180, max: 4200, label: 'Bilanciata Smartphone & Tromba' },
-      lowWarm:  { min: 150, max: 3200, label: 'Basso Morbido' },
-      fullHd:   { min: 150, max: 5800, label: 'Estesa Alta Definizione' }
+      ambientWide:  { min: 80,  max: 8000,  label: 'Estesa Ambiente & Segnale' },
+      ultraAmbient: { min: 60,  max: 10500, label: 'Ultra Estesa Natura & Cielo' },
+      balanced:     { min: 180, max: 4200,  label: 'Compatta Smartphone & Tromba' }
     };
 
-    let currentProfile = PROFILES.balanced;
+    let currentProfile = PROFILES.ambientWide;
 
     function yToFreq(y, height) {
       const normY = 1 - (y / Math.max(1, height - 1));
       return currentProfile.min + normY * (currentProfile.max - currentProfile.min);
+    }
+
+    function freqToY(freq, height) {
+      const normY = (freq - currentProfile.min) / Math.max(1, currentProfile.max - currentProfile.min);
+      return (1 - Math.max(0, Math.min(1, normY))) * (height - 1);
     }
 
     /* ==================== NAVIGAZIONE SCHEDE ==================== */
@@ -883,7 +888,7 @@
       clearRxWaterfall();
       drawRxGrid(null, null);
       drawTxGrid();
-      drawPresentationOverlay(null);
+      rebuildPresentationRibbon();
     });
 
     /* ==================== PALETTE COLORI (LUT 256) ==================== */
@@ -937,13 +942,13 @@
     function getAcousticCompensation(freq) {
       let gain = 1.0;
       if (freq < 380) {
-        gain += ((380 - freq) / 230) * 0.35;
+        gain += ((380 - freq) / 300) * 0.35;
       }
       const earResonance = Math.exp(-Math.pow((freq - 3000) / 750, 2));
       gain -= 0.25 * earResonance;
 
-      if (freq > 4000) {
-        gain += Math.min(0.25, ((freq - 4000) / 2000) * 0.25);
+      if (freq > 4200) {
+        gain += Math.min(0.28, ((freq - 4200) / 4000) * 0.28);
       }
       return Math.max(0.7, gain);
     }
@@ -953,8 +958,8 @@
       const H = imgDataObj.height;
       const imgData = imgDataObj.data;
 
-      // Risoluzione temporale elevata (~125 colonne/sec) per preservare la nitidezza dei testi veloci
-      const numCols = Math.min(4096, Math.max(240, Math.round(durationSec * 125)));
+      // Alta risoluzione temporale (200 colonne/sec = 5 ms) per preservare i tratti sottili dei testi piccoli e veloci
+      const numCols = Math.min(16384, Math.max(240, Math.round(durationSec * 200)));
       const oscillators = [];
 
       for (let b = 0; b < numBands; b++) {
@@ -1205,7 +1210,7 @@
       overCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
       overCtx.textBaseline = 'middle';
 
-      const steps = 6;
+      const steps = 8;
       for (let i = 1; i < steps; i++) {
         const y = Math.round((i / steps) * h) + 0.5;
         const freq = yToFreq(y, h);
@@ -1219,7 +1224,7 @@
 
         const label = freq >= 1000 ? `${(freq / 1000).toFixed(2)} kHz` : `${Math.round(freq)} Hz`;
         const padX = 8 * dpr;
-        const boxW = 64 * dpr;
+        const boxW = 66 * dpr;
         const boxH = 18 * dpr;
         overCtx.fillStyle = 'rgba(6, 8, 13, 0.82)';
         overCtx.fillRect(padX, y - boxH / 2, boxW, boxH);
@@ -1277,8 +1282,9 @@
         lastColumnDb[y] = db;
         if (db > peakDb) peakDb = db;
 
+        // Curva bilanciata: rivela sia i suoni ambientali tenui sia i tratti netti di testi e immagini
         let norm = Math.max(0, Math.min(1, (db - minDb) / (maxDb - minDb)));
-        norm = Math.pow(norm, 1.25);
+        norm = Math.pow(norm, 1.12);
         const cIdx = Math.floor(norm * 255) * 3;
 
         for (let dx = 0; dx < stepX; dx++) {
@@ -1452,14 +1458,14 @@
     const addImageBlockBtn = document.getElementById('addImageBlockBtn');
     const presBlocksList = document.getElementById('presBlocksList');
 
-    const RIBBON_H = 400;            // Risoluzione verticale dello spettro
+    const RIBBON_H = 440;            // Risoluzione verticale dello spettro
     const RIBBON_PX_PER_SEC = 110;   // Scala temporale 1:1 del nastro e delle immagini
     let blockIdCounter = 1;
 
     function createDemoGraphicImage() {
       const c = document.createElement('canvas');
       c.width = 560;
-      c.height = 400;
+      c.height = 440;
       const ctx = c.getContext('2d');
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, c.width, c.height);
@@ -1470,14 +1476,14 @@
       for (let x = 40; x <= 520; x += 2) {
         const t = (x - 40) / 480;
         const env = Math.sin(t * Math.PI);
-        const y = 200 + Math.sin(t * Math.PI * 10) * 125 * env;
+        const y = 220 + Math.sin(t * Math.PI * 10) * 140 * env;
         if (x === 40) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
       ctx.stroke();
 
       ctx.beginPath();
-      ctx.arc(280, 200, 145, 0, Math.PI * 2);
+      ctx.arc(280, 220, 160, 0, Math.PI * 2);
       ctx.lineWidth = 4;
       ctx.stroke();
 
@@ -1492,7 +1498,7 @@
         type: 'text',
         text: 'BENVENUTI NELLO SPAZIO SONORO — ASCOLTA IL PAESAGGIO CHE PRENDE FORMA',
         layout: 'single',      // 'single' | 'double'
-        vAlign: 'center',      // 'center' | 'top' | 'bottom'
+        vAlign: 'acoustic',    // 'acoustic' | 'center' | 'top' | 'bottom'
         weight: '700',
         spacing: 'wide',
         renderedCanvas: null,
@@ -1519,7 +1525,7 @@
         type: 'text',
         text: 'OGNI VOCE E OGNI CANTO DI UCCELLO DISEGNA UNA TRACCIA NELL ARIA',
         layout: 'double',
-        vAlign: 'center',
+        vAlign: 'acoustic',
         weight: '700',
         spacing: 'wide',
         renderedCanvas: null,
@@ -1603,23 +1609,29 @@
 
         // Altezza visiva reale (cap-height in Montserrat ~ 0.72 * fontSize)
         const targetSpanPx = RIBBON_H * heightPct;
-        const capH = isDouble ? (targetSpanPx / 2.26) : targetSpanPx;
-        const fontSize = Math.max(24, Math.min(Math.round(RIBBON_H * 0.92), Math.round(capH / 0.72)));
-        const tracking = block.spacing === 'wide' ? Math.round(fontSize * 0.12) : Math.round(fontSize * 0.04);
-        const padX = Math.round(64 * aspectStretch);
+        const capH = isDouble ? (targetSpanPx / 2.24) : targetSpanPx;
+        const fontSize = Math.max(20, Math.min(Math.round(RIBBON_H * 0.88), Math.round(capH / 0.72)));
+        const tracking = block.spacing === 'wide' ? Math.round(fontSize * 0.13) : Math.round(fontSize * 0.05);
+        const padX = Math.round(44 * aspectStretch);
 
-        // Posizione verticale centrata nello spettro
-        let centerY = RIBBON_H * 0.50;
-        if (block.vAlign === 'top') {
-          centerY = Math.max(targetSpanPx * 0.5 + 16, RIBBON_H * 0.32);
+        // Posizionamento verticale nel profilo di frequenze attivo
+        let rawCenterY = RIBBON_H * 0.50;
+        if (block.vAlign === 'acoustic') {
+          // Centra il testo nella fascia acustica ottimale (~2.3 kHz, perfetta su smartphone e ambienti aperti)
+          const targetFreq = Math.min(currentProfile.max * 0.58, Math.max(currentProfile.min + 600, 2350));
+          rawCenterY = freqToY(targetFreq, RIBBON_H);
+        } else if (block.vAlign === 'top') {
+          rawCenterY = RIBBON_H * 0.25;
         } else if (block.vAlign === 'bottom') {
-          centerY = Math.min(RIBBON_H - targetSpanPx * 0.5 - 16, RIBBON_H * 0.68);
+          rawCenterY = RIBBON_H * 0.75;
         }
+        const halfSpan = targetSpanPx * 0.5 + 12;
+        const centerY = Math.max(halfSpan, Math.min(RIBBON_H - halfSpan, rawCenterY));
 
         ctx.font = `${block.weight} ${fontSize}px Montserrat, sans-serif`;
 
         if (!raw) {
-          canvas.width = 400;
+          canvas.width = 300;
           ctx.fillStyle = '#000000';
           ctx.fillRect(0, 0, canvas.width, RIBBON_H);
           block.durationSec = canvas.width / textPxPerSec;
@@ -1630,9 +1642,8 @@
 
         const lines = isDouble ? splitTextIntoTwoBalancedLines(raw) : [raw.replace(/\s*\/\s*/g, ' ')];
         const lineWidths = lines.map(l => measureTextWithTracking(ctx, l, tracking));
-        const maxUnscaledW = Math.max(...lineWidths, 140);
+        const maxUnscaledW = Math.max(...lineWidths, 120);
 
-        // Applica l'espansione orizzontale (aspectStretch) per compensare lo scorrimento rapido
         canvas.width = Math.ceil(maxUnscaledW * aspectStretch + padX * 2);
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, canvas.width, RIBBON_H);
@@ -1648,17 +1659,17 @@
         if (lines.length === 1) {
           drawTextWithTracking(ctx, lines[0], unscaledStartX, centerY, tracking);
         } else {
-          const lineOffset = capH * 0.63;
+          const lineOffset = capH * 0.62;
           drawTextWithTracking(ctx, lines[0], unscaledStartX, centerY - lineOffset, tracking);
           drawTextWithTracking(ctx, lines[1], unscaledStartX, centerY + lineOffset, tracking);
         }
         ctx.restore();
 
         block.durationSec = canvas.width / textPxPerSec;
-        block.ribbonWidthPx = Math.max(48, Math.round(block.durationSec * RIBBON_PX_PER_SEC));
+        block.ribbonWidthPx = Math.max(44, Math.round(block.durationSec * RIBBON_PX_PER_SEC));
         block.renderedCanvas = canvas;
       } else {
-        // Blocco Immagine: mantenuto esattamente alla sua scala originale 1:1
+        // Blocco Immagine: mantenuto esattamente alla sua scala originale 1:1 a pieno spettro
         const img = block.imageObj;
         const padY = 18;
         const padX = 36;
@@ -1722,7 +1733,6 @@
       }
     }
 
-    // Ricompone il nastro continuo rispettando le durate temporali reali (RIBBON_PX_PER_SEC)
     function rebuildPresentationRibbon() {
       const gapSec = parseFloat(presGapSelect.value);
       const gapPx = Math.round(gapSec * RIBBON_PX_PER_SEC);
@@ -1745,7 +1755,7 @@
       presOverlayCanvas.width = finalCanvasW;
       presOverlayCanvas.height = RIBBON_H;
 
-      const displayScale = 270 / RIBBON_H;
+      const displayScale = 280 / RIBBON_H;
       const cssWidth = Math.round(finalCanvasW * displayScale);
       presStage.style.width = `${cssWidth}px`;
       presRibbonCanvas.style.width = `${cssWidth}px`;
@@ -1756,7 +1766,6 @@
 
       presentationBlocks.forEach(block => {
         if (block.renderedCanvas) {
-          // Disegna sul nastro nella sua reale larghezza temporale (ribbonWidthPx)
           ribbonCtx.drawImage(
             block.renderedCanvas,
             0, 0, block.renderedCanvas.width, RIBBON_H,
@@ -1794,7 +1803,7 @@
       presOverCtx.font = '700 13px Montserrat, sans-serif';
       presOverCtx.fillStyle = 'rgba(148, 163, 184, 0.75)';
 
-      [0.12, 0.5, 0.88].forEach(ratio => {
+      [0.14, 0.36, 0.62, 0.88].forEach(ratio => {
         const y = Math.round(ratio * h) + 0.5;
         const f = yToFreq(y, h);
         const label = f >= 1000 ? `${(f / 1000).toFixed(2)} kHz` : `${Math.round(f)} Hz`;
@@ -1896,11 +1905,12 @@
                   <option value="double" ${block.layout === 'double' ? 'selected' : ''}>2 Righe Sovrapposte</option>
                 </select>
               </label>
-              <label class="control-inline">Posizione verticale:
+              <label class="control-inline">Posizione nello spettro:
                 <select data-field="vAlign">
-                  <option value="center" ${block.vAlign === 'center' ? 'selected' : ''}>Centrato nello spettro</option>
-                  <option value="top" ${block.vAlign === 'top' ? 'selected' : ''}>Fascia superiore</option>
-                  <option value="bottom" ${block.vAlign === 'bottom' ? 'selected' : ''}>Fascia inferiore</option>
+                  <option value="acoustic" ${block.vAlign === 'acoustic' ? 'selected' : ''}>Fascia Acustica Nitida (~1.2–3.8 kHz)</option>
+                  <option value="center" ${block.vAlign === 'center' ? 'selected' : ''}>Centro Spettro (50%)</option>
+                  <option value="top" ${block.vAlign === 'top' ? 'selected' : ''}>Fascia Alta (75%)</option>
+                  <option value="bottom" ${block.vAlign === 'bottom' ? 'selected' : ''}>Fascia Bassa (25%)</option>
                 </select>
               </label>
               <label class="control-inline">Spaziatura lettere:
@@ -2047,7 +2057,7 @@
         type: 'text',
         text: 'NUOVO FRAMMENTO NARRATIVO DELLA PRESENTAZIONE',
         layout: 'single',
-        vAlign: 'center',
+        vAlign: 'acoustic',
         weight: '700',
         spacing: 'wide',
         renderedCanvas: null,
@@ -2081,7 +2091,6 @@
       presScroller.scrollLeft = presScroller.scrollWidth;
     });
 
-    // Aggiornamento in tempo reale dei parametri testo
     presTextSpeedInput.addEventListener('input', () => {
       stopAllTxPlayback();
       presTextSpeedVal.textContent = `${presTextSpeedInput.value} px/s`;
@@ -2102,12 +2111,12 @@
 
     resetTextGeomBtn.addEventListener('click', () => {
       stopAllTxPlayback();
-      presTextSpeedInput.value = 420;
-      presTextSpeedVal.textContent = '420 px/s';
-      presTextHeightInput.value = 60;
-      presTextHeightVal.textContent = '60%';
-      presTextAspectInput.value = 1.55;
-      presTextAspectVal.textContent = '1.55×';
+      presTextHeightInput.value = 32;
+      presTextHeightVal.textContent = '32%';
+      presTextSpeedInput.value = 500;
+      presTextSpeedVal.textContent = '500 px/s';
+      presTextAspectInput.value = 1.45;
+      presTextAspectVal.textContent = '1.45×';
       rebuildPresentationRibbon();
     });
 
@@ -2226,7 +2235,7 @@
         presStatusText.textContent = `Parte ${partNum} completata`;
       };
 
-      const displayScale = 270 / RIBBON_H;
+      const displayScale = 280 / RIBBON_H;
 
       function animatePartHead() {
         if (!activePlayback || activePlayback.blockId !== block.id) return;
@@ -2290,7 +2299,7 @@
       };
 
       const gapSec = parseFloat(presGapSelect.value);
-      const displayScale = 270 / RIBBON_H;
+      const displayScale = 280 / RIBBON_H;
 
       const timeline = [];
       let cursorSec = 0;
@@ -2373,7 +2382,7 @@
       scanCtx.font = '11px Montserrat, sans-serif';
       scanCtx.fillStyle = 'rgba(148, 163, 184, 0.85)';
 
-      [0.12, 0.5, 0.88].forEach(ratio => {
+      [0.14, 0.38, 0.62, 0.88].forEach(ratio => {
         const y = Math.round(ratio * h) + 0.5;
         const f = yToFreq(y, h);
         const label = f >= 1000 ? `${(f / 1000).toFixed(2)} kHz` : `${Math.round(f)} Hz`;
@@ -2436,23 +2445,25 @@
       const align = textAlignSelect.value;
       const marginX = 48;
       const maxW = W - marginX * 2;
-      const maxH = H * 0.65;
+      const maxH = H * 0.48;
 
       let fontSize = Math.floor(maxH / lines.length);
-      let spacing = Math.max(4, Math.round(fontSize * 0.08));
+      let spacing = Math.max(4, Math.round(fontSize * 0.09));
       srcCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
 
       let widest = Math.max(...lines.map(l => measureTextWithTracking(srcCtx, l, spacing)));
-      while ((widest > maxW || fontSize * lines.length * 1.25 > maxH) && fontSize > 22) {
+      while ((widest > maxW || fontSize * lines.length * 1.25 > maxH) && fontSize > 20) {
         fontSize -= 2;
-        spacing = Math.max(4, Math.round(fontSize * 0.08));
+        spacing = Math.max(4, Math.round(fontSize * 0.09));
         srcCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
         widest = Math.max(...lines.map(l => measureTextWithTracking(srcCtx, l, spacing)));
       }
 
       const lineHeight = fontSize * 1.28;
       const totalBlockH = lineHeight * lines.length;
-      const startY = (H - totalBlockH) / 2 + lineHeight / 2;
+      const targetFreq = Math.min(currentProfile.max * 0.58, Math.max(currentProfile.min + 600, 2350));
+      const centerY = freqToY(targetFreq, H);
+      const startY = Math.max(totalBlockH / 2 + 12, Math.min(H - totalBlockH / 2 - 12, centerY)) - totalBlockH / 2 + lineHeight / 2;
 
       srcCtx.fillStyle = '#ffffff';
       srcCtx.textBaseline = 'middle';
