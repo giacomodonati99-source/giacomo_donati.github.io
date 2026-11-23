@@ -423,10 +423,10 @@
       <a data-tab="txPanel">Codifica (Immagine / Testo)</a>
     </div>
 
-    <label class="control-inline">Profilo acustico:
+    <label class="control-inline">Banda acustica:
       <select id="bandProfileSelect">
-        <option value="horn" selected>Tromba / Megafono (550 Hz – 6.2 kHz)</option>
-        <option value="extended">Spettro Esteso (300 Hz – 10 kHz)</option>
+        <option value="lowWarm" selected>Basso Morbido (180 Hz – 1.8 kHz)</option>
+        <option value="hornLow">Medio-Basso Tromba (320 Hz – 2.4 kHz)</option>
       </select>
     </label>
   </nav>
@@ -442,19 +442,19 @@
         <button class="btn-link" id="rxClearBtn">Pulisci</button>
 
         <label class="control-inline">Soglia:
-          <input type="range" id="minDbInput" min="-115" max="-45" value="-92">
-          <span id="minDbVal">-92 dB</span>
+          <input type="range" id="minDbInput" min="-115" max="-45" value="-90">
+          <span id="minDbVal">-90 dB</span>
         </label>
 
         <label class="control-inline">Contrasto:
-          <input type="range" id="contrastInput" min="35" max="85" value="60">
-          <span id="contrastVal">60 dB</span>
+          <input type="range" id="contrastInput" min="35" max="85" value="58">
+          <span id="contrastVal">58 dB</span>
         </label>
 
         <label class="control-inline">FFT:
           <select id="fftSelect">
-            <option value="8192">8192 (Veloce)</option>
-            <option value="16384" selected>16384 (Bilanciata)</option>
+            <option value="8192">8192 (Transitori rapidi)</option>
+            <option value="16384" selected>16384 (Bilanciata HD)</option>
             <option value="32768">32768 (Massimo dettaglio)</option>
           </select>
         </label>
@@ -484,7 +484,7 @@
       </div>
 
       <div class="nota-footer">
-        <span>Orienta il microfono verso la sorgente sonora. Regola <strong>Soglia</strong> e <strong>Contrasto</strong> per isolare voci, uccelli e immagini.</span>
+        <span>In piazza, se il brusio ambientale sporca la parte bassa del grafico, alza leggermente la <strong>Soglia</strong> (es. -78 dB).</span>
         <span class="nota-sottolineata">Usa «Congela» per fermare il flusso e «Salva immagine» per scaricare il fotogramma</span>
       </div>
     </section>
@@ -523,7 +523,7 @@
         </label>
 
         <label class="control-inline">Contrasto / Taglio:
-          <input type="range" id="imgContrastInput" min="50" max="240" value="130">
+          <input type="range" id="imgContrastInput" min="50" max="240" value="135">
         </label>
 
         <label class="control-inline">
@@ -531,7 +531,7 @@
         </label>
 
         <label class="control-inline">
-          <input type="checkbox" id="preEmphasisCheck" checked> Compensazione tromba (+alti)
+          <input type="checkbox" id="lowBoostCheck" checked> Compensazione bassi (+180–450 Hz)
         </label>
       </div>
 
@@ -541,8 +541,7 @@
 
         <label class="control-inline">Durata scansione:
           <select id="durationSelect">
-            <option value="4">4 sec</option>
-            <option value="6">6 sec</option>
+            <option value="5">5 sec</option>
             <option value="8" selected>8 sec (Consigliata)</option>
             <option value="12">12 sec (Dettaglio fine)</option>
             <option value="16">16 sec (Immagini complesse)</option>
@@ -551,8 +550,8 @@
 
         <label class="control-inline">Densità bande:
           <select id="bandsSelect">
-            <option value="160">160 bande (Standard)</option>
-            <option value="240" selected>240 bande (Alta definizione)</option>
+            <option value="120" selected>120 bande (Pulito / Morbido)</option>
+            <option value="180">180 bande (Dettaglio fine)</option>
           </select>
         </label>
 
@@ -565,7 +564,7 @@
       </div>
 
       <div class="nota-footer">
-        <span>Il file .WAV include 0,25s di silenzio iniziale e finale per facilitare il montaggio con le registrazioni ambientali.</span>
+        <span>La compensazione bassi rinforza le note gravi per garantire che i microfoni degli smartphone leggano nitidamente anche il bordo inferiore.</span>
         <span class="nota-sottolineata">Scala lineare 1:1 — Nessuna deformazione geometrica</span>
       </div>
     </section>
@@ -578,13 +577,13 @@
 
   <script>
   (() => {
-    /* ==================== PROFILI BANDA ACUSTICA ==================== */
+    /* ==================== PROFILI BANDA A BASSA FREQUENZA ==================== */
     const PROFILES = {
-      horn:     { min: 550, max: 6200, label: 'Tromba / Megafono' },
-      extended: { min: 300, max: 10000, label: 'Spettro Esteso' }
+      lowWarm: { min: 180, max: 1800, label: 'Basso Morbido' },
+      hornLow: { min: 320, max: 2400, label: 'Medio-Basso Tromba' }
     };
 
-    let currentProfile = PROFILES.horn;
+    let currentProfile = PROFILES.lowWarm;
 
     function yToFreq(y, height) {
       const normY = 1 - (y / Math.max(1, height - 1));
@@ -774,9 +773,9 @@
         overCtx.lineTo(w, y);
         overCtx.stroke();
 
-        const label = freq >= 1000 ? `${(freq / 1000).toFixed(1)} kHz` : `${Math.round(freq)} Hz`;
+        const label = freq >= 1000 ? `${(freq / 1000).toFixed(2)} kHz` : `${Math.round(freq)} Hz`;
         const padX = 8 * dpr;
-        const boxW = 58 * dpr;
+        const boxW = 64 * dpr;
         const boxH = 18 * dpr;
         overCtx.fillStyle = 'rgba(6, 8, 13, 0.82)';
         overCtx.fillRect(padX, y - boxH / 2, boxW, boxH);
@@ -852,7 +851,6 @@
 
       specCtx.putImageData(colImage, w - stepX, 0);
 
-      // Aggiorna l'indicatore di picco in dB ogni 12 frame per confermare che il segnale entra
       frameCounter++;
       if (!isHoveringRx && frameCounter % 12 === 0) {
         const peakLabel = Number.isFinite(peakDb) && peakDb > -150 ? `${peakDb.toFixed(1)} dB` : 'silenzio';
@@ -864,7 +862,6 @@
       rxReadout.classList.remove('error-msg');
       rxReadout.textContent = 'Richiesta accesso microfono...';
 
-      // 1. Crea e sblocca AudioContext SUBITO dentro il click (fondamentale per Safari/iOS)
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) {
         showRxError('Web Audio API non supportata da questo browser.');
@@ -881,7 +878,6 @@
         return;
       }
 
-      // 2. Verifica supporto getUserMedia (richiede HTTPS o localhost)
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         showRxError('Microfono bloccato: apri la pagina su HTTPS o localhost.');
         rxAudioCtx.close().catch(() => {});
@@ -912,7 +908,6 @@
         rxAnalyser.fftSize = parseInt(fftSelect.value, 10);
         rxAnalyser.smoothingTimeConstant = 0;
 
-        // Collega a un nodo silenzioso verso destination per mantenere attivo il grafo su tutti i browser
         const silentGain = rxAudioCtx.createGain();
         silentGain.gain.value = 0;
 
@@ -1009,7 +1004,7 @@
     const imgModeSelect = document.getElementById('imgModeSelect');
     const imgContrastInput = document.getElementById('imgContrastInput');
     const invertCheck = document.getElementById('invertCheck');
-    const preEmphasisCheck = document.getElementById('preEmphasisCheck');
+    const lowBoostCheck = document.getElementById('lowBoostCheck');
 
     const txPlayBtn = document.getElementById('txPlayBtn');
     const txExportBtn = document.getElementById('txExportBtn');
@@ -1034,7 +1029,7 @@
       [0.12, 0.5, 0.88].forEach(ratio => {
         const y = Math.round(ratio * h) + 0.5;
         const f = yToFreq(y, h);
-        const label = f >= 1000 ? `${(f / 1000).toFixed(1)} kHz` : `${Math.round(f)} Hz`;
+        const label = f >= 1000 ? `${(f / 1000).toFixed(2)} kHz` : `${Math.round(f)} Hz`;
         scanCtx.beginPath();
         scanCtx.moveTo(0, y);
         scanCtx.lineTo(w, y);
@@ -1178,19 +1173,19 @@
       const imgData = matCtx.getImageData(0, 0, W, H).data;
 
       const numBands = parseInt(bandsSelect.value, 10);
-      const numCols = Math.min(W, Math.max(240, Math.round(durationSec * 60)));
-      const usePreEmphasis = preEmphasisCheck.checked;
+      const numCols = Math.min(W, Math.max(240, Math.round(durationSec * 55)));
+      const useLowBoost = lowBoostCheck.checked;
 
       const oscillators = [];
 
       for (let b = 0; b < numBands; b++) {
-        const normTopDown = b / Math.max(1, numBands - 1);
+        const normTopDown = b / Math.max(1, numBands - 1); // 0 = acuto, 1 = grave
         const y = Math.min(H - 1, Math.floor(normTopDown * (H - 1)));
         const rowAmps = new Float32Array(numCols);
         let hasEnergy = false;
 
-        const normFreq = 1 - normTopDown;
-        const hornGain = usePreEmphasis ? (0.82 + 0.55 * Math.pow(normFreq, 1.35)) : 1.0;
+        // Rinforza le frequenze gravi (180-450 Hz) per compensare il roll-off dei microfoni smartphone
+        const lowGain = useLowBoost ? (0.85 + 0.50 * Math.pow(normTopDown, 1.5)) : 1.0;
 
         for (let c = 0; c < numCols; c++) {
           const x = Math.min(W - 1, Math.floor((c / Math.max(1, numCols - 1)) * (W - 1)));
@@ -1198,7 +1193,7 @@
           const lum = imgData[idx] / 255;
 
           if (lum > 0.05) {
-            rowAmps[c] = Math.pow(lum, 1.25) * hornGain;
+            rowAmps[c] = Math.pow(lum, 1.25) * lowGain;
             hasEnergy = true;
           }
         }
@@ -1224,7 +1219,7 @@
 
       if (oscillators.length === 0) return out;
 
-      const fadeSamples = Math.floor(sampleRate * 0.02);
+      const fadeSamples = Math.floor(sampleRate * 0.03);
 
       for (let i = 0; i < activeSamples; i++) {
         const pos = (i / activeSamples) * (numCols - 1);
