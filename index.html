@@ -78,6 +78,11 @@
       border-bottom-color: var(--amber);
     }
 
+    .status-avviso.cpted-active {
+      color: var(--danger);
+      border-bottom-color: var(--danger);
+    }
+
     .status-avviso.is-error {
       color: var(--danger);
       border-bottom-color: var(--danger);
@@ -242,7 +247,8 @@
     }
 
     select,
-    input[type="text"] {
+    input[type="text"],
+    input[type="number"] {
       background: transparent;
       color: var(--text-main);
       border: none;
@@ -254,13 +260,19 @@
       outline: none;
     }
 
+    input[type="number"] {
+      width: 52px;
+      text-align: center;
+    }
+
     select option {
       background: var(--bg-surface);
       color: var(--text-main);
     }
 
     select:focus,
-    input[type="text"]:focus {
+    input[type="text"]:focus,
+    input[type="number"]:focus {
       border-bottom-color: var(--text-main);
     }
 
@@ -270,7 +282,8 @@
       width: 86px;
     }
 
-    #rxPanel input[type="range"] {
+    #rxPanel input[type="range"],
+    #cptedPanel input[type="range"] {
       accent-color: var(--cyan);
       width: 82px;
     }
@@ -312,8 +325,123 @@
     }
 
     #overlayCanvas,
-    #txScanCanvas {
+    #txScanCanvas,
+    #cptedOverlayCanvas {
       pointer-events: none;
+    }
+
+    /* ==================== CPTED DETECTION TELEMETRIA ==================== */
+    .cpted-summary-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .telemetry-cell {
+      background: var(--bg-card);
+      border: 1px solid var(--border-line);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .telemetry-cell.is-alert {
+      border-color: var(--danger);
+    }
+
+    .telemetry-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--text-muted);
+    }
+
+    .telemetry-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .telemetry-cell.is-alert .telemetry-value {
+      color: var(--danger);
+    }
+
+    .telemetry-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .cpted-table-wrap {
+      margin-top: 18px;
+      border: 1px solid var(--border-line);
+      background: var(--bg-card);
+      overflow-x: auto;
+    }
+
+    .cpted-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .cpted-table th {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-line);
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .cpted-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(40, 51, 68, 0.55);
+      white-space: nowrap;
+    }
+
+    .cpted-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .cpted-table tr.row-detected {
+      background: rgba(239, 68, 68, 0.08);
+    }
+
+    .band-tag {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      border: 1px solid var(--border-strong);
+      color: var(--text-muted);
+    }
+
+    .band-tag.active-detect {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .db-meter-bar {
+      width: 90px;
+      height: 6px;
+      background: #020305;
+      border: 1px solid var(--border-line);
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    .db-meter-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--cyan);
+      transition: width 0.08s linear, background-color 0.1s ease;
     }
 
     /* GRIGLIA SORGENTI CODIFICA */
@@ -413,6 +541,11 @@
         gap: 16px;
       }
 
+      .cpted-summary-bar {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
       .viewport {
         height: 440px;
       }
@@ -448,9 +581,10 @@
     <div class="nav-links">
       <a class="attivo" data-tab="rxPanel">Decodifica (Spettrogramma)</a>
       <a data-tab="txPanel">Codifica (Testo, Immagini, Disegno)</a>
+      <a data-tab="cptedPanel">CPTED Detection</a>
     </div>
 
-    <label class="control-inline">Banda spettrale:
+    <label class="control-inline" id="sharedBandWrapper">Banda spettrale:
       <select id="bandProfileSelect">
         <option value="ambientWide" selected>Estesa (80 Hz – 8.0 kHz)</option>
         <option value="full65">Spettro Completo (120 Hz – 6.5 kHz)</option>
@@ -614,6 +748,98 @@
       </div>
     </section>
 
+    <!-- ==================== 3. CPTED DETECTION (ALTA RISOLUZIONE) ==================== -->
+    <section class="panel" id="cptedPanel">
+      <div class="toolbar">
+        <button class="btn-action" id="cptedToggleBtn">Avvia scansione CPTED</button>
+        <button class="btn-link" id="cptedFreezeBtn">Congela</button>
+        <button class="btn-link" id="cptedResetPeaksBtn">Azzera picchi</button>
+        <button class="btn-link" id="cptedSnapshotBtn">Salva spettrogramma</button>
+
+        <label class="control-inline">Gamma analisi:
+          <select id="cptedRangeSelect">
+            <option value="cptedFull" selected>Banda CPTED Completa (6.0 – 22.0 kHz)</option>
+            <option value="cptedUltra">Zoom Alta Frequenza / Ultrasuoni (14.0 – 22.0 kHz)</option>
+            <option value="cptedWide">Spettro Esteso (1.0 – 22.0 kHz)</option>
+          </select>
+        </label>
+
+        <label class="control-inline">Soglia:
+          <input type="range" id="cptedMinDbInput" min="-125" max="-50" value="-108">
+          <span id="cptedMinDbVal">-108 dB</span>
+        </label>
+
+        <label class="control-inline">Contrasto:
+          <input type="range" id="cptedContrastInput" min="25" max="85" value="48">
+          <span id="cptedContrastVal">48 dB</span>
+        </label>
+
+        <label class="control-inline">Offset SPL:
+          <input type="number" id="cptedSplOffsetInput" min="70" max="135" value="105">
+          <span>dB</span>
+        </label>
+
+        <span class="readout-text" id="cptedReadout">Premi «Avvia scansione CPTED» per analizzare lo spettro</span>
+      </div>
+
+      <!-- TELEMETRIA SINTETICA RILEVAMENTO -->
+      <div class="cpted-summary-bar">
+        <div class="telemetry-cell" id="cptedPeakCard">
+          <span class="telemetry-label">Portante Dominante Rilevata</span>
+          <span class="telemetry-value" id="cptedDominantFreq">— Hz</span>
+          <span class="telemetry-sub" id="cptedDominantSub">In attesa di segnale</span>
+        </div>
+
+        <div class="telemetry-cell" id="cptedDbCard">
+          <span class="telemetry-label">Livello Picco (dBFS / Stima SPL)</span>
+          <span class="telemetry-value" id="cptedDominantDb">— dBFS</span>
+          <span class="telemetry-sub" id="cptedDominantSpl">Stima SPL: — dB</span>
+        </div>
+
+        <div class="telemetry-cell" id="cptedSnrCard">
+          <span class="telemetry-label">Prominenza Tonale (SNR)</span>
+          <span class="telemetry-value" id="cptedDominantSnr">— dB</span>
+          <span class="telemetry-sub" id="cptedModulationText">Regime: Nessuna portante</span>
+        </div>
+
+        <div class="telemetry-cell">
+          <span class="telemetry-label">Campionamento Hardware</span>
+          <span class="telemetry-value" id="cptedHardwareRate">48.0 kHz (FFT 16384)</span>
+          <span class="telemetry-sub" id="cptedBinRes">Risoluzione: 2.93 Hz / banda</span>
+        </div>
+      </div>
+
+      <!-- SPETTROGRAMMA CPTED DEDICATO -->
+      <div class="viewport" id="cptedWrapper">
+        <canvas id="cptedSpecCanvas"></canvas>
+        <canvas id="cptedOverlayCanvas"></canvas>
+      </div>
+
+      <!-- TABELLA LIVE SOTTO-BANDE CPTED -->
+      <div class="cpted-table-wrap">
+        <table class="cpted-table">
+          <thead>
+            <tr>
+              <th>Sotto-banda CPTED</th>
+              <th>Intervallo</th>
+              <th>Frequenza Picco</th>
+              <th>Livello Attuale</th>
+              <th>Stima dB SPL</th>
+              <th>Picco Massimo</th>
+              <th>Prominenza (SNR)</th>
+              <th>Stato</th>
+            </tr>
+          </thead>
+          <tbody id="cptedBandsTbody"></tbody>
+        </table>
+      </div>
+
+      <div class="nota-footer">
+        <span>Analisi a banda stretta <strong>FFT 16384</strong> progettata per isolare portanti continue o pulsate da <strong>6 kHz</strong> fino al limite ultrasonico della capsula mobile (<strong>22 kHz</strong>).</span>
+        <span class="nota-sottolineata">Tocca o sposta il cursore sullo spettrogramma per leggere Hz e dB puntuali</span>
+      </div>
+    </section>
+
   </main>
 
   <footer>
@@ -622,7 +848,7 @@
 
   <script>
   (() => {
-    /* ==================== PROFILI BANDA ==================== */
+    /* ==================== PROFILI BANDA (DECODIFICA & CODIFICA) ==================== */
     const PROFILES = {
       ambientWide: { min: 80,  max: 8000,  label: 'Estesa' },
       full65:      { min: 120, max: 6500,  label: 'Spettro Completo' },
@@ -642,18 +868,43 @@
       return (1 - Math.max(0, Math.min(1, normY))) * (height - 1);
     }
 
+    /* ==================== PROFILI BANDA (CPTED DETECTION) ==================== */
+    const CPTED_RANGES = {
+      cptedFull:  { min: 6000,  max: 22000, stepHz: 2000 },
+      cptedUltra: { min: 14000, max: 22000, stepHz: 1000 },
+      cptedWide:  { min: 1000,  max: 22000, stepHz: 3000 }
+    };
+
+    let currentCptedRange = CPTED_RANGES.cptedFull;
+
+    function cptedYToFreq(y, height) {
+      const normY = 1 - (y / Math.max(1, height - 1));
+      return currentCptedRange.min + normY * (currentCptedRange.max - currentCptedRange.min);
+    }
+
+    function cptedFreqToY(freq, height) {
+      const normY = (freq - currentCptedRange.min) / Math.max(1, currentCptedRange.max - currentCptedRange.min);
+      return (1 - Math.max(0, Math.min(1, normY))) * (height - 1);
+    }
+
     /* ==================== NAVIGAZIONE SCHEDE ==================== */
     const tabLinks = document.querySelectorAll('nav a[data-tab]');
     const panels = document.querySelectorAll('.panel');
     const bandProfileSelect = document.getElementById('bandProfileSelect');
+    const sharedBandWrapper = document.getElementById('sharedBandWrapper');
 
     tabLinks.forEach(link => {
       link.addEventListener('click', () => {
         tabLinks.forEach(l => l.classList.remove('attivo'));
         panels.forEach(p => p.classList.remove('active'));
         link.classList.add('attivo');
-        document.getElementById(link.dataset.tab).classList.add('active');
-        if (link.dataset.tab === 'rxPanel') resizeRxCanvases();
+        const targetId = link.dataset.tab;
+        document.getElementById(targetId).classList.add('active');
+
+        sharedBandWrapper.style.display = targetId === 'cptedPanel' ? 'none' : 'inline-flex';
+
+        if (targetId === 'rxPanel') resizeRxCanvases();
+        else if (targetId === 'cptedPanel') resizeCptedCanvases();
         else drawTxGrid(null, null);
       });
     });
@@ -872,6 +1123,13 @@
     let rxFreqData = null;
     let rxFrozen = false;
 
+    let cptedAudioCtx = null;
+    let cptedAnalyser = null;
+    let cptedStream = null;
+    let cptedAnimId = null;
+    let cptedFreqData = null;
+    let cptedFrozen = false;
+
     let sharedTxAudioCtx = null;
     let activePlayback = null;
 
@@ -879,6 +1137,9 @@
       if (activePlayback) {
         globalStatusText.textContent = 'Stato: Riproduzione anteprima';
         globalStatusText.className = 'status-avviso tx-active';
+      } else if (cptedAnalyser) {
+        globalStatusText.textContent = cptedFrozen ? 'Stato: CPTED congelato' : 'Stato: Scansione CPTED attiva';
+        globalStatusText.className = 'status-avviso cpted-active';
       } else if (rxAnalyser) {
         globalStatusText.textContent = rxFrozen ? 'Stato: Fotogramma congelato' : 'Stato: Ascolto in diretta';
         globalStatusText.className = 'status-avviso rx-active';
@@ -1081,6 +1342,8 @@
     }
 
     async function startRx() {
+      if (cptedAnalyser || cptedAudioCtx) stopCpted();
+
       rxReadout.classList.remove('error-msg');
       rxReadout.textContent = 'Richiesta accesso microfono...';
 
@@ -1111,7 +1374,8 @@
             echoCancellation: false,
             noiseSuppression: false,
             autoGainControl: false,
-            channelCount: 1
+            channelCount: 1,
+            sampleRate: { ideal: 48000 }
           }
         });
 
@@ -1189,18 +1453,36 @@
 
     rxClearBtn.addEventListener('click', clearRxWaterfall);
 
-    rxWrapper.addEventListener('mousemove', (e) => {
-      isHoveringRx = true;
+    function inspectRxPoint(clientX, clientY) {
       const rect = rxWrapper.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const x = Math.floor((e.clientX - rect.left) * dpr);
-      const y = Math.floor((e.clientY - rect.top) * dpr);
+      const x = Math.max(0, Math.min(overlayCanvas.width - 1, Math.floor((clientX - rect.left) * dpr)));
+      const y = Math.max(0, Math.min(overlayCanvas.height - 1, Math.floor((clientY - rect.top) * dpr)));
       const freq = yToFreq(y, overlayCanvas.height);
       const db = lastColumnDb ? lastColumnDb[y] : -120;
       const fLabel = freq >= 1000 ? `${(freq / 1000).toFixed(2)} kHz` : `${Math.round(freq)} Hz`;
       rxReadout.textContent = `${fLabel} | ${db.toFixed(1)} dB`;
       drawRxGrid(x, y);
+    }
+
+    rxWrapper.addEventListener('mousemove', (e) => {
+      isHoveringRx = true;
+      inspectRxPoint(e.clientX, e.clientY);
     });
+
+    rxWrapper.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 0) {
+        isHoveringRx = true;
+        inspectRxPoint(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
+
+    rxWrapper.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) {
+        isHoveringRx = true;
+        inspectRxPoint(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
 
     rxWrapper.addEventListener('mouseleave', () => {
       isHoveringRx = false;
@@ -1634,9 +1916,606 @@
       txStatusText.textContent = 'File .WAV esportato';
     });
 
+    /* ==================== MODULO 3: CPTED DETECTION (ALTA RISOLUZIONE) ==================== */
+    const cptedToggleBtn = document.getElementById('cptedToggleBtn');
+    const cptedFreezeBtn = document.getElementById('cptedFreezeBtn');
+    const cptedResetPeaksBtn = document.getElementById('cptedResetPeaksBtn');
+    const cptedSnapshotBtn = document.getElementById('cptedSnapshotBtn');
+    const cptedRangeSelect = document.getElementById('cptedRangeSelect');
+    const cptedMinDbInput = document.getElementById('cptedMinDbInput');
+    const cptedMinDbVal = document.getElementById('cptedMinDbVal');
+    const cptedContrastInput = document.getElementById('cptedContrastInput');
+    const cptedContrastVal = document.getElementById('cptedContrastVal');
+    const cptedSplOffsetInput = document.getElementById('cptedSplOffsetInput');
+    const cptedReadout = document.getElementById('cptedReadout');
+
+    const cptedPeakCard = document.getElementById('cptedPeakCard');
+    const cptedDbCard = document.getElementById('cptedDbCard');
+    const cptedSnrCard = document.getElementById('cptedSnrCard');
+    const cptedDominantFreq = document.getElementById('cptedDominantFreq');
+    const cptedDominantSub = document.getElementById('cptedDominantSub');
+    const cptedDominantDb = document.getElementById('cptedDominantDb');
+    const cptedDominantSpl = document.getElementById('cptedDominantSpl');
+    const cptedDominantSnr = document.getElementById('cptedDominantSnr');
+    const cptedModulationText = document.getElementById('cptedModulationText');
+    const cptedHardwareRate = document.getElementById('cptedHardwareRate');
+    const cptedBinRes = document.getElementById('cptedBinRes');
+
+    const cptedWrapper = document.getElementById('cptedWrapper');
+    const cptedSpecCanvas = document.getElementById('cptedSpecCanvas');
+    const cptedOverlayCanvas = document.getElementById('cptedOverlayCanvas');
+    const cptedSpecCtx = cptedSpecCanvas.getContext('2d', { alpha: false });
+    const cptedOverCtx = cptedOverlayCanvas.getContext('2d');
+    const cptedBandsTbody = document.getElementById('cptedBandsTbody');
+
+    const CPTED_SUBBANDS = [
+      { id: 'b8k',   name: 'Portante Udibile Alta',      min: 7500,  max: 8500,  maxDb: -160, maxFreq: 0 },
+      { id: 'b16k',  name: 'Alta Frequenza (Fascia A)',  min: 16000, max: 17200, maxDb: -160, maxFreq: 0 },
+      { id: 'b17k',  name: 'Dissuasore Direzionale',     min: 17200, max: 18200, maxDb: -160, maxFreq: 0 },
+      { id: 'b18k',  name: 'Alta Frequenza (Fascia B)',  min: 18200, max: 20000, maxDb: -160, maxFreq: 0 },
+      { id: 'b20k',  name: 'Soglia Ultrasonica Mobile',  min: 20000, max: 22000, maxDb: -160, maxFreq: 0 }
+    ];
+
+    let isHoveringCpted = false;
+    let cptedHoverPt = null;
+    let lastCptedColumnDb = null;
+    let cptedFrameCounter = 0;
+    let lastCptedFrameTime = 0;
+    let cptedScrollAcc = 0;
+    let liveDetectedFreq = null;
+    const carrierPulseHistory = []; // Storico rilevamento per distinguere emissione continua vs pulsata
+
+    function initCptedBandsTable() {
+      cptedBandsTbody.innerHTML = CPTED_SUBBANDS.map(b => `
+        <tr id="row-${b.id}">
+          <td><strong>${b.name}</strong></td>
+          <td>${(b.min / 1000).toFixed(1)} – ${(b.max / 1000).toFixed(1)} kHz</td>
+          <td id="freq-${b.id}">—</td>
+          <td>
+            <span class="db-meter-bar"><span class="db-meter-fill" id="bar-${b.id}"></span></span>
+            <span id="db-${b.id}">— dBFS</span>
+          </td>
+          <td id="spl-${b.id}">— dB</td>
+          <td id="max-${b.id}">—</td>
+          <td id="snr-${b.id}">—</td>
+          <td><span class="band-tag" id="tag-${b.id}">QUIETE</span></td>
+        </tr>
+      `).join('');
+    }
+    initCptedBandsTable();
+
+    function showCptedError(msg) {
+      globalStatusText.textContent = 'Stato: Errore microfono';
+      globalStatusText.className = 'status-avviso is-error';
+      cptedReadout.textContent = msg;
+      cptedReadout.classList.add('error-msg');
+    }
+
+    function clearCptedWaterfall() {
+      cptedSpecCtx.fillStyle = '#020305';
+      cptedSpecCtx.fillRect(0, 0, cptedSpecCanvas.width, cptedSpecCanvas.height);
+    }
+
+    cptedMinDbInput.addEventListener('input', () => {
+      cptedMinDbVal.textContent = `${cptedMinDbInput.value} dB`;
+    });
+
+    cptedContrastInput.addEventListener('input', () => {
+      cptedContrastVal.textContent = `${cptedContrastInput.value} dB`;
+    });
+
+    cptedRangeSelect.addEventListener('change', () => {
+      currentCptedRange = CPTED_RANGES[cptedRangeSelect.value];
+      clearCptedWaterfall();
+      drawCptedGrid(cptedHoverPt, liveDetectedFreq);
+    });
+
+    cptedResetPeaksBtn.addEventListener('click', () => {
+      CPTED_SUBBANDS.forEach(b => {
+        b.maxDb = -160;
+        b.maxFreq = 0;
+        const maxEl = document.getElementById(`max-${b.id}`);
+        if (maxEl) maxEl.textContent = '—';
+      });
+      carrierPulseHistory.length = 0;
+      clearCptedWaterfall();
+      cptedReadout.textContent = 'Picchi memorizzati azzerati';
+    });
+
+    function resizeCptedCanvases() {
+      const rect = cptedWrapper.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cptedSpecCanvas.width = Math.floor(rect.width * dpr);
+      cptedSpecCanvas.height = Math.floor(rect.height * dpr);
+      cptedOverlayCanvas.width = cptedSpecCanvas.width;
+      cptedOverlayCanvas.height = cptedSpecCanvas.height;
+      lastCptedColumnDb = new Float32Array(cptedSpecCanvas.height).fill(-130);
+      clearCptedWaterfall();
+      drawCptedGrid(null, null);
+    }
+
+    function drawCptedGrid(cursorPt, detectedFreq) {
+      const w = cptedOverlayCanvas.width;
+      const h = cptedOverlayCanvas.height;
+      if (w === 0 || h === 0) return;
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cptedOverCtx.clearRect(0, 0, w, h);
+
+      // Fasce di riferimento CPTED note (8 kHz, 16-18.5 kHz, 18.5-22 kHz)
+      const refZones = [
+        { f0: 7600,  f1: 8400,  color: 'rgba(245, 158, 11, 0.06)' },
+        { f0: 16000, f1: 18500, color: 'rgba(239, 68, 68, 0.09)' },
+        { f0: 18500, f1: 22000, color: 'rgba(0, 240, 255, 0.06)' }
+      ];
+
+      refZones.forEach(z => {
+        if (z.f1 < currentCptedRange.min || z.f0 > currentCptedRange.max) return;
+        const yTop = cptedFreqToY(Math.min(currentCptedRange.max, z.f1), h);
+        const yBot = cptedFreqToY(Math.max(currentCptedRange.min, z.f0), h);
+        cptedOverCtx.fillStyle = z.color;
+        cptedOverCtx.fillRect(0, yTop, w, Math.max(2, yBot - yTop));
+      });
+
+      const fontSize = Math.round(10.5 * dpr);
+      cptedOverCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
+      cptedOverCtx.textBaseline = 'middle';
+
+      const step = currentCptedRange.stepHz;
+      const firstTick = Math.ceil(currentCptedRange.min / step) * step;
+
+      for (let f = firstTick; f < currentCptedRange.max; f += step) {
+        if (f <= currentCptedRange.min + 100) continue;
+        const y = Math.round(cptedFreqToY(f, h)) + 0.5;
+
+        cptedOverCtx.strokeStyle = 'rgba(226, 232, 240, 0.14)';
+        cptedOverCtx.lineWidth = 1;
+        cptedOverCtx.beginPath();
+        cptedOverCtx.moveTo(0, y);
+        cptedOverCtx.lineTo(w, y);
+        cptedOverCtx.stroke();
+
+        const label = `${(f / 1000).toFixed(1)} kHz`;
+        const padX = 8 * dpr;
+        const boxW = 64 * dpr;
+        const boxH = 18 * dpr;
+        cptedOverCtx.fillStyle = 'rgba(6, 8, 13, 0.85)';
+        cptedOverCtx.fillRect(padX, y - boxH / 2, boxW, boxH);
+        cptedOverCtx.fillStyle = '#94a3b8';
+        cptedOverCtx.fillText(label, padX + 5 * dpr, y);
+      }
+
+      // Linea puntatore portante CPTED rilevata in tempo reale
+      if (detectedFreq !== null && detectedFreq >= currentCptedRange.min && detectedFreq <= currentCptedRange.max) {
+        const dy = Math.round(cptedFreqToY(detectedFreq, h)) + 0.5;
+        cptedOverCtx.strokeStyle = 'rgba(239, 68, 68, 0.9)';
+        cptedOverCtx.lineWidth = 1.5;
+        cptedOverCtx.setLineDash([5 * dpr, 4 * dpr]);
+        cptedOverCtx.beginPath();
+        cptedOverCtx.moveTo(0, dy);
+        cptedOverCtx.lineTo(w, dy);
+        cptedOverCtx.stroke();
+        cptedOverCtx.setLineDash([]);
+
+        const tag = `PORTANTE ${(detectedFreq / 1000).toFixed(3)} kHz`;
+        const tagW = cptedOverCtx.measureText(tag).width + 14 * dpr;
+        const boxH = 20 * dpr;
+        cptedOverCtx.fillStyle = 'rgba(239, 68, 68, 0.92)';
+        cptedOverCtx.fillRect(w - tagW - 10 * dpr, dy - boxH / 2, tagW, boxH);
+        cptedOverCtx.fillStyle = '#06080d';
+        cptedOverCtx.fillText(tag, w - tagW - 3 * dpr, dy);
+      }
+
+      // Mirino cursore / tocco
+      if (cursorPt) {
+        cptedOverCtx.strokeStyle = 'rgba(0, 240, 255, 0.8)';
+        cptedOverCtx.lineWidth = 1;
+        cptedOverCtx.beginPath();
+        cptedOverCtx.moveTo(0, cursorPt.y + 0.5);
+        cptedOverCtx.lineTo(w, cursorPt.y + 0.5);
+        cptedOverCtx.moveTo(cursorPt.x + 0.5, 0);
+        cptedOverCtx.lineTo(cursorPt.x + 0.5, h);
+        cptedOverCtx.stroke();
+      }
+    }
+
+    function analyzeCptedSpectrum(freqData, sampleRate, minDb, splOffset) {
+      const nyquist = sampleRate / 2;
+      const binCount = freqData.length;
+      const hzPerBin = nyquist / binCount;
+
+      // Analisi globale nell'intervallo CPTED selezionato
+      const startBin = Math.max(5, Math.floor(currentCptedRange.min / hzPerBin));
+      const endBin = Math.min(binCount - 6, Math.ceil(currentCptedRange.max / hzPerBin));
+
+      let bestPeakDb = -160;
+      let bestPeakBin = -1;
+      let bestSnr = 0;
+
+      for (let b = startBin; b <= endBin; b++) {
+        const db = freqData[b];
+        if (db <= minDb) continue;
+
+        // Stima del rumore di fondo locale attorno al bin (escludendo i 4 bin adiacenti al lobo)
+        let floorSum = 0;
+        let floorCount = 0;
+        for (let offset = -36; offset <= 36; offset += 2) {
+          if (Math.abs(offset) <= 4) continue;
+          const nb = b + offset;
+          if (nb >= 2 && nb < binCount) {
+            floorSum += freqData[nb];
+            floorCount++;
+          }
+        }
+        const localFloor = floorCount > 0 ? (floorSum / floorCount) : minDb;
+        const snr = db - localFloor;
+
+        // Priorità ai picchi tonali stretti (prominenza > 12 dB)
+        if (snr > 12 && (db + snr * 0.45) > (bestPeakDb + bestSnr * 0.45)) {
+          bestPeakDb = db;
+          bestPeakBin = b;
+          bestSnr = snr;
+        }
+      }
+
+      const isCarrierDetected = bestPeakBin !== -1 && bestSnr >= 13.5 && bestPeakDb > minDb + 4;
+      carrierPulseHistory.push(isCarrierDetected ? 1 : 0);
+      if (carrierPulseHistory.length > 90) carrierPulseHistory.shift();
+
+      if (isCarrierDetected) {
+        // Interpolazione parabolica tra 3 bin per precisione sub-Hertz sulla frequenza
+        const y0 = freqData[bestPeakBin - 1];
+        const y1 = freqData[bestPeakBin];
+        const y2 = freqData[bestPeakBin + 1];
+        const denom = (y0 - 2 * y1 + y2);
+        const delta = Math.abs(denom) > 1e-6 ? (0.5 * (y0 - y2) / denom) : 0;
+        const exactFreq = (bestPeakBin + Math.max(-0.5, Math.min(0.5, delta))) * hzPerBin;
+        const estSpl = bestPeakDb + splOffset;
+
+        // Classificazione continuità vs modulazione pulsata
+        const activeRatio = carrierPulseHistory.reduce((a, b) => a + b, 0) / carrierPulseHistory.length;
+        let transitions = 0;
+        for (let i = 1; i < carrierPulseHistory.length; i++) {
+          if (carrierPulseHistory[i] !== carrierPulseHistory[i - 1]) transitions++;
+        }
+        const regimeLabel = (activeRatio < 0.85 && transitions >= 3)
+          ? 'Regime: Emissione pulsata'
+          : 'Regime: Portante continua';
+
+        liveDetectedFreq = exactFreq;
+        cptedPeakCard.classList.add('is-alert');
+        cptedDbCard.classList.add('is-alert');
+        cptedSnrCard.classList.add('is-alert');
+
+        cptedDominantFreq.textContent = `${Math.round(exactFreq)} Hz (${(exactFreq / 1000).toFixed(2)} kHz)`;
+        cptedDominantSub.textContent = exactFreq >= 16000
+          ? 'Fascia alta frequenza / ultrasuono'
+          : 'Fascia udibile direzionale';
+        cptedDominantDb.textContent = `${bestPeakDb.toFixed(1)} dBFS`;
+        cptedDominantSpl.textContent = `Stima SPL: ~${estSpl.toFixed(1)} dB`;
+        cptedDominantSnr.textContent = `+${bestSnr.toFixed(1)} dB`;
+        cptedModulationText.textContent = regimeLabel;
+      } else {
+        liveDetectedFreq = null;
+        cptedPeakCard.classList.remove('is-alert');
+        cptedDbCard.classList.remove('is-alert');
+        cptedSnrCard.classList.remove('is-alert');
+
+        cptedDominantFreq.textContent = 'Nessuna portante';
+        cptedDominantSub.textContent = 'Spettro privo di picchi stretti';
+        cptedDominantDb.textContent = '— dBFS';
+        cptedDominantSpl.textContent = 'Stima SPL: — dB';
+        cptedDominantSnr.textContent = '— dB';
+        cptedModulationText.textContent = 'Regime: Quiete';
+      }
+
+      // Aggiornamento telemetria delle 5 sotto-bande specifiche
+      CPTED_SUBBANDS.forEach(band => {
+        const bStart = Math.max(2, Math.floor(band.min / hzPerBin));
+        const bEnd = Math.min(binCount - 3, Math.ceil(band.max / hzPerBin));
+
+        let bandPeakDb = -160;
+        let bandPeakBin = bStart;
+        let sumLinear = 0;
+        let count = 0;
+
+        for (let b = bStart; b <= bEnd; b++) {
+          const val = freqData[b];
+          if (val > bandPeakDb) {
+            bandPeakDb = val;
+            bandPeakBin = b;
+          }
+          sumLinear += Math.pow(10, val / 10);
+          count++;
+        }
+
+        const avgDb = count > 0 ? (10 * Math.log10(sumLinear / count)) : -130;
+        const bandSnr = Math.max(0, bandPeakDb - avgDb);
+        const peakFreq = bandPeakBin * hzPerBin;
+        const estSpl = bandPeakDb + splOffset;
+
+        if (bandPeakDb > band.maxDb && bandPeakDb > -140) {
+          band.maxDb = bandPeakDb;
+          band.maxFreq = peakFreq;
+        }
+
+        const detectedInBand = bandSnr >= 13.5 && bandPeakDb > minDb + 4;
+
+        const rowEl = document.getElementById(`row-${band.id}`);
+        const freqEl = document.getElementById(`freq-${band.id}`);
+        const barEl = document.getElementById(`bar-${band.id}`);
+        const dbEl = document.getElementById(`db-${band.id}`);
+        const splEl = document.getElementById(`spl-${band.id}`);
+        const maxEl = document.getElementById(`max-${band.id}`);
+        const snrEl = document.getElementById(`snr-${band.id}`);
+        const tagEl = document.getElementById(`tag-${band.id}`);
+
+        if (!rowEl) return;
+
+        rowEl.classList.toggle('row-detected', detectedInBand);
+        freqEl.textContent = bandPeakDb > minDb ? `${Math.round(peakFreq)} Hz` : '—';
+        dbEl.textContent = bandPeakDb > -145 ? `${bandPeakDb.toFixed(1)} dBFS` : '—';
+        splEl.textContent = bandPeakDb > -145 ? `~${estSpl.toFixed(1)} dB` : '—';
+        maxEl.textContent = band.maxDb > -145
+          ? `${band.maxDb.toFixed(1)} dBFS (~${(band.maxDb + splOffset).toFixed(0)} dB)`
+          : '—';
+        snrEl.textContent = bandPeakDb > minDb ? `+${bandSnr.toFixed(1)} dB` : '—';
+
+        const pct = Math.max(0, Math.min(100, ((bandPeakDb - minDb) / 65) * 100));
+        barEl.style.width = `${pct}%`;
+        barEl.style.backgroundColor = detectedInBand ? '#ef4444' : '#00f0ff';
+
+        tagEl.textContent = detectedInBand ? 'PORTANTE' : 'QUIETE';
+        tagEl.classList.toggle('active-detect', detectedInBand);
+      });
+    }
+
+    function cptedRenderLoop(now) {
+      if (!cptedAnalyser || !cptedAudioCtx) return;
+      cptedAnimId = requestAnimationFrame(cptedRenderLoop);
+
+      if (cptedAudioCtx.state === 'suspended') cptedAudioCtx.resume().catch(() => {});
+      if (cptedFrozen) {
+        lastCptedFrameTime = now || performance.now();
+        return;
+      }
+
+      const w = cptedSpecCanvas.width;
+      const h = cptedSpecCanvas.height;
+      if (w === 0 || h === 0) return;
+
+      const currentTime = now || performance.now();
+      const dt = lastCptedFrameTime ? Math.min(0.1, (currentTime - lastCptedFrameTime) / 1000) : (1 / 60);
+      lastCptedFrameTime = currentTime;
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const targetCssPxPerSec = 140; // Scorrimento bilanciato per ispezione stabile delle portanti
+      cptedScrollAcc += targetCssPxPerSec * dpr * dt;
+      const stepX = Math.floor(cptedScrollAcc);
+      if (stepX < 1) return;
+      cptedScrollAcc -= stepX;
+
+      const minDb = parseFloat(cptedMinDbInput.value);
+      const spanDb = parseFloat(cptedContrastInput.value);
+      const maxDb = minDb + spanDb;
+      const splOffset = parseFloat(cptedSplOffsetInput.value) || 105;
+      const nyquist = cptedAudioCtx.sampleRate / 2;
+      const binCount = cptedAnalyser.frequencyBinCount;
+
+      cptedAnalyser.getFloatFrequencyData(cptedFreqData);
+
+      cptedSpecCtx.drawImage(cptedSpecCanvas, -stepX, 0);
+      const colImage = cptedSpecCtx.createImageData(stepX, h);
+      const pixels = colImage.data;
+
+      for (let y = 0; y < h; y++) {
+        const freq = cptedYToFreq(y, h);
+        const exactBin = (freq / nyquist) * (binCount - 1);
+        const b0 = Math.max(0, Math.min(binCount - 1, Math.floor(exactBin)));
+        const b1 = Math.min(binCount - 1, b0 + 1);
+        const frac = exactBin - b0;
+
+        const db = cptedFreqData[b0] * (1 - frac) + cptedFreqData[b1] * frac;
+        lastCptedColumnDb[y] = db;
+
+        let norm = Math.max(0, Math.min(1, (db - minDb) / (maxDb - minDb)));
+        norm = Math.pow(norm, 1.15);
+        const cIdx = Math.floor(norm * 255) * 3;
+
+        for (let dx = 0; dx < stepX; dx++) {
+          const pIdx = (y * stepX + dx) * 4;
+          pixels[pIdx]     = colorLUT[cIdx];
+          pixels[pIdx + 1] = colorLUT[cIdx + 1];
+          pixels[pIdx + 2] = colorLUT[cIdx + 2];
+          pixels[pIdx + 3] = 255;
+        }
+      }
+
+      cptedSpecCtx.putImageData(colImage, w - stepX, 0);
+
+      cptedFrameCounter++;
+      if (cptedFrameCounter % 4 === 0) {
+        analyzeCptedSpectrum(cptedFreqData, cptedAudioCtx.sampleRate, minDb, splOffset);
+        drawCptedGrid(isHoveringCpted ? cptedHoverPt : null, liveDetectedFreq);
+
+        if (!isHoveringCpted) {
+          if (liveDetectedFreq !== null) {
+            cptedReadout.textContent = `Portante rilevata a ${Math.round(liveDetectedFreq)} Hz`;
+          } else {
+            cptedReadout.textContent = `Scansione attiva (${(cptedAudioCtx.sampleRate / 1000).toFixed(1)} kHz)`;
+          }
+        }
+      }
+    }
+
+    async function startCpted() {
+      if (rxAnalyser || rxAudioCtx) stopRx();
+
+      cptedReadout.classList.remove('error-msg');
+      cptedReadout.textContent = 'Attivazione microfono ad alta frequenza...';
+
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) {
+        showCptedError('Web Audio API non supportata da questo browser.');
+        return;
+      }
+
+      try {
+        cptedAudioCtx = new AudioCtx({ sampleRate: 48000 });
+        if (cptedAudioCtx.state === 'suspended') await cptedAudioCtx.resume();
+      } catch (_) {
+        try {
+          cptedAudioCtx = new AudioCtx();
+          if (cptedAudioCtx.state === 'suspended') await cptedAudioCtx.resume();
+        } catch (e) {
+          showCptedError('Impossibile avviare il motore audio: ' + e.message);
+          return;
+        }
+      }
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showCptedError('Microfono bloccato: apri la pagina su HTTPS o localhost.');
+        cptedAudioCtx.close().catch(() => {});
+        cptedAudioCtx = null;
+        return;
+      }
+
+      try {
+        cptedStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false,
+            channelCount: 1,
+            sampleRate: { ideal: 48000 }
+          }
+        });
+
+        if (cptedAudioCtx.state === 'suspended') await cptedAudioCtx.resume();
+        if (cptedSpecCanvas.width === 0 || cptedSpecCanvas.height === 0) resizeCptedCanvases();
+
+        const source = cptedAudioCtx.createMediaStreamSource(cptedStream);
+        cptedAnalyser = cptedAudioCtx.createAnalyser();
+        cptedAnalyser.fftSize = 16384; // Massima risoluzione spettrale (~2.93 Hz/bin a 48 kHz)
+        cptedAnalyser.smoothingTimeConstant = 0;
+
+        const silentGain = cptedAudioCtx.createGain();
+        silentGain.gain.value = 0;
+
+        source.connect(cptedAnalyser);
+        cptedAnalyser.connect(silentGain);
+        silentGain.connect(cptedAudioCtx.destination);
+
+        const sr = cptedAudioCtx.sampleRate;
+        const binRes = (sr / cptedAnalyser.fftSize).toFixed(2);
+        cptedHardwareRate.textContent = `${(sr / 1000).toFixed(1)} kHz (FFT 16384)`;
+        cptedBinRes.textContent = `Risoluzione: ${binRes} Hz / banda`;
+
+        cptedFreqData = new Float32Array(cptedAnalyser.frequencyBinCount);
+        cptedFrozen = false;
+        lastCptedFrameTime = performance.now();
+        cptedScrollAcc = 0;
+        cptedFreezeBtn.classList.remove('active-state');
+        cptedFreezeBtn.textContent = 'Congela';
+        cptedToggleBtn.textContent = 'Ferma scansione CPTED';
+        cptedToggleBtn.classList.add('is-stop');
+        cptedReadout.textContent = `Scansione CPTED attiva (${sr} Hz)`;
+        updateGlobalStatus();
+
+        cptedRenderLoop(lastCptedFrameTime);
+      } catch (err) {
+        if (cptedAudioCtx) {
+          cptedAudioCtx.close().catch(() => {});
+          cptedAudioCtx = null;
+        }
+        cptedAnalyser = null;
+        showCptedError(`Permesso negato o microfono assente (${err.name || err.message})`);
+      }
+    }
+
+    function stopCpted() {
+      if (cptedAnimId) cancelAnimationFrame(cptedAnimId);
+      if (cptedStream) cptedStream.getTracks().forEach(t => t.stop());
+      if (cptedAudioCtx) cptedAudioCtx.close().catch(() => {});
+      cptedStream = null;
+      cptedAnalyser = null;
+      cptedAudioCtx = null;
+      liveDetectedFreq = null;
+      cptedToggleBtn.textContent = 'Avvia scansione CPTED';
+      cptedToggleBtn.classList.remove('is-stop');
+      cptedReadout.classList.remove('error-msg');
+      cptedReadout.textContent = 'Scansione CPTED in pausa';
+      drawCptedGrid(null, null);
+      updateGlobalStatus();
+    }
+
+    cptedToggleBtn.addEventListener('click', () => {
+      if (cptedAnalyser || cptedAudioCtx) stopCpted();
+      else startCpted();
+    });
+
+    cptedFreezeBtn.addEventListener('click', () => {
+      if (!cptedAnalyser) return;
+      cptedFrozen = !cptedFrozen;
+      cptedFreezeBtn.classList.toggle('active-state', cptedFrozen);
+      cptedFreezeBtn.textContent = cptedFrozen ? 'Riprendi' : 'Congela';
+      cptedReadout.textContent = cptedFrozen ? 'Fotogramma CPTED congelato' : 'Scansione CPTED attiva';
+      updateGlobalStatus();
+    });
+
+    cptedSnapshotBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = `decoder-cpted-${Date.now()}.png`;
+      link.href = cptedSpecCanvas.toDataURL('image/png');
+      link.click();
+    });
+
+    function inspectCptedPoint(clientX, clientY) {
+      const rect = cptedWrapper.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const x = Math.max(0, Math.min(cptedOverlayCanvas.width - 1, Math.floor((clientX - rect.left) * dpr)));
+      const y = Math.max(0, Math.min(cptedOverlayCanvas.height - 1, Math.floor((clientY - rect.top) * dpr)));
+      cptedHoverPt = { x, y };
+
+      const freq = cptedYToFreq(y, cptedOverlayCanvas.height);
+      const db = lastCptedColumnDb ? lastCptedColumnDb[y] : -130;
+      const splOffset = parseFloat(cptedSplOffsetInput.value) || 105;
+      const estSpl = db + splOffset;
+
+      cptedReadout.textContent = `${Math.round(freq)} Hz (${(freq / 1000).toFixed(2)} kHz) | ${db.toFixed(1)} dBFS (~${estSpl.toFixed(1)} dB SPL)`;
+      drawCptedGrid(cptedHoverPt, liveDetectedFreq);
+    }
+
+    cptedWrapper.addEventListener('mousemove', (e) => {
+      isHoveringCpted = true;
+      inspectCptedPoint(e.clientX, e.clientY);
+    });
+
+    cptedWrapper.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 0) {
+        isHoveringCpted = true;
+        inspectCptedPoint(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
+
+    cptedWrapper.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) {
+        isHoveringCpted = true;
+        inspectCptedPoint(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
+
+    cptedWrapper.addEventListener('mouseleave', () => {
+      isHoveringCpted = false;
+      cptedHoverPt = null;
+      drawCptedGrid(null, liveDetectedFreq);
+    });
+
     /* ==================== INIZIALIZZAZIONE ==================== */
     window.addEventListener('resize', () => {
       resizeRxCanvases();
+      resizeCptedCanvases();
     });
 
     resizeRxCanvases();
