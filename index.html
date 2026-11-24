@@ -196,11 +196,6 @@
       color: var(--bg-void);
     }
 
-    .btn-action.btn-sm {
-      padding: 5px 10px;
-      font-size: 11px;
-    }
-
     /* PULSANTI TESTUALI SOTTOLINEATI */
     .btn-link {
       background: none;
@@ -243,12 +238,11 @@
     .control-inline strong {
       color: var(--text-main);
       font-weight: 700;
-      min-width: 44px;
+      min-width: 38px;
     }
 
     select,
-    input[type="text"],
-    textarea {
+    input[type="text"] {
       background: transparent;
       color: var(--text-main);
       border: none;
@@ -258,21 +252,6 @@
       font-family: 'Montserrat', sans-serif;
       font-size: 12px;
       outline: none;
-    }
-
-    textarea {
-      width: 100%;
-      background: #04060a;
-      border: 1px solid var(--border-line);
-      padding: 10px 12px;
-      font-size: 13px;
-      line-height: 1.5;
-      resize: vertical;
-      min-height: 68px;
-    }
-
-    textarea:focus {
-      border-color: var(--amber);
     }
 
     select option {
@@ -288,7 +267,7 @@
     input[type="range"] {
       accent-color: var(--amber);
       cursor: pointer;
-      width: 90px;
+      width: 86px;
     }
 
     #rxPanel input[type="range"] {
@@ -313,7 +292,7 @@
       border-bottom-color: var(--danger);
     }
 
-    /* VIEWPORT SPETTROGRAMMA LIVE */
+    /* VIEWPORT SPETTROGRAMMA E MATRICE */
     .viewport {
       position: relative;
       width: 100%;
@@ -337,155 +316,7 @@
       pointer-events: none;
     }
 
-    /* ==================== PRESENTAZIONE (NASTRO CONTINUO + BLOCCHI) ==================== */
-    .ribbon-header {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .ribbon-scroller {
-      position: relative;
-      width: 100%;
-      height: 280px;
-      background: #020305;
-      border: 1px solid var(--border-line);
-      overflow-x: auto;
-      overflow-y: hidden;
-      margin-bottom: 24px;
-    }
-
-    .ribbon-stage {
-      position: relative;
-      height: 100%;
-      min-width: 100%;
-    }
-
-    .ribbon-stage canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      display: block;
-    }
-
-    #presOverlayCanvas {
-      pointer-events: none;
-    }
-
-    .blocks-toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 16px;
-    }
-
-    .blocks-actions {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .blocks-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .block-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-line);
-      padding: 16px 18px;
-      transition: border-color 0.15s ease;
-    }
-
-    .block-card.is-playing {
-      border-color: var(--amber);
-    }
-
-    .block-card-head {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding-bottom: 12px;
-      margin-bottom: 14px;
-      border-bottom: 1px solid var(--border-line);
-    }
-
-    .block-meta {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .block-badge {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--amber);
-      border: 1px solid var(--amber);
-      padding: 2px 7px;
-      letter-spacing: 0.4px;
-    }
-
-    .block-badge.is-img {
-      color: var(--cyan);
-      border-color: var(--cyan);
-    }
-
-    .block-info {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .block-controls {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .block-options {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 14px 20px;
-      margin-top: 12px;
-    }
-
-    .img-block-grid {
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 18px;
-      align-items: center;
-    }
-
-    .img-thumb-box {
-      width: 160px;
-      height: 80px;
-      background: #020305;
-      border: 1px solid var(--border-line);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .img-thumb-box canvas {
-      max-width: 100%;
-      max-height: 100%;
-      display: block;
-    }
-
-    /* GRIGLIA CODIFICA RAPIDA */
+    /* GRIGLIA SORGENTI CODIFICA */
     .encoder-inputs {
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
@@ -518,8 +349,10 @@
     .preview-viewport {
       height: auto;
       aspect-ratio: 2 / 1;
-      min-height: 240px;
-      max-height: 440px;
+      min-height: 260px;
+      max-height: 460px;
+      cursor: crosshair;
+      touch-action: none;
     }
 
     .nota-footer {
@@ -575,14 +408,18 @@
         padding: 4px 0;
       }
 
-      .encoder-inputs,
-      .img-block-grid {
+      .encoder-inputs {
         grid-template-columns: 1fr;
         gap: 16px;
       }
 
       .viewport {
         height: 440px;
+      }
+
+      .preview-viewport {
+        height: auto;
+        min-height: 220px;
       }
 
       .readout-text {
@@ -609,23 +446,23 @@
   <!-- NAVIGAZIONE E PROFILO BANDA CONDIVISO -->
   <nav>
     <div class="nav-links">
-      <a class="attivo" data-tab="rxPanel">Spettrogramma (Live)</a>
-      <a data-tab="presPanel">Presentazione (Sequenza)</a>
-      <a data-tab="txPanel">Codifica Rapida</a>
+      <a class="attivo" data-tab="rxPanel">Decodifica (Spettrogramma)</a>
+      <a data-tab="txPanel">Codifica (Testo, Immagini, Disegno)</a>
     </div>
 
     <label class="control-inline">Banda spettrale:
       <select id="bandProfileSelect">
-        <option value="ambientWide" selected>Estesa Ambiente &amp; Segnale (80 Hz – 8.0 kHz)</option>
-        <option value="ultraAmbient">Ultra Estesa Natura &amp; Cielo (60 Hz – 10.5 kHz)</option>
-        <option value="balanced">Compatta Smartphone &amp; Tromba (180 Hz – 4.2 kHz)</option>
+        <option value="ambientWide" selected>Estesa (80 Hz – 8.0 kHz)</option>
+        <option value="full65">Spettro Completo (120 Hz – 6.5 kHz)</option>
+        <option value="ultraWide">Ultra Estesa (60 Hz – 10.5 kHz)</option>
+        <option value="compact">Compatta (180 Hz – 4.2 kHz)</option>
       </select>
     </label>
   </nav>
 
   <main class="contenitore">
 
-    <!-- ==================== 1. SPETTROGRAMMA LIVE (PUBBLICO) ==================== -->
+    <!-- ==================== 1. DECODIFICA (SPETTROGRAMMA LIVE) ==================== -->
     <section class="panel active" id="rxPanel">
       <div class="toolbar">
         <button class="btn-action" id="rxToggleBtn">Attiva spettrogramma</button>
@@ -634,28 +471,27 @@
         <button class="btn-link" id="rxClearBtn">Pulisci</button>
 
         <label class="control-inline">Soglia:
-          <input type="range" id="minDbInput" min="-115" max="-45" value="-90">
-          <span id="minDbVal">-90 dB</span>
+          <input type="range" id="minDbInput" min="-120" max="-45" value="-102">
+          <span id="minDbVal">-102 dB</span>
         </label>
 
         <label class="control-inline">Contrasto:
-          <input type="range" id="contrastInput" min="30" max="85" value="56">
-          <span id="contrastVal">56 dB</span>
+          <input type="range" id="contrastInput" min="25" max="85" value="44">
+          <span id="contrastVal">44 dB</span>
         </label>
 
         <label class="control-inline">FFT:
           <select id="fftSelect">
-            <option value="2048">2048 (Testi rapidissimi)</option>
-            <option value="4096" selected>4096 (Ambiente + Testi &amp; Immagini — Consigliata)</option>
-            <option value="8192">8192 (Uccelli &amp; Immagini HD)</option>
-            <option value="16384">16384 (Massima risoluzione frequenze)</option>
+            <option value="4096">4096</option>
+            <option value="8192" selected>8192 (Consigliata)</option>
+            <option value="16384">16384</option>
           </select>
         </label>
 
         <label class="control-inline">Scorrimento:
           <select id="speedSelect">
             <option value="2">2 px</option>
-            <option value="3" selected>3 px (Testi veloci)</option>
+            <option value="3" selected>3 px</option>
             <option value="4">4 px</option>
           </select>
         </label>
@@ -677,95 +513,18 @@
       </div>
 
       <div class="nota-footer">
-        <span>La banda <strong>80 Hz – 8.0 kHz</strong> mostra i rumori ambientali gravi e acuti insieme ai messaggi codificati, preservando i dettagli con <strong>FFT 4096</strong>.</span>
+        <span>Risoluzione <strong>FFT 8192</strong> con scorrimento temporale costante e scala lineare sincronizzata con la codifica.</span>
         <span class="nota-sottolineata">Usa «Congela» per fermare il flusso e «Salva immagine» per scaricare il fotogramma</span>
       </div>
     </section>
 
-    <!-- ==================== 2. PRESENTAZIONE GRAFICA (SEQUENZA CONTINUA) ==================== -->
-    <section class="panel" id="presPanel">
-      <div class="toolbar">
-        <button class="btn-action tx-mode" id="presPlayAllBtn">Riproduci intera sequenza</button>
-        <button class="btn-link" id="presDownloadAllBtn">Scarica tutte le parti (.WAV separati)</button>
-        <button class="btn-link" id="presExportSingleBtn">Esporta sequenza unica (.WAV)</button>
-
-        <label class="control-inline">Pausa tra blocchi:
-          <select id="presGapSelect">
-            <option value="0.5">0.5 sec</option>
-            <option value="1.0" selected>1.0 sec</option>
-            <option value="2.0">2.0 sec</option>
-          </select>
-        </label>
-
-        <label class="control-inline">Bande:
-          <select id="presBandsSelect">
-            <option value="200" selected>200 bande (Ambiente + Testi nitidi)</option>
-            <option value="260">260 bande (Immagini ultra HD)</option>
-          </select>
-        </label>
-
-        <span class="readout-text" id="presStatusText">Pronto</span>
-      </div>
-
-      <!-- CONTROLLI DEDICATI AL TESTO (COMPATTEZZA, VELOCITÀ E PROPORZIONI) -->
-      <div class="toolbar-sub">
-        <span class="section-label">Parametri Testo:</span>
-
-        <label class="control-inline">Altezza nello spettro:
-          <input type="range" id="presTextHeightInput" min="18" max="75" step="1" value="32">
-          <strong id="presTextHeightVal">32%</strong>
-        </label>
-
-        <label class="control-inline">Velocità scorrimento:
-          <input type="range" id="presTextSpeedInput" min="250" max="750" step="10" value="500">
-          <strong id="presTextSpeedVal">500 px/s</strong>
-        </label>
-
-        <label class="control-inline">Larghezza caratteri:
-          <input type="range" id="presTextAspectInput" min="1.0" max="2.4" step="0.05" value="1.45">
-          <strong id="presTextAspectVal">1.45×</strong>
-        </label>
-
-        <button class="btn-link" id="resetTextGeomBtn">Ripristina valori consigliati</button>
-      </div>
-
-      <!-- NASTRO SPETTRALE CONTINUO -->
-      <div class="ribbon-header">
-        <span class="section-label">Nastro spettrale continuo (Proporzioni reali nel tempo sullo spettrogramma)</span>
-        <span class="nota-sottolineata" id="presTotalMeta">3 parti — Durata totale: 0.0 sec</span>
-      </div>
-
-      <div class="ribbon-scroller" id="presScroller">
-        <div class="ribbon-stage" id="presStage">
-          <canvas id="presRibbonCanvas" height="440"></canvas>
-          <canvas id="presOverlayCanvas" height="440"></canvas>
-        </div>
-      </div>
-
-      <!-- GESTIONE BLOCCHI DELLA PRESENTAZIONE -->
-      <div class="blocks-toolbar">
-        <span class="section-label">Parti della presentazione (Modifica e scarica ogni singola parte in .WAV)</span>
-        <div class="blocks-actions">
-          <button class="btn-action tx-mode btn-sm" id="addTextBlockBtn">+ Aggiungi Testo Lungo</button>
-          <button class="btn-action btn-sm" id="addImageBlockBtn">+ Aggiungi Immagine</button>
-        </div>
-      </div>
-
-      <div class="blocks-list" id="presBlocksList"></div>
-
-      <div class="nota-footer">
-        <span>Il testo compatto al <strong>32%</strong> scorre rapidamente nella fascia acustica centrale lasciando spazio visivo ai suoni ambientali sopra e sotto.</span>
-        <span class="nota-sottolineata">Scorri orizzontalmente il nastro sopra per ispezionare l'intera narrazione</span>
-      </div>
-    </section>
-
-    <!-- ==================== 3. CODIFICA RAPIDA (SINGOLA) ==================== -->
+    <!-- ==================== 2. CODIFICA (TESTO, IMMAGINI, DISEGNO) ==================== -->
     <section class="panel" id="txPanel">
       <div class="encoder-inputs">
         <div class="input-block">
-          <span class="section-label">1. Componi testo (usa « / » per andare a capo)</span>
+          <span class="section-label">1. Testo (usa « / » per andare a capo)</span>
           <div class="input-row">
-            <input type="text" id="textInput" maxlength="60" placeholder="Es. ASCOLTA / SEGNALE 01">
+            <input type="text" id="textInput" maxlength="60" value="" aria-label="Testo da codificare">
             <select id="textAlignSelect">
               <option value="center" selected>Centrato</option>
               <option value="left">Allineato a sinistra</option>
@@ -775,7 +534,7 @@
         </div>
 
         <div class="input-block">
-          <span class="section-label">2. Oppure carica un'immagine (PNG, JPG, SVG)</span>
+          <span class="section-label">2. Immagine (PNG, JPG, SVG)</span>
           <div class="input-row">
             <label for="imageFileInput" class="btn-link" style="cursor:pointer;">Scegli file immagine</label>
             <input type="file" id="imageFileInput" accept="image/*">
@@ -785,23 +544,39 @@
       </div>
 
       <div class="toolbar-sub">
-        <label class="control-inline">Resa grafica:
-          <select id="imgModeSelect">
-            <option value="threshold" selected>Alto contrasto (Netto per testi/loghi)</option>
-            <option value="grayscale">Scala di grigi (Sfumature foto)</option>
+        <span class="section-label">3. Disegno &amp; Resa:</span>
+
+        <label class="control-inline">Strumento:
+          <select id="brushToolSelect">
+            <option value="brush" selected>Pennello</option>
+            <option value="eraser">Gomma</option>
           </select>
         </label>
 
-        <label class="control-inline">Contrasto / Taglio:
+        <label class="control-inline">Tratto:
+          <input type="range" id="brushSizeInput" min="2" max="28" value="6">
+          <strong id="brushSizeVal">6 px</strong>
+        </label>
+
+        <button class="btn-link danger-link" id="clearMatrixBtn">Cancella tela</button>
+
+        <label class="control-inline">Resa:
+          <select id="imgModeSelect">
+            <option value="threshold" selected>Alto contrasto</option>
+            <option value="grayscale">Scala di grigi</option>
+          </select>
+        </label>
+
+        <label class="control-inline">Contrasto:
           <input type="range" id="imgContrastInput" min="50" max="240" value="140">
         </label>
 
         <label class="control-inline">
-          <input type="checkbox" id="invertCheck"> Inverti luminanza
+          <input type="checkbox" id="invertCheck"> Inverti
         </label>
 
         <label class="control-inline">
-          <input type="checkbox" id="deviceEqCheck" checked> Equalizzazione comfort &amp; dispositivi
+          <input type="checkbox" id="deviceEqCheck" checked> Equalizzazione acustica
         </label>
       </div>
 
@@ -811,21 +586,21 @@
 
         <label class="control-inline">Durata scansione:
           <select id="durationSelect">
-            <option value="3">3 sec (Testo veloce)</option>
-            <option value="5" selected>5 sec (Standard)</option>
-            <option value="8">8 sec (Immagini)</option>
-            <option value="12">12 sec (Immagini complesse)</option>
+            <option value="4">4 sec</option>
+            <option value="6" selected>6 sec</option>
+            <option value="9">9 sec</option>
+            <option value="12">12 sec</option>
           </select>
         </label>
 
         <label class="control-inline">Densità bande:
           <select id="bandsSelect">
-            <option value="180" selected>180 bande (Testi nitidi)</option>
-            <option value="240">240 bande (Immagini ricche)</option>
+            <option value="180" selected>180 bande</option>
+            <option value="240">240 bande</option>
           </select>
         </label>
 
-        <span class="readout-text" id="txStatusText">Matrice pronta (800×400)</span>
+        <span class="readout-text" id="txStatusText">Matrice 800×400 pronta</span>
       </div>
 
       <div class="viewport preview-viewport" id="txWrapper">
@@ -834,7 +609,7 @@
       </div>
 
       <div class="nota-footer">
-        <span>Per testi lunghi alternati a immagini usa la scheda <strong>Presentazione (Sequenza)</strong>.</span>
+        <span>Disegna direttamente sulla tela spettrale oppure inserisci testo e immagini; l'asse verticale corrisponde alle frequenze selezionate.</span>
         <span class="nota-sottolineata">Scala lineare 1:1 — Nessuna deformazione geometrica</span>
       </div>
     </section>
@@ -849,9 +624,10 @@
   (() => {
     /* ==================== PROFILI BANDA ==================== */
     const PROFILES = {
-      ambientWide:  { min: 80,  max: 8000,  label: 'Estesa Ambiente & Segnale' },
-      ultraAmbient: { min: 60,  max: 10500, label: 'Ultra Estesa Natura & Cielo' },
-      balanced:     { min: 180, max: 4200,  label: 'Compatta Smartphone & Tromba' }
+      ambientWide: { min: 80,  max: 8000,  label: 'Estesa' },
+      full65:      { min: 120, max: 6500,  label: 'Spettro Completo' },
+      ultraWide:   { min: 60,  max: 10500, label: 'Ultra Estesa' },
+      compact:     { min: 180, max: 4200,  label: 'Compatta' }
     };
 
     let currentProfile = PROFILES.ambientWide;
@@ -878,8 +654,7 @@
         link.classList.add('attivo');
         document.getElementById(link.dataset.tab).classList.add('active');
         if (link.dataset.tab === 'rxPanel') resizeRxCanvases();
-        else if (link.dataset.tab === 'presPanel') rebuildPresentationRibbon();
-        else drawTxGrid();
+        else drawTxGrid(null, null);
       });
     });
 
@@ -887,8 +662,7 @@
       currentProfile = PROFILES[bandProfileSelect.value];
       clearRxWaterfall();
       drawRxGrid(null, null);
-      drawTxGrid();
-      rebuildPresentationRibbon();
+      drawTxGrid(null, null);
     });
 
     /* ==================== PALETTE COLORI (LUT 256) ==================== */
@@ -958,7 +732,6 @@
       const H = imgDataObj.height;
       const imgData = imgDataObj.data;
 
-      // Alta risoluzione temporale (200 colonne/sec = 5 ms) per preservare i tratti sottili dei testi piccoli e veloci
       const numCols = Math.min(16384, Math.max(240, Math.round(durationSec * 200)));
       const oscillators = [];
 
@@ -976,8 +749,8 @@
           const idx = (y * W + x) * 4;
           const lum = imgData[idx] / 255;
 
-          if (lum > 0.05) {
-            rowAmps[c] = Math.pow(lum, 1.15) * eqGain;
+          if (lum > 0.08) {
+            rowAmps[c] = Math.pow(lum, 1.45) * eqGain;
             hasEnergy = true;
           }
         }
@@ -1104,9 +877,7 @@
 
     function updateGlobalStatus() {
       if (activePlayback) {
-        globalStatusText.textContent = activePlayback.mode === 'pres'
-          ? 'Stato: Riproduzione presentazione'
-          : 'Stato: Riproduzione anteprima';
+        globalStatusText.textContent = 'Stato: Riproduzione anteprima';
         globalStatusText.className = 'status-avviso tx-active';
       } else if (rxAnalyser) {
         globalStatusText.textContent = rxFrozen ? 'Stato: Fotogramma congelato' : 'Stato: Ascolto in diretta';
@@ -1117,7 +888,7 @@
       }
     }
 
-    function stopAllTxPlayback() {
+    function stopTxPlayback() {
       if (!activePlayback) return;
       if (activePlayback.animId) cancelAnimationFrame(activePlayback.animId);
       if (activePlayback.sourceNode) {
@@ -1127,21 +898,12 @@
 
       txPlayBtn.textContent = 'Anteprima audio';
       txPlayBtn.classList.remove('is-stop');
-      presPlayAllBtn.textContent = 'Riproduci intera sequenza';
-      presPlayAllBtn.classList.remove('is-stop');
 
-      document.querySelectorAll('.block-card').forEach(c => c.classList.remove('is-playing'));
-      document.querySelectorAll('.play-part-btn').forEach(b => {
-        b.textContent = 'Ascolta parte';
-        b.classList.remove('is-stop');
-      });
-
-      drawTxGrid();
-      drawPresentationOverlay(null);
+      drawTxGrid(null, null);
       updateGlobalStatus();
     }
 
-    /* ==================== MODULO 1: SPETTROGRAMMA LIVE (RX) ==================== */
+    /* ==================== MODULO 1: DECODIFICA (SPETTROGRAMMA LIVE) ==================== */
     const rxToggleBtn = document.getElementById('rxToggleBtn');
     const rxFreezeBtn = document.getElementById('rxFreezeBtn');
     const rxSnapshotBtn = document.getElementById('rxSnapshotBtn');
@@ -1163,6 +925,8 @@
     let isHoveringRx = false;
     let lastColumnDb = null;
     let frameCounter = 0;
+    let lastRxFrameTime = 0;
+    let scrollAccumulator = 0;
 
     function showRxError(msg) {
       globalStatusText.textContent = 'Stato: Errore microfono';
@@ -1210,7 +974,7 @@
       overCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
       overCtx.textBaseline = 'middle';
 
-      const steps = 8;
+      const steps = 6;
       for (let i = 1; i < steps; i++) {
         const y = Math.round((i / steps) * h) + 0.5;
         const freq = yToFreq(y, h);
@@ -1244,24 +1008,36 @@
       }
     }
 
-    function rxRenderLoop() {
+    function rxRenderLoop(now) {
       if (!rxAnalyser || !rxAudioCtx) return;
       rxAnimId = requestAnimationFrame(rxRenderLoop);
 
       if (rxAudioCtx.state === 'suspended') rxAudioCtx.resume().catch(() => {});
-      if (rxFrozen) return;
+      if (rxFrozen) {
+        lastRxFrameTime = now || performance.now();
+        return;
+      }
 
       const w = specCanvas.width;
       const h = specCanvas.height;
       if (w === 0 || h === 0) return;
 
+      const currentTime = now || performance.now();
+      const dt = lastRxFrameTime ? Math.min(0.1, (currentTime - lastRxFrameTime) / 1000) : (1 / 60);
+      lastRxFrameTime = currentTime;
+
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const targetCssPxPerSec = parseInt(speedSelect.value, 10) * 60;
+      scrollAccumulator += targetCssPxPerSec * dpr * dt;
+      const stepX = Math.floor(scrollAccumulator);
+      if (stepX < 1) return;
+      scrollAccumulator -= stepX;
+
       const minDb = parseFloat(minDbInput.value);
       const spanDb = parseFloat(contrastInput.value);
       const maxDb = minDb + spanDb;
       const nyquist = rxAudioCtx.sampleRate / 2;
       const binCount = rxAnalyser.frequencyBinCount;
-      const stepX = Math.max(1, Math.round(parseInt(speedSelect.value, 10) * dpr));
 
       rxAnalyser.getFloatFrequencyData(rxFreqData);
 
@@ -1282,9 +1058,8 @@
         lastColumnDb[y] = db;
         if (db > peakDb) peakDb = db;
 
-        // Curva bilanciata: rivela sia i suoni ambientali tenui sia i tratti netti di testi e immagini
         let norm = Math.max(0, Math.min(1, (db - minDb) / (maxDb - minDb)));
-        norm = Math.pow(norm, 1.12);
+        norm = Math.pow(norm, 1.15);
         const cIdx = Math.floor(norm * 255) * 3;
 
         for (let dx = 0; dx < stepX; dx++) {
@@ -1357,6 +1132,8 @@
 
         rxFreqData = new Float32Array(rxAnalyser.frequencyBinCount);
         rxFrozen = false;
+        lastRxFrameTime = performance.now();
+        scrollAccumulator = 0;
         rxFreezeBtn.classList.remove('active-state');
         rxFreezeBtn.textContent = 'Congela';
         rxToggleBtn.textContent = 'Ferma spettrogramma';
@@ -1364,7 +1141,7 @@
         rxReadout.textContent = `In ascolto (${rxAudioCtx.sampleRate} Hz)`;
         updateGlobalStatus();
 
-        rxRenderLoop();
+        rxRenderLoop(lastRxFrameTime);
       } catch (err) {
         if (rxAudioCtx) {
           rxAudioCtx.close().catch(() => {});
@@ -1430,149 +1207,43 @@
       drawRxGrid(null, null);
     });
 
-    /* ==================== MODULO 2: PRESENTAZIONE GRAFICA (SEQUENZA CONTINUA) ==================== */
-    const presPlayAllBtn = document.getElementById('presPlayAllBtn');
-    const presDownloadAllBtn = document.getElementById('presDownloadAllBtn');
-    const presExportSingleBtn = document.getElementById('presExportSingleBtn');
-    const presGapSelect = document.getElementById('presGapSelect');
-    const presBandsSelect = document.getElementById('presBandsSelect');
-    const presStatusText = document.getElementById('presStatusText');
-    const presTotalMeta = document.getElementById('presTotalMeta');
+    /* ==================== MODULO 2: CODIFICA (TESTO, IMMAGINI, DISEGNO) ==================== */
+    const txWrapper = document.getElementById('txWrapper');
+    const matrixCanvas = document.getElementById('matrixCanvas');
+    const txScanCanvas = document.getElementById('txScanCanvas');
+    const matCtx = matrixCanvas.getContext('2d');
+    const scanCtx = txScanCanvas.getContext('2d');
 
-    const presTextSpeedInput = document.getElementById('presTextSpeedInput');
-    const presTextSpeedVal = document.getElementById('presTextSpeedVal');
-    const presTextHeightInput = document.getElementById('presTextHeightInput');
-    const presTextHeightVal = document.getElementById('presTextHeightVal');
-    const presTextAspectInput = document.getElementById('presTextAspectInput');
-    const presTextAspectVal = document.getElementById('presTextAspectVal');
-    const resetTextGeomBtn = document.getElementById('resetTextGeomBtn');
+    const textInput = document.getElementById('textInput');
+    const textAlignSelect = document.getElementById('textAlignSelect');
+    const renderTextBtn = document.getElementById('renderTextBtn');
+    const imageFileInput = document.getElementById('imageFileInput');
+    const fileNameLabel = document.getElementById('fileNameLabel');
 
-    const presScroller = document.getElementById('presScroller');
-    const presStage = document.getElementById('presStage');
-    const presRibbonCanvas = document.getElementById('presRibbonCanvas');
-    const presOverlayCanvas = document.getElementById('presOverlayCanvas');
-    const ribbonCtx = presRibbonCanvas.getContext('2d');
-    const presOverCtx = presOverlayCanvas.getContext('2d');
+    const brushToolSelect = document.getElementById('brushToolSelect');
+    const brushSizeInput = document.getElementById('brushSizeInput');
+    const brushSizeVal = document.getElementById('brushSizeVal');
+    const clearMatrixBtn = document.getElementById('clearMatrixBtn');
 
-    const addTextBlockBtn = document.getElementById('addTextBlockBtn');
-    const addImageBlockBtn = document.getElementById('addImageBlockBtn');
-    const presBlocksList = document.getElementById('presBlocksList');
+    const imgModeSelect = document.getElementById('imgModeSelect');
+    const imgContrastInput = document.getElementById('imgContrastInput');
+    const invertCheck = document.getElementById('invertCheck');
+    const deviceEqCheck = document.getElementById('deviceEqCheck');
 
-    const RIBBON_H = 440;            // Risoluzione verticale dello spettro
-    const RIBBON_PX_PER_SEC = 110;   // Scala temporale 1:1 del nastro e delle immagini
-    let blockIdCounter = 1;
+    const txPlayBtn = document.getElementById('txPlayBtn');
+    const txExportBtn = document.getElementById('txExportBtn');
+    const durationSelect = document.getElementById('durationSelect');
+    const bandsSelect = document.getElementById('bandsSelect');
+    const txStatusText = document.getElementById('txStatusText');
 
-    function createDemoGraphicImage() {
-      const c = document.createElement('canvas');
-      c.width = 560;
-      c.height = 440;
-      const ctx = c.getContext('2d');
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, c.width, c.height);
+    const sourceBuffer = document.createElement('canvas');
+    sourceBuffer.width = matrixCanvas.width;
+    sourceBuffer.height = matrixCanvas.height;
+    const srcCtx = sourceBuffer.getContext('2d');
 
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      for (let x = 40; x <= 520; x += 2) {
-        const t = (x - 40) / 480;
-        const env = Math.sin(t * Math.PI);
-        const y = 220 + Math.sin(t * Math.PI * 10) * 140 * env;
-        if (x === 40) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(280, 220, 160, 0, Math.PI * 2);
-      ctx.lineWidth = 4;
-      ctx.stroke();
-
-      const img = new Image();
-      img.src = c.toDataURL('image/png');
-      return img;
-    }
-
-    let presentationBlocks = [
-      {
-        id: blockIdCounter++,
-        type: 'text',
-        text: 'BENVENUTI NELLO SPAZIO SONORO — ASCOLTA IL PAESAGGIO CHE PRENDE FORMA',
-        layout: 'single',      // 'single' | 'double'
-        vAlign: 'acoustic',    // 'acoustic' | 'center' | 'top' | 'bottom'
-        weight: '700',
-        spacing: 'wide',
-        renderedCanvas: null,
-        durationSec: 0,
-        startX: 0,
-        ribbonWidthPx: 0
-      },
-      {
-        id: blockIdCounter++,
-        type: 'image',
-        fileName: 'onda-armonica.png',
-        imageObj: null,
-        mode: 'grayscale',
-        contrast: 145,
-        invert: false,
-        durationMode: 'auto',
-        renderedCanvas: null,
-        durationSec: 0,
-        startX: 0,
-        ribbonWidthPx: 0
-      },
-      {
-        id: blockIdCounter++,
-        type: 'text',
-        text: 'OGNI VOCE E OGNI CANTO DI UCCELLO DISEGNA UNA TRACCIA NELL ARIA',
-        layout: 'double',
-        vAlign: 'acoustic',
-        weight: '700',
-        spacing: 'wide',
-        renderedCanvas: null,
-        durationSec: 0,
-        startX: 0,
-        ribbonWidthPx: 0
-      }
-    ];
-
-    const demoImg = createDemoGraphicImage();
-    demoImg.onload = () => {
-      const imgBlock = presentationBlocks.find(b => b.type === 'image');
-      if (imgBlock && !imgBlock.imageObj) {
-        imgBlock.imageObj = demoImg;
-        renderBlocksUI();
-        rebuildPresentationRibbon();
-      }
-    };
-
-    function splitTextIntoTwoBalancedLines(raw) {
-      const cleaned = raw.replace(/\s+/g, ' ').trim().toUpperCase();
-      if (!cleaned) return [''];
-      if (cleaned.includes('/')) {
-        const parts = cleaned.split('/').map(s => s.trim()).filter(Boolean);
-        return parts.slice(0, 2);
-      }
-      const words = cleaned.split(' ');
-      if (words.length <= 1) return [cleaned];
-
-      const totalLen = cleaned.length;
-      let bestIdx = 1;
-      let bestDiff = Infinity;
-      let acc = 0;
-
-      for (let i = 0; i < words.length - 1; i++) {
-        acc += words[i].length + (i > 0 ? 1 : 0);
-        const diff = Math.abs(totalLen / 2 - acc);
-        if (diff < bestDiff) {
-          bestDiff = diff;
-          bestIdx = i + 1;
-        }
-      }
-      return [
-        words.slice(0, bestIdx).join(' '),
-        words.slice(bestIdx).join(' ')
-      ];
-    }
+    let isDrawing = false;
+    let lastDrawPt = null;
+    let hoverBrushPt = null;
 
     function measureTextWithTracking(ctx, str, trackingPx) {
       if (!str) return 0;
@@ -1593,792 +1264,13 @@
       }
     }
 
-    // Genera il canvas sorgente ad alta risoluzione per un blocco (Testo o Immagine)
-    function renderBlockToCanvas(block) {
-      const canvas = document.createElement('canvas');
-      canvas.height = RIBBON_H;
-      const ctx = canvas.getContext('2d');
-
-      if (block.type === 'text') {
-        const textPxPerSec = parseFloat(presTextSpeedInput.value);
-        const heightPct = parseInt(presTextHeightInput.value, 10) / 100;
-        const aspectStretch = parseFloat(presTextAspectInput.value);
-
-        const raw = (block.text || '').trim().toUpperCase();
-        const isDouble = block.layout === 'double';
-
-        // Altezza visiva reale (cap-height in Montserrat ~ 0.72 * fontSize)
-        const targetSpanPx = RIBBON_H * heightPct;
-        const capH = isDouble ? (targetSpanPx / 2.24) : targetSpanPx;
-        const fontSize = Math.max(20, Math.min(Math.round(RIBBON_H * 0.88), Math.round(capH / 0.72)));
-        const tracking = block.spacing === 'wide' ? Math.round(fontSize * 0.13) : Math.round(fontSize * 0.05);
-        const padX = Math.round(44 * aspectStretch);
-
-        // Posizionamento verticale nel profilo di frequenze attivo
-        let rawCenterY = RIBBON_H * 0.50;
-        if (block.vAlign === 'acoustic') {
-          // Centra il testo nella fascia acustica ottimale (~2.3 kHz, perfetta su smartphone e ambienti aperti)
-          const targetFreq = Math.min(currentProfile.max * 0.58, Math.max(currentProfile.min + 600, 2350));
-          rawCenterY = freqToY(targetFreq, RIBBON_H);
-        } else if (block.vAlign === 'top') {
-          rawCenterY = RIBBON_H * 0.25;
-        } else if (block.vAlign === 'bottom') {
-          rawCenterY = RIBBON_H * 0.75;
-        }
-        const halfSpan = targetSpanPx * 0.5 + 12;
-        const centerY = Math.max(halfSpan, Math.min(RIBBON_H - halfSpan, rawCenterY));
-
-        ctx.font = `${block.weight} ${fontSize}px Montserrat, sans-serif`;
-
-        if (!raw) {
-          canvas.width = 300;
-          ctx.fillStyle = '#000000';
-          ctx.fillRect(0, 0, canvas.width, RIBBON_H);
-          block.durationSec = canvas.width / textPxPerSec;
-          block.ribbonWidthPx = Math.max(40, Math.round(block.durationSec * RIBBON_PX_PER_SEC));
-          block.renderedCanvas = canvas;
-          return;
-        }
-
-        const lines = isDouble ? splitTextIntoTwoBalancedLines(raw) : [raw.replace(/\s*\/\s*/g, ' ')];
-        const lineWidths = lines.map(l => measureTextWithTracking(ctx, l, tracking));
-        const maxUnscaledW = Math.max(...lineWidths, 120);
-
-        canvas.width = Math.ceil(maxUnscaledW * aspectStretch + padX * 2);
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, canvas.width, RIBBON_H);
-
-        ctx.save();
-        ctx.scale(aspectStretch, 1);
-        ctx.font = `${block.weight} ${fontSize}px Montserrat, sans-serif`;
-        ctx.fillStyle = '#ffffff';
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'middle';
-
-        const unscaledStartX = padX / aspectStretch;
-        if (lines.length === 1) {
-          drawTextWithTracking(ctx, lines[0], unscaledStartX, centerY, tracking);
-        } else {
-          const lineOffset = capH * 0.62;
-          drawTextWithTracking(ctx, lines[0], unscaledStartX, centerY - lineOffset, tracking);
-          drawTextWithTracking(ctx, lines[1], unscaledStartX, centerY + lineOffset, tracking);
-        }
-        ctx.restore();
-
-        block.durationSec = canvas.width / textPxPerSec;
-        block.ribbonWidthPx = Math.max(44, Math.round(block.durationSec * RIBBON_PX_PER_SEC));
-        block.renderedCanvas = canvas;
-      } else {
-        // Blocco Immagine: mantenuto esattamente alla sua scala originale 1:1 a pieno spettro
-        const img = block.imageObj;
-        const padY = 18;
-        const padX = 36;
-        const availH = RIBBON_H - padY * 2;
-
-        let targetW;
-        if (!img || !img.width || !img.height) {
-          targetW = 480;
-        } else if (block.durationMode === 'auto') {
-          const naturalAspect = img.width / img.height;
-          targetW = Math.max(240, Math.round(availH * naturalAspect + padX * 2));
-        } else {
-          targetW = Math.max(240, Math.round(parseFloat(block.durationMode) * RIBBON_PX_PER_SEC));
-        }
-
-        canvas.width = targetW;
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, canvas.width, RIBBON_H);
-
-        if (img && img.width && img.height) {
-          const innerW = canvas.width - padX * 2;
-          const scale = Math.min(innerW / img.width, availH / img.height);
-          const drawW = img.width * scale;
-          const drawH = img.height * scale;
-          const ox = (canvas.width - drawW) / 2;
-          const oy = (RIBBON_H - drawH) / 2;
-
-          ctx.drawImage(img, ox, oy, drawW, drawH);
-
-          const imgData = ctx.getImageData(0, 0, canvas.width, RIBBON_H);
-          const d = imgData.data;
-          const contrastFactor = block.contrast / 128;
-
-          for (let i = 0; i < d.length; i += 4) {
-            let lum = 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
-            if (block.invert) lum = 255 - lum;
-
-            let val;
-            if (block.mode === 'threshold') {
-              val = lum >= (255 - block.contrast) ? 255 : 0;
-            } else {
-              val = Math.max(0, Math.min(255, (lum - 128) * contrastFactor + 128));
-            }
-            d[i] = d[i + 1] = d[i + 2] = val;
-            d[i + 3] = 255;
-          }
-          ctx.putImageData(imgData, 0, 0);
-        } else {
-          ctx.strokeStyle = '#283344';
-          ctx.strokeRect(20, 20, canvas.width - 40, RIBBON_H - 40);
-          ctx.fillStyle = '#64748b';
-          ctx.font = '700 16px Montserrat, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('CARICA UN IMMAGINE', canvas.width / 2, RIBBON_H / 2);
-        }
-
-        block.durationSec = canvas.width / RIBBON_PX_PER_SEC;
-        block.ribbonWidthPx = canvas.width;
-        block.renderedCanvas = canvas;
-      }
-    }
-
-    function rebuildPresentationRibbon() {
-      const gapSec = parseFloat(presGapSelect.value);
-      const gapPx = Math.round(gapSec * RIBBON_PX_PER_SEC);
-
-      let totalRibbonW = 0;
-      presentationBlocks.forEach((block, idx) => {
-        renderBlockToCanvas(block);
-        block.startX = totalRibbonW;
-        totalRibbonW += block.ribbonWidthPx;
-        if (idx < presentationBlocks.length - 1) {
-          totalRibbonW += gapPx;
-        }
-      });
-
-      const minDisplayW = Math.max(800, presScroller.clientWidth || 800);
-      const finalCanvasW = Math.max(minDisplayW, totalRibbonW);
-
-      presRibbonCanvas.width = finalCanvasW;
-      presRibbonCanvas.height = RIBBON_H;
-      presOverlayCanvas.width = finalCanvasW;
-      presOverlayCanvas.height = RIBBON_H;
-
-      const displayScale = 280 / RIBBON_H;
-      const cssWidth = Math.round(finalCanvasW * displayScale);
-      presStage.style.width = `${cssWidth}px`;
-      presRibbonCanvas.style.width = `${cssWidth}px`;
-      presOverlayCanvas.style.width = `${cssWidth}px`;
-
-      ribbonCtx.fillStyle = '#020305';
-      ribbonCtx.fillRect(0, 0, finalCanvasW, RIBBON_H);
-
-      presentationBlocks.forEach(block => {
-        if (block.renderedCanvas) {
-          ribbonCtx.drawImage(
-            block.renderedCanvas,
-            0, 0, block.renderedCanvas.width, RIBBON_H,
-            block.startX, 0, block.ribbonWidthPx, RIBBON_H
-          );
-        }
-        const thumb = document.getElementById(`thumb-${block.id}`);
-        if (thumb && block.renderedCanvas) {
-          const tCtx = thumb.getContext('2d');
-          thumb.width = 160;
-          thumb.height = 80;
-          tCtx.fillStyle = '#020305';
-          tCtx.fillRect(0, 0, 160, 80);
-          tCtx.drawImage(block.renderedCanvas, 0, 0, 160, 80);
-        }
-        const metaEl = document.getElementById(`meta-${block.id}`);
-        if (metaEl) {
-          metaEl.textContent = `${block.durationSec.toFixed(1)} sec`;
-        }
-      });
-
-      const totalSec = totalRibbonW / RIBBON_PX_PER_SEC;
-      presTotalMeta.textContent = `${presentationBlocks.length} ${presentationBlocks.length === 1 ? 'parte' : 'parti'} — Durata sequenza: ${totalSec.toFixed(1)} sec`;
-
-      drawPresentationOverlay(null);
-    }
-
-    function drawPresentationOverlay(playheadX) {
-      const w = presOverlayCanvas.width;
-      const h = presOverlayCanvas.height;
-      presOverCtx.clearRect(0, 0, w, h);
-
-      presOverCtx.strokeStyle = 'rgba(226, 232, 240, 0.12)';
-      presOverCtx.lineWidth = 1;
-      presOverCtx.font = '700 13px Montserrat, sans-serif';
-      presOverCtx.fillStyle = 'rgba(148, 163, 184, 0.75)';
-
-      [0.14, 0.36, 0.62, 0.88].forEach(ratio => {
-        const y = Math.round(ratio * h) + 0.5;
-        const f = yToFreq(y, h);
-        const label = f >= 1000 ? `${(f / 1000).toFixed(2)} kHz` : `${Math.round(f)} Hz`;
-        presOverCtx.beginPath();
-        presOverCtx.moveTo(0, y);
-        presOverCtx.lineTo(w, y);
-        presOverCtx.stroke();
-        presOverCtx.fillText(label, 12, y - 7);
-      });
-
-      presOverCtx.fillStyle = 'rgba(148, 163, 184, 0.65)';
-      presOverCtx.font = '12px Montserrat, sans-serif';
-      for (let sec = 2; sec * RIBBON_PX_PER_SEC < w; sec += 2) {
-        const tx = Math.round(sec * RIBBON_PX_PER_SEC) + 0.5;
-        presOverCtx.strokeStyle = 'rgba(226, 232, 240, 0.15)';
-        presOverCtx.beginPath();
-        presOverCtx.moveTo(tx, h - 18);
-        presOverCtx.lineTo(tx, h);
-        presOverCtx.stroke();
-        presOverCtx.fillText(`${sec}s`, tx + 5, h - 6);
-      }
-
-      presentationBlocks.forEach((block, idx) => {
-        const x0 = Math.round(block.startX) + 0.5;
-        const x1 = Math.round(block.startX + block.ribbonWidthPx) + 0.5;
-
-        presOverCtx.strokeStyle = 'rgba(0, 240, 255, 0.38)';
-        presOverCtx.setLineDash([6, 4]);
-        presOverCtx.beginPath();
-        presOverCtx.moveTo(x0, 0);
-        presOverCtx.lineTo(x0, h);
-        presOverCtx.moveTo(x1, 0);
-        presOverCtx.lineTo(x1, h);
-        presOverCtx.stroke();
-        presOverCtx.setLineDash([]);
-
-        const tag = `P${String(idx + 1).padStart(2, '0')} • ${block.type === 'text' ? 'TESTO' : 'IMG'} (${block.durationSec.toFixed(1)}s)`;
-        presOverCtx.font = '700 12px Montserrat, sans-serif';
-        const tagW = presOverCtx.measureText(tag).width + 14;
-        presOverCtx.fillStyle = 'rgba(6, 8, 13, 0.85)';
-        presOverCtx.fillRect(x0 + 5, 8, tagW, 22);
-        presOverCtx.fillStyle = block.type === 'text' ? '#f59e0b' : '#00f0ff';
-        presOverCtx.fillText(tag, x0 + 12, 23);
-      });
-
-      if (playheadX !== null) {
-        const px = Math.round(playheadX) + 0.5;
-        presOverCtx.strokeStyle = '#f59e0b';
-        presOverCtx.lineWidth = 3;
-        presOverCtx.beginPath();
-        presOverCtx.moveTo(px, 0);
-        presOverCtx.lineTo(px, h);
-        presOverCtx.stroke();
-      }
-    }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    function renderBlocksUI() {
-      presBlocksList.innerHTML = '';
-
-      presentationBlocks.forEach((block, idx) => {
-        const partNum = String(idx + 1).padStart(2, '0');
-        const card = document.createElement('div');
-        card.className = 'block-card';
-        card.id = `card-${block.id}`;
-
-        const headHtml = `
-          <div class="block-card-head">
-            <div class="block-meta">
-              <span class="block-badge ${block.type === 'image' ? 'is-img' : ''}">PARTE ${partNum} • ${block.type === 'text' ? 'TESTO CONTINUO' : 'IMMAGINE'}</span>
-              <span class="block-info" id="meta-${block.id}">${block.durationSec.toFixed(1)} sec</span>
-            </div>
-            <div class="block-controls">
-              <button class="btn-link" data-act="up" ${idx === 0 ? 'disabled style="opacity:0.35;cursor:default;"' : ''}>Su ↑</button>
-              <button class="btn-link" data-act="down" ${idx === presentationBlocks.length - 1 ? 'disabled style="opacity:0.35;cursor:default;"' : ''}>Giù ↓</button>
-              <button class="btn-link" data-act="dup">Duplica</button>
-              <button class="btn-link danger-link" data-act="del">Elimina</button>
-              <button class="btn-action btn-sm play-part-btn" id="playBtn-${block.id}" data-act="play">Ascolta parte</button>
-              <button class="btn-action tx-mode btn-sm" data-act="wav">Scarica Parte ${partNum} (.WAV)</button>
-            </div>
-          </div>
-        `;
-
-        let bodyHtml = '';
-        if (block.type === 'text') {
-          bodyHtml = `
-            <textarea rows="2" placeholder="Scrivi qui il testo lungo che scorrerà nello spettrogramma...">${escapeHtml(block.text)}</textarea>
-            <div class="block-options">
-              <label class="control-inline">Disposizione:
-                <select data-field="layout">
-                  <option value="single" ${block.layout === 'single' ? 'selected' : ''}>1 Riga Continua</option>
-                  <option value="double" ${block.layout === 'double' ? 'selected' : ''}>2 Righe Sovrapposte</option>
-                </select>
-              </label>
-              <label class="control-inline">Posizione nello spettro:
-                <select data-field="vAlign">
-                  <option value="acoustic" ${block.vAlign === 'acoustic' ? 'selected' : ''}>Fascia Acustica Nitida (~1.2–3.8 kHz)</option>
-                  <option value="center" ${block.vAlign === 'center' ? 'selected' : ''}>Centro Spettro (50%)</option>
-                  <option value="top" ${block.vAlign === 'top' ? 'selected' : ''}>Fascia Alta (75%)</option>
-                  <option value="bottom" ${block.vAlign === 'bottom' ? 'selected' : ''}>Fascia Bassa (25%)</option>
-                </select>
-              </label>
-              <label class="control-inline">Spaziatura lettere:
-                <select data-field="spacing">
-                  <option value="wide" ${block.spacing === 'wide' ? 'selected' : ''}>Ampia (Consigliata)</option>
-                  <option value="normal" ${block.spacing === 'normal' ? 'selected' : ''}>Standard</option>
-                </select>
-              </label>
-              <label class="control-inline">Peso:
-                <select data-field="weight">
-                  <option value="700" ${block.weight === '700' ? 'selected' : ''}>Grassetto (Nitido)</option>
-                  <option value="400" ${block.weight === '400' ? 'selected' : ''}>Regolare (Sottile)</option>
-                </select>
-              </label>
-            </div>
-          `;
-        } else {
-          bodyHtml = `
-            <div class="img-block-grid">
-              <div class="img-thumb-box">
-                <canvas id="thumb-${block.id}" width="160" height="80"></canvas>
-              </div>
-              <div>
-                <div class="input-row" style="margin-bottom:10px;">
-                  <label for="file-${block.id}" class="btn-link" style="cursor:pointer;">Scegli / Sostituisci immagine</label>
-                  <input type="file" id="file-${block.id}" accept="image/*">
-                  <span style="font-size:11.5px; color:var(--text-muted);">${escapeHtml(block.fileName || 'Nessun file')}</span>
-                </div>
-                <div class="block-options" style="margin-top:0;">
-                  <label class="control-inline">Resa:
-                    <select data-field="mode">
-                      <option value="grayscale" ${block.mode === 'grayscale' ? 'selected' : ''}>Scala di grigi (Sfumature)</option>
-                      <option value="threshold" ${block.mode === 'threshold' ? 'selected' : ''}>Alto contrasto (Netto B/N)</option>
-                    </select>
-                  </label>
-                  <label class="control-inline">Contrasto:
-                    <input type="range" data-field="contrast" min="50" max="240" value="${block.contrast}">
-                  </label>
-                  <label class="control-inline">Durata:
-                    <select data-field="durationMode">
-                      <option value="auto" ${block.durationMode === 'auto' ? 'selected' : ''}>Proporzionale 1:1 (Auto)</option>
-                      <option value="6" ${block.durationMode === '6' ? 'selected' : ''}>6 sec</option>
-                      <option value="9" ${block.durationMode === '9' ? 'selected' : ''}>9 sec</option>
-                      <option value="12" ${block.durationMode === '12' ? 'selected' : ''}>12 sec</option>
-                      <option value="16" ${block.durationMode === '16' ? 'selected' : ''}>16 sec</option>
-                    </select>
-                  </label>
-                  <label class="control-inline">
-                    <input type="checkbox" data-field="invert" ${block.invert ? 'checked' : ''}> Inverti
-                  </label>
-                </div>
-              </div>
-            </div>
-          `;
-        }
-
-        card.innerHTML = headHtml + bodyHtml;
-        presBlocksList.appendChild(card);
-
-        card.querySelectorAll('[data-act]').forEach(btn => {
-          btn.addEventListener('click', () => handleBlockAction(block.id, btn.dataset.act));
-        });
-
-        if (block.type === 'text') {
-          const ta = card.querySelector('textarea');
-          ta.addEventListener('input', () => {
-            block.text = ta.value;
-            rebuildPresentationRibbon();
-          });
-        } else {
-          const fileInp = card.querySelector(`#file-${block.id}`);
-          fileInp.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            block.fileName = file.name;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-              const img = new Image();
-              img.onload = () => {
-                block.imageObj = img;
-                renderBlocksUI();
-                rebuildPresentationRibbon();
-              };
-              img.src = ev.target.result;
-            };
-            reader.readAsDataURL(file);
-          });
-        }
-
-        card.querySelectorAll('[data-field]').forEach(ctrl => {
-          const eventName = ctrl.type === 'range' ? 'input' : 'change';
-          ctrl.addEventListener(eventName, () => {
-            const field = ctrl.dataset.field;
-            if (ctrl.type === 'checkbox') block[field] = ctrl.checked;
-            else if (ctrl.type === 'range') block[field] = parseInt(ctrl.value, 10);
-            else block[field] = ctrl.value;
-            rebuildPresentationRibbon();
-          });
-        });
-      });
-    }
-
-    function handleBlockAction(blockId, action) {
-      const idx = presentationBlocks.findIndex(b => b.id === blockId);
-      if (idx === -1) return;
-      const block = presentationBlocks[idx];
-
-      if (action === 'up' && idx > 0) {
-        stopAllTxPlayback();
-        [presentationBlocks[idx - 1], presentationBlocks[idx]] = [presentationBlocks[idx], presentationBlocks[idx - 1]];
-        renderBlocksUI();
-        rebuildPresentationRibbon();
-      } else if (action === 'down' && idx < presentationBlocks.length - 1) {
-        stopAllTxPlayback();
-        [presentationBlocks[idx], presentationBlocks[idx + 1]] = [presentationBlocks[idx + 1], presentationBlocks[idx]];
-        renderBlocksUI();
-        rebuildPresentationRibbon();
-      } else if (action === 'dup') {
-        stopAllTxPlayback();
-        const copy = { ...block, id: blockIdCounter++, renderedCanvas: null };
-        presentationBlocks.splice(idx + 1, 0, copy);
-        renderBlocksUI();
-        rebuildPresentationRibbon();
-      } else if (action === 'del') {
-        if (presentationBlocks.length <= 1) {
-          presStatusText.textContent = 'Deve rimanere almeno una parte nella sequenza';
-          return;
-        }
-        stopAllTxPlayback();
-        presentationBlocks.splice(idx, 1);
-        renderBlocksUI();
-        rebuildPresentationRibbon();
-      } else if (action === 'play') {
-        playSinglePresentationBlock(block, idx);
-      } else if (action === 'wav') {
-        exportSinglePresentationBlockWav(block, idx);
-      }
-    }
-
-    addTextBlockBtn.addEventListener('click', () => {
-      stopAllTxPlayback();
-      presentationBlocks.push({
-        id: blockIdCounter++,
-        type: 'text',
-        text: 'NUOVO FRAMMENTO NARRATIVO DELLA PRESENTAZIONE',
-        layout: 'single',
-        vAlign: 'acoustic',
-        weight: '700',
-        spacing: 'wide',
-        renderedCanvas: null,
-        durationSec: 0,
-        startX: 0,
-        ribbonWidthPx: 0
-      });
-      renderBlocksUI();
-      rebuildPresentationRibbon();
-      presScroller.scrollLeft = presScroller.scrollWidth;
-    });
-
-    addImageBlockBtn.addEventListener('click', () => {
-      stopAllTxPlayback();
-      presentationBlocks.push({
-        id: blockIdCounter++,
-        type: 'image',
-        fileName: 'Nessun file selezionato',
-        imageObj: null,
-        mode: 'grayscale',
-        contrast: 140,
-        invert: false,
-        durationMode: 'auto',
-        renderedCanvas: null,
-        durationSec: 0,
-        startX: 0,
-        ribbonWidthPx: 0
-      });
-      renderBlocksUI();
-      rebuildPresentationRibbon();
-      presScroller.scrollLeft = presScroller.scrollWidth;
-    });
-
-    presTextSpeedInput.addEventListener('input', () => {
-      stopAllTxPlayback();
-      presTextSpeedVal.textContent = `${presTextSpeedInput.value} px/s`;
-      rebuildPresentationRibbon();
-    });
-
-    presTextHeightInput.addEventListener('input', () => {
-      stopAllTxPlayback();
-      presTextHeightVal.textContent = `${presTextHeightInput.value}%`;
-      rebuildPresentationRibbon();
-    });
-
-    presTextAspectInput.addEventListener('input', () => {
-      stopAllTxPlayback();
-      presTextAspectVal.textContent = `${parseFloat(presTextAspectInput.value).toFixed(2)}×`;
-      rebuildPresentationRibbon();
-    });
-
-    resetTextGeomBtn.addEventListener('click', () => {
-      stopAllTxPlayback();
-      presTextHeightInput.value = 32;
-      presTextHeightVal.textContent = '32%';
-      presTextSpeedInput.value = 500;
-      presTextSpeedVal.textContent = '500 px/s';
-      presTextAspectInput.value = 1.45;
-      presTextAspectVal.textContent = '1.45×';
-      rebuildPresentationRibbon();
-    });
-
-    presGapSelect.addEventListener('change', () => {
-      stopAllTxPlayback();
-      rebuildPresentationRibbon();
-    });
-
-    function getBlockSamples(block, sampleRate) {
-      renderBlockToCanvas(block);
-      const ctx = block.renderedCanvas.getContext('2d');
-      const imgData = ctx.getImageData(0, 0, block.renderedCanvas.width, RIBBON_H);
-      const numBands = parseInt(presBandsSelect.value, 10);
-      return synthesizeImageDataToAudio(imgData, sampleRate, block.durationSec, numBands, true);
-    }
-
-    function exportSinglePresentationBlockWav(block, idx) {
-      const partNum = String(idx + 1).padStart(2, '0');
-      presStatusText.textContent = `Esportazione Parte ${partNum}...`;
-      const sampleRate = 48000;
-      const samples = getBlockSamples(block, sampleRate);
-      const slug = block.type === 'text' ? 'testo' : 'immagine';
-      downloadFloat32AsWav(samples, sampleRate, `decoder-parte-${partNum}-${slug}.wav`);
-      presStatusText.textContent = `Parte ${partNum} (.WAV) scaricata`;
-    }
-
-    presDownloadAllBtn.addEventListener('click', () => {
-      const sampleRate = 48000;
-      presStatusText.textContent = 'Esportazione di tutte le parti in corso...';
-      presentationBlocks.forEach((block, idx) => {
-        setTimeout(() => {
-          const partNum = String(idx + 1).padStart(2, '0');
-          const samples = getBlockSamples(block, sampleRate);
-          const slug = block.type === 'text' ? 'testo' : 'immagine';
-          downloadFloat32AsWav(samples, sampleRate, `decoder-parte-${partNum}-${slug}.wav`);
-          if (idx === presentationBlocks.length - 1) {
-            presStatusText.textContent = `Esportate ${presentationBlocks.length} parti (.WAV)`;
-          }
-        }, idx * 350);
-      });
-    });
-
-    function buildFullSequenceSamples(sampleRate) {
-      const gapSec = parseFloat(presGapSelect.value);
-      const gapSamples = Math.floor(sampleRate * gapSec);
-      const chunks = [];
-      let totalLen = 0;
-
-      presentationBlocks.forEach((block, idx) => {
-        const s = getBlockSamples(block, sampleRate);
-        chunks.push(s);
-        totalLen += s.length;
-        if (idx < presentationBlocks.length - 1) {
-          chunks.push(new Float32Array(gapSamples));
-          totalLen += gapSamples;
-        }
-      });
-
-      const merged = new Float32Array(totalLen);
-      let offset = 0;
-      chunks.forEach(chunk => {
-        merged.set(chunk, offset);
-        offset += chunk.length;
-      });
-      return merged;
-    }
-
-    presExportSingleBtn.addEventListener('click', () => {
-      presStatusText.textContent = 'Generazione sequenza unica .WAV...';
-      const sampleRate = 48000;
-      const merged = buildFullSequenceSamples(sampleRate);
-      downloadFloat32AsWav(merged, sampleRate, `decoder-presentazione-completa-${Date.now()}.wav`);
-      presStatusText.textContent = 'Sequenza unica (.WAV) esportata';
-    });
-
-    async function playSinglePresentationBlock(block, idx) {
-      const wasSame = activePlayback && activePlayback.mode === 'pres' && activePlayback.blockId === block.id;
-      stopAllTxPlayback();
-      if (wasSame) {
-        presStatusText.textContent = 'Riproduzione interrotta';
-        return;
-      }
-
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!sharedTxAudioCtx) sharedTxAudioCtx = new AudioCtx();
-      if (sharedTxAudioCtx.state === 'suspended') await sharedTxAudioCtx.resume();
-
-      const partNum = String(idx + 1).padStart(2, '0');
-      presStatusText.textContent = `Sintesi Parte ${partNum}...`;
-
-      const samples = getBlockSamples(block, sharedTxAudioCtx.sampleRate);
-      const audioBuffer = sharedTxAudioCtx.createBuffer(1, samples.length, sharedTxAudioCtx.sampleRate);
-      audioBuffer.copyToChannel(samples, 0);
-
-      const sourceNode = sharedTxAudioCtx.createBufferSource();
-      sourceNode.buffer = audioBuffer;
-      sourceNode.connect(sharedTxAudioCtx.destination);
-
-      const startTime = sharedTxAudioCtx.currentTime;
-      sourceNode.start(startTime);
-
-      const card = document.getElementById(`card-${block.id}`);
-      const btn = document.getElementById(`playBtn-${block.id}`);
-      if (card) card.classList.add('is-playing');
-      if (btn) {
-        btn.textContent = 'Ferma';
-        btn.classList.add('is-stop');
-      }
-      presStatusText.textContent = `In ascolto: Parte ${partNum}`;
-
-      activePlayback = { sourceNode, animId: null, mode: 'pres', blockId: block.id };
-      updateGlobalStatus();
-
-      sourceNode.onended = () => {
-        stopAllTxPlayback();
-        presStatusText.textContent = `Parte ${partNum} completata`;
-      };
-
-      const displayScale = 280 / RIBBON_H;
-
-      function animatePartHead() {
-        if (!activePlayback || activePlayback.blockId !== block.id) return;
-        const elapsed = sharedTxAudioCtx.currentTime - startTime - 0.25;
-        if (elapsed >= block.durationSec) return;
-
-        if (elapsed >= 0) {
-          const progress = elapsed / block.durationSec;
-          const headX = block.startX + progress * block.ribbonWidthPx;
-          drawPresentationOverlay(headX);
-
-          const cssX = headX * displayScale;
-          const viewW = presScroller.clientWidth;
-          if (cssX < presScroller.scrollLeft + 40 || cssX > presScroller.scrollLeft + viewW - 80) {
-            presScroller.scrollLeft = Math.max(0, cssX - viewW * 0.3);
-          }
-        }
-        activePlayback.animId = requestAnimationFrame(animatePartHead);
-      }
-      animatePartHead();
-    }
-
-    presPlayAllBtn.addEventListener('click', async () => {
-      const wasFull = activePlayback && activePlayback.mode === 'pres' && activePlayback.blockId === 'ALL';
-      stopAllTxPlayback();
-      if (wasFull) {
-        presStatusText.textContent = 'Riproduzione interrotta';
-        return;
-      }
-
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!sharedTxAudioCtx) sharedTxAudioCtx = new AudioCtx();
-      if (sharedTxAudioCtx.state === 'suspended') await sharedTxAudioCtx.resume();
-
-      presStatusText.textContent = 'Sintesi intera sequenza...';
-
-      const sampleRate = sharedTxAudioCtx.sampleRate;
-      const merged = buildFullSequenceSamples(sampleRate);
-      const totalDuration = merged.length / sampleRate;
-
-      const audioBuffer = sharedTxAudioCtx.createBuffer(1, merged.length, sampleRate);
-      audioBuffer.copyToChannel(merged, 0);
-
-      const sourceNode = sharedTxAudioCtx.createBufferSource();
-      sourceNode.buffer = audioBuffer;
-      sourceNode.connect(sharedTxAudioCtx.destination);
-
-      const startTime = sharedTxAudioCtx.currentTime;
-      sourceNode.start(startTime);
-
-      presPlayAllBtn.textContent = 'Ferma sequenza';
-      presPlayAllBtn.classList.add('is-stop');
-      presStatusText.textContent = 'Riproduzione sequenza continua';
-
-      activePlayback = { sourceNode, animId: null, mode: 'pres', blockId: 'ALL' };
-      updateGlobalStatus();
-
-      sourceNode.onended = () => {
-        stopAllTxPlayback();
-        presStatusText.textContent = 'Sequenza completata';
-      };
-
-      const gapSec = parseFloat(presGapSelect.value);
-      const displayScale = 280 / RIBBON_H;
-
-      const timeline = [];
-      let cursorSec = 0;
-      presentationBlocks.forEach((b, i) => {
-        const blockTotalAudioSec = b.durationSec + 0.5;
-        timeline.push({
-          block: b,
-          audioStart: cursorSec,
-          activeStart: cursorSec + 0.25,
-          activeEnd: cursorSec + 0.25 + b.durationSec,
-          audioEnd: cursorSec + blockTotalAudioSec
-        });
-        cursorSec += blockTotalAudioSec + (i < presentationBlocks.length - 1 ? gapSec : 0);
-      });
-
-      function animateFullSequence() {
-        if (!activePlayback || activePlayback.blockId !== 'ALL') return;
-        const elapsed = sharedTxAudioCtx.currentTime - startTime;
-        if (elapsed >= totalDuration) return;
-
-        let headX = null;
-        for (const item of timeline) {
-          const card = document.getElementById(`card-${item.block.id}`);
-          if (elapsed >= item.audioStart && elapsed <= item.audioEnd) {
-            if (card) card.classList.add('is-playing');
-            const localActive = Math.max(0, Math.min(item.block.durationSec, elapsed - item.activeStart));
-            headX = item.block.startX + (localActive / item.block.durationSec) * item.block.ribbonWidthPx;
-          } else {
-            if (card) card.classList.remove('is-playing');
-          }
-        }
-
-        if (headX !== null) {
-          drawPresentationOverlay(headX);
-          const cssX = headX * displayScale;
-          const viewW = presScroller.clientWidth;
-          if (cssX > presScroller.scrollLeft + viewW * 0.65 || cssX < presScroller.scrollLeft) {
-            presScroller.scrollLeft = Math.max(0, cssX - viewW * 0.25);
-          }
-        }
-
-        activePlayback.animId = requestAnimationFrame(animateFullSequence);
-      }
-      animateFullSequence();
-    });
-
-    /* ==================== MODULO 3: CODIFICA RAPIDA (SINGOLA) ==================== */
-    const matrixCanvas = document.getElementById('matrixCanvas');
-    const txScanCanvas = document.getElementById('txScanCanvas');
-    const matCtx = matrixCanvas.getContext('2d');
-    const scanCtx = txScanCanvas.getContext('2d');
-
-    const textInput = document.getElementById('textInput');
-    const textAlignSelect = document.getElementById('textAlignSelect');
-    const renderTextBtn = document.getElementById('renderTextBtn');
-    const imageFileInput = document.getElementById('imageFileInput');
-    const fileNameLabel = document.getElementById('fileNameLabel');
-    const imgModeSelect = document.getElementById('imgModeSelect');
-    const imgContrastInput = document.getElementById('imgContrastInput');
-    const invertCheck = document.getElementById('invertCheck');
-    const deviceEqCheck = document.getElementById('deviceEqCheck');
-
-    const txPlayBtn = document.getElementById('txPlayBtn');
-    const txExportBtn = document.getElementById('txExportBtn');
-    const durationSelect = document.getElementById('durationSelect');
-    const bandsSelect = document.getElementById('bandsSelect');
-    const txStatusText = document.getElementById('txStatusText');
-
-    const sourceBuffer = document.createElement('canvas');
-    sourceBuffer.width = matrixCanvas.width;
-    sourceBuffer.height = matrixCanvas.height;
-    const srcCtx = sourceBuffer.getContext('2d');
-
-    function drawTxGrid() {
+    function drawTxGrid(cursorPt, scanX) {
       const w = txScanCanvas.width;
       const h = txScanCanvas.height;
       scanCtx.clearRect(0, 0, w, h);
 
       scanCtx.strokeStyle = 'rgba(226, 232, 240, 0.16)';
+      scanCtx.lineWidth = 1;
       scanCtx.font = '11px Montserrat, sans-serif';
       scanCtx.fillStyle = 'rgba(148, 163, 184, 0.85)';
 
@@ -2392,6 +1284,34 @@
         scanCtx.stroke();
         scanCtx.fillText(label, 10, y - 6);
       });
+
+      if (typeof scanX === 'number') {
+        scanCtx.strokeStyle = '#f59e0b';
+        scanCtx.lineWidth = 1.5;
+        scanCtx.beginPath();
+        scanCtx.moveTo(scanX, 0);
+        scanCtx.lineTo(scanX, h);
+        scanCtx.stroke();
+      }
+
+      if (cursorPt) {
+        const radius = parseInt(brushSizeInput.value, 10) / 2;
+        scanCtx.strokeStyle = brushToolSelect.value === 'eraser'
+          ? 'rgba(239, 68, 68, 0.85)'
+          : 'rgba(245, 158, 11, 0.85)';
+        scanCtx.lineWidth = 1.2;
+        scanCtx.beginPath();
+        scanCtx.arc(cursorPt.x, cursorPt.y, radius, 0, Math.PI * 2);
+        scanCtx.stroke();
+      }
+    }
+
+    function clearTxMatrix() {
+      srcCtx.fillStyle = '#000000';
+      srcCtx.fillRect(0, 0, sourceBuffer.width, sourceBuffer.height);
+      matCtx.fillStyle = '#000000';
+      matCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+      drawTxGrid(hoverBrushPt, null);
     }
 
     function processMatrix() {
@@ -2423,9 +1343,103 @@
       }
 
       matCtx.putImageData(outData, 0, 0);
-      drawTxGrid();
+      drawTxGrid(hoverBrushPt, null);
     }
 
+    /* ---- Disegno a mano libera sulla tela ---- */
+    function getCanvasCoords(e) {
+      const rect = txWrapper.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * matrixCanvas.width;
+      const y = ((e.clientY - rect.top) / rect.height) * matrixCanvas.height;
+      return {
+        x: Math.max(0, Math.min(matrixCanvas.width, x)),
+        y: Math.max(0, Math.min(matrixCanvas.height, y))
+      };
+    }
+
+    function paintStroke(fromPt, toPt) {
+      const size = parseInt(brushSizeInput.value, 10);
+      const isEraser = brushToolSelect.value === 'eraser';
+
+      srcCtx.save();
+      srcCtx.lineCap = 'round';
+      srcCtx.lineJoin = 'round';
+      srcCtx.lineWidth = size;
+      srcCtx.strokeStyle = isEraser ? '#000000' : '#ffffff';
+      srcCtx.fillStyle = isEraser ? '#000000' : '#ffffff';
+
+      srcCtx.beginPath();
+      if (fromPt.x === toPt.x && fromPt.y === toPt.y) {
+        srcCtx.arc(toPt.x, toPt.y, size / 2, 0, Math.PI * 2);
+        srcCtx.fill();
+      } else {
+        srcCtx.moveTo(fromPt.x, fromPt.y);
+        srcCtx.lineTo(toPt.x, toPt.y);
+        srcCtx.stroke();
+      }
+      srcCtx.restore();
+
+      processMatrix();
+    }
+
+    brushSizeInput.addEventListener('input', () => {
+      brushSizeVal.textContent = `${brushSizeInput.value} px`;
+      drawTxGrid(hoverBrushPt, null);
+    });
+
+    brushToolSelect.addEventListener('change', () => {
+      drawTxGrid(hoverBrushPt, null);
+    });
+
+    clearMatrixBtn.addEventListener('click', () => {
+      stopTxPlayback();
+      clearTxMatrix();
+      fileNameLabel.textContent = 'Nessun file selezionato';
+      txStatusText.textContent = 'Tela pulita';
+    });
+
+    txWrapper.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0 && e.pointerType === 'mouse') return;
+      stopTxPlayback();
+      txWrapper.setPointerCapture(e.pointerId);
+      isDrawing = true;
+      const pt = getCanvasCoords(e);
+      lastDrawPt = pt;
+      hoverBrushPt = pt;
+      paintStroke(pt, pt);
+      txStatusText.textContent = 'Disegno su matrice attivo';
+    });
+
+    txWrapper.addEventListener('pointermove', (e) => {
+      const pt = getCanvasCoords(e);
+      hoverBrushPt = pt;
+      if (isDrawing && lastDrawPt) {
+        paintStroke(lastDrawPt, pt);
+        lastDrawPt = pt;
+      } else {
+        const freq = yToFreq(pt.y, matrixCanvas.height);
+        const fLabel = freq >= 1000 ? `${(freq / 1000).toFixed(2)} kHz` : `${Math.round(freq)} Hz`;
+        txStatusText.textContent = `Cursore: ${fLabel}`;
+        drawTxGrid(pt, null);
+      }
+    });
+
+    function endDrawing(e) {
+      if (isDrawing) {
+        isDrawing = false;
+        lastDrawPt = null;
+        try { txWrapper.releasePointerCapture(e.pointerId); } catch (_) {}
+      }
+    }
+
+    txWrapper.addEventListener('pointerup', endDrawing);
+    txWrapper.addEventListener('pointercancel', endDrawing);
+    txWrapper.addEventListener('pointerleave', () => {
+      hoverBrushPt = null;
+      if (!activePlayback) drawTxGrid(null, null);
+    });
+
+    /* ---- Generazione Testo ---- */
     function renderTextToSource(rawText) {
       const W = sourceBuffer.width;
       const H = sourceBuffer.height;
@@ -2445,16 +1459,16 @@
       const align = textAlignSelect.value;
       const marginX = 48;
       const maxW = W - marginX * 2;
-      const maxH = H * 0.48;
+      const maxH = H * 0.42;
 
       let fontSize = Math.floor(maxH / lines.length);
-      let spacing = Math.max(4, Math.round(fontSize * 0.09));
+      let spacing = Math.max(5, Math.round(fontSize * 0.11));
       srcCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
 
       let widest = Math.max(...lines.map(l => measureTextWithTracking(srcCtx, l, spacing)));
       while ((widest > maxW || fontSize * lines.length * 1.25 > maxH) && fontSize > 20) {
         fontSize -= 2;
-        spacing = Math.max(4, Math.round(fontSize * 0.09));
+        spacing = Math.max(5, Math.round(fontSize * 0.11));
         srcCtx.font = `700 ${fontSize}px Montserrat, sans-serif`;
         widest = Math.max(...lines.map(l => measureTextWithTracking(srcCtx, l, spacing)));
       }
@@ -2480,14 +1494,30 @@
       txStatusText.textContent = 'Testo codificato nella matrice';
     }
 
-    renderTextBtn.addEventListener('click', () => renderTextToSource(textInput.value || 'DECODER'));
-    textInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') renderTextToSource(textInput.value || 'DECODER');
+    renderTextBtn.addEventListener('click', () => {
+      if (!textInput.value.trim()) {
+        clearTxMatrix();
+        txStatusText.textContent = 'Inserisci un testo nella casella';
+        return;
+      }
+      renderTextToSource(textInput.value);
     });
+
+    textInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        if (!textInput.value.trim()) {
+          clearTxMatrix();
+          return;
+        }
+        renderTextToSource(textInput.value);
+      }
+    });
+
     textAlignSelect.addEventListener('change', () => {
       if (textInput.value.trim()) renderTextToSource(textInput.value);
     });
 
+    /* ---- Caricamento Immagine ---- */
     imageFileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -2524,9 +1554,10 @@
       el.addEventListener('change', processMatrix);
     });
 
+    /* ---- Riproduzione ed Esportazione WAV ---- */
     txPlayBtn.addEventListener('click', async () => {
-      const wasTx = activePlayback && activePlayback.mode === 'tx';
-      stopAllTxPlayback();
+      const wasTx = Boolean(activePlayback);
+      stopTxPlayback();
       if (wasTx) {
         txStatusText.textContent = 'Anteprima interrotta';
         return;
@@ -2562,29 +1593,25 @@
       txPlayBtn.classList.add('is-stop');
       txStatusText.textContent = 'Riproduzione in corso';
 
-      activePlayback = { sourceNode, animId: null, mode: 'tx' };
+      activePlayback = { sourceNode, animId: null };
       updateGlobalStatus();
 
       sourceNode.onended = () => {
-        stopAllTxPlayback();
+        stopTxPlayback();
         txStatusText.textContent = 'Anteprima completata';
       };
 
       function animateScanner() {
-        if (!activePlayback || activePlayback.mode !== 'tx') return;
+        if (!activePlayback) return;
         const elapsed = sharedTxAudioCtx.currentTime - startTime - 0.25;
         if (elapsed >= duration) return;
 
-        drawTxGrid();
         if (elapsed >= 0) {
           const progress = elapsed / duration;
           const scanX = Math.round(progress * txScanCanvas.width) + 0.5;
-          scanCtx.strokeStyle = '#f59e0b';
-          scanCtx.lineWidth = 1.5;
-          scanCtx.beginPath();
-          scanCtx.moveTo(scanX, 0);
-          scanCtx.lineTo(scanX, txScanCanvas.height);
-          scanCtx.stroke();
+          drawTxGrid(hoverBrushPt, scanX);
+        } else {
+          drawTxGrid(hoverBrushPt, null);
         }
         activePlayback.animId = requestAnimationFrame(animateScanner);
       }
@@ -2610,13 +1637,10 @@
     /* ==================== INIZIALIZZAZIONE ==================== */
     window.addEventListener('resize', () => {
       resizeRxCanvases();
-      rebuildPresentationRibbon();
     });
 
     resizeRxCanvases();
-    renderTextToSource('DECODER / SPAZIO PUBBLICO');
-    renderBlocksUI();
-    rebuildPresentationRibbon();
+    clearTxMatrix();
   })();
   </script>
 </body>
